@@ -23,6 +23,9 @@
     "hexo-renderer-stylus": "^3.0.0",
     "hexo-server": "^3.0.0",
     "hexo-theme-landscape": "^1.0.0",
-    "hexo-theme-next": "^8.15.0"
+    "hexo-theme-next": "^8.15.0",
+    "hexo-fontawesome": "^2.3.0",
+    "hexo-filter-text-autospace": "^1.2.4",
+    "hexo-tag-publications": "^0.3.3"
   }
 }
