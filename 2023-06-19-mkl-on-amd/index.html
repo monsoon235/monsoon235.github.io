@@ -29,7 +29,7 @@
 <meta property="og:description" content="问题实验室有一些 AMD EPYC 7713 的服务器，采购的原因是组里有一些人的程序有非常高的 CPU 负载（我也不知道是什么负载，为什么不能跑在 GPU 上，我也没有精力去逐个帮助解决），框框多的 AMD 处理器非常适合这种需求。 不过 AMD 的处理器虽然香，用在炼丹实验室会有额外的问题：Anaconda 安装的 numpy 和 PyTorch 默认都使用了 MKL 作为 BLAS 的实现，">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-06-18T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-06-19T14:51:33.955Z">
+<meta property="article:modified_time" content="2023-06-19T14:52:55.690Z">
 <meta property="article:author" content="Monsoon">
 <meta property="article:tag" content="hpc">
 <meta property="article:tag" content="mkl">
@@ -200,7 +200,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2023-06-19 00:00:00 / 修改时间：22:51:33" itemprop="dateCreated datePublished" datetime="2023-06-19T00:00:00+08:00">2023-06-19</time>
+      <time title="创建时间：2023-06-19 00:00:00 / 修改时间：22:52:55" itemprop="dateCreated datePublished" datetime="2023-06-19T00:00:00+08:00">2023-06-19</time>
     </span>
 
   
@@ -214,7 +214,7 @@
     
     <div class="post-body" itemprop="articleBody"><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>实验室有一些 AMD EPYC 7713 的服务器，采购的原因是组里有一些人的程序有非常高的 CPU 负载（我也不知道是什么负载，为什么不能跑在 GPU 上，我也没有精力去逐个帮助解决），框框多的 AMD 处理器非常适合这种需求。</p>
 <p>不过 AMD 的处理器虽然香，用在炼丹实验室会有额外的问题：Anaconda 安装的 numpy 和 PyTorch 默认都使用了 MKL 作为 BLAS 的实现，MKL 的 library function 也是大部分高 CPU 负载程序的热点，但 <strong>MKL 会判断自己是否在 Intel CPU 上运行，如果不是，则没有优化效果。</strong></p>
-<p>由于这是炼丹实验室，大家很少有足够的 HPC 基础去自己编译适合的 numpy 和 AMD 版本，也很难脱离 Anaconda，对于 MKL 的依赖因此很难去除。为此需要一个<strong>对一般用户无感知的解决方案</strong>。</p>
+<p>由于这是炼丹实验室，大家很少有足够的 HPC 基础去自己编译适合的 numpy 和 PyTorch 版本，也很难脱离 Anaconda，对于 MKL 的依赖因此很难去除。为此需要一个<strong>对一般用户无感知的解决方案</strong>。</p>
 <h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>通过搜索引擎可以搜索到一个广为流传解决方案：设置环境变量 <code>MKL_DEBUG_CPU_TYPE=5</code>。这是个曾经有效的解决方案，但<strong>对于 MKL 2020 及之后的版本不再有效</strong>。</p>
 <p>最终我在<a target="_blank" rel="noopener" href="https://documentation.sigma2.no/jobs/mkl.html">此处</a>找到了更巧妙的解决方案。</p>
 <p>MKL 会调用一个 <code>mkl_serv_intel_cpu_true()</code> 函数以检查自己是否运行在 Intel CPU 上，只要提供一个虚假的、始终返回 <code>1</code> 的 <code>mkl_serv_intel_cpu_true()</code>，即可欺骗 MKL 让它认为自己在 Intel CPU 上运行。</p>
