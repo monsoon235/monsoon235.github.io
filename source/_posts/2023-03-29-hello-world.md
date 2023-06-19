@@ -1,6 +1,6 @@
 ---
 title: Hello World
-date: 2023/03/29 17:17:11
+date: 2023/03/29
 lang: en
 ---
 
