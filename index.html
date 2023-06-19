@@ -190,7 +190,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2023-06-19 00:00:00 / Modified: 22:57:36" itemprop="dateCreated datePublished" datetime="2023-06-19T00:00:00+08:00">2023-06-19</time>
+      <time title="Created: 2023-06-19 00:00:00 / Modified: 23:07:42" itemprop="dateCreated datePublished" datetime="2023-06-19T00:00:00+08:00">2023-06-19</time>
     </span>
 
   
@@ -218,7 +218,7 @@
 
 <p>使用 <code>gcc -shared -fPIC -o libmkl_trick.so mkl_trick.c</code> 编译，并将生成的 <code>libmkl_trick.so</code> 复制到 <code>/usr/local/lib</code>。</p>
 <p>在 Shell 的全局初始化文件中加入：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">export MKL_DEBUG_CPU_TYPE=5  # 兼容旧版本 MKL</span><br><span class="line">export MKL_ENABLE_INSTRUCTIONS=AVX2  # 可选，指明 MKL 可以使用 AVX2</span><br><span class="line">export LD_PRELOAD=/usr/local/lib/libmkl_trick.so</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> MKL_DEBUG_CPU_TYPE=5  <span class="comment"># 兼容旧版本 MKL</span></span><br><span class="line"><span class="built_in">export</span> MKL_ENABLE_INSTRUCTIONS=AVX2  <span class="comment"># 可选，指明 MKL 可以使用 AVX2</span></span><br><span class="line"><span class="built_in">export</span> LD_PRELOAD=/usr/local/lib/libmkl_trick.so</span><br></pre></td></tr></table></figure>
 
 <p>实验室的同学有的用 Bash 也有的用 ZSH，所以两者都要修改：</p>
 <ul>
@@ -290,7 +290,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-06-19 22:57:36" itemprop="dateModified" datetime="2023-06-19T22:57:36+08:00">2023-06-19</time>
+      <time title="Modified: 2023-06-19 23:07:42" itemprop="dateModified" datetime="2023-06-19T23:07:42+08:00">2023-06-19</time>
     </span>
 
   
@@ -865,7 +865,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-06-19 22:57:36" itemprop="dateModified" datetime="2023-06-19T22:57:36+08:00">2023-06-19</time>
+      <time title="Modified: 2023-06-19 23:07:42" itemprop="dateModified" datetime="2023-06-19T23:07:42+08:00">2023-06-19</time>
     </span>
 
   
