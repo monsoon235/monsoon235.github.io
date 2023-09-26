@@ -51,7 +51,7 @@ http {
         listen [::]:443 quic;
 
         listen unix:/dev/shm/nginx-example-foo.sock ssl http2 proxy_protocol;
-        set_real_ip_from unix:;  # 只对于来自 unix domain socket 的连接覆盖其源地址
+        set_real_ip_from unix:;
         real_ip_header proxy_protocol;
 
         add_header Alt-Svc 'h3=":443"; ma=86400';  # used to advertise the availability of HTTP/3
