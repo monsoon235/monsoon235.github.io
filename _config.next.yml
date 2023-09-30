@@ -553,7 +553,7 @@ math:
   every_page: false
 
   mathjax:
-    enable: false
+    enable: true
     # Available values: none | ams | all
     tags: none
 
@@ -770,7 +770,7 @@ growingio_analytics: # <project_id>
 
 # Cloudflare Web Analytics
 # See: https://www.cloudflare.com/web-analytics/
-cloudflare_analytics:
+cloudflare_analytics: 3c9e3103682b4f6fbc36342486e67640
 
 # Microsoft Clarity Analytics
 # See: https://clarity.microsoft.com/
