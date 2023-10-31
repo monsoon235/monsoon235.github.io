@@ -6,7 +6,7 @@ lang: en
 
 I'm a 3rd year graduate student at the University of Science and Technology of China (USTC) since 2021. I received my bachelor degree from the same university, majoring in computer science.
 
-Now I'm doing researches in [ADSLab](https://adsl.ustc.edu.cn), focusing on machine learning systems and deep learning compiler. Before this, I was in [Laboratory of Feature Network](https://lfn.ustc.edu.cn) and studied in 3D vision, including feature matching, SLAM, MVS and NeRF.
+Now I'm doing researches in [ADSLab](https://adsl.ustc.edu.cn), focusing on machine learning systems and deep learning compiler. Before this, I was in [Laboratory of Future Network](https://lfn.ustc.edu.cn) and studied in 3D vision, including feature matching, SLAM, MVS and NeRF.
 
 **I'm looking for PhD admission opportunity of 2024 Fall, targeting machine learning system.**
 
