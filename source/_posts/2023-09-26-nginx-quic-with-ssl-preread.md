@@ -2,7 +2,12 @@
 title: Nginx 启用 QUIC 并和 SNI 分流共存
 date: 2023-09-26
 lang: zh-CN
-tags: nginx,quic,http3,tls,sni-routing
+tags:
+  - nginx
+  - quic
+  - http3
+  - tls
+  - sni-routing
 ---
 
 ## 问题

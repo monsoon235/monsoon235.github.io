@@ -2,7 +2,10 @@
 title: Catching Mining Virus
 date: 2023-11-01
 lang: en
-tags: linux,iptables,anti-virus
+tags:
+  - linux
+  - iptables
+  - anti-virus
 ---
 
 ## Problem
