@@ -35,6 +35,10 @@ yu2023adaptive,chang2023structured
 - Computer Science
 - Linux
 - Anime
+  - Favorite anime directors: [Naoko Yamada (山田尚子)](https://en.wikipedia.org/wiki/Naoko_Yamada), [Satoshi Kon (今敏)](https://en.wikipedia.org/wiki/Satoshi_Kon)
+  - Favorite TV anime: [*March Comes In like a Lion* (3月のライオン)](https://en.wikipedia.org/wiki/March_Comes_In_like_a_Lion)
+  - Favorite anime movie: [*Millennium Actress* (千年女優)](https://en.wikipedia.org/wiki/Millennium_Actress)
+  - Favorite anime studios: [Kyoto Animation (KyoAni, 京アニ)](https://en.wikipedia.org/wiki/Kyoto_Animation), [SHAFT](https://en.wikipedia.org/wiki/Shaft_(company))
 
 ![](https://rzi.xeonse.com/mybar.php?userid=150.png)
 
