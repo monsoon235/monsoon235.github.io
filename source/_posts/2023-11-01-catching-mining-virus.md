@@ -9,7 +9,7 @@ tags: linux,iptables,anti-virus
 
 On October 30, 2023, I received a warning message from the data center administrator, informing me that the firewall detected mining traffic sending from the server managed by me.
 
-![](firewall-warning.png)
+![](firewall_warning.png)
 
 The "mining traffic" was a `bitcoin.sipa.be` DNS request sent to `223.5.5.5`.
 
