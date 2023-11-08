@@ -21,15 +21,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="PrefaceDue to Internet censorship in China (known as GFW, Great Firewall, 防火长城), many websites (e.g. Google, Google Scholar, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity i">
+    <meta name="description" content="This is an unfinished blog.  PrefaceDue to Internet censorship in China (known as GFW, Great Firewall, 防火长城), many websites (e.g. Google, Twitter) are blocked, and some websites (e.g. GitHub) suffer">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Building Proxy Service for Team">
 <meta property="og:url" content="https://monsoon-cs.moe/2023-11-09-proxy-for-team/">
 <meta property="og:site_name" content="Monsoon&#39;s Blog">
-<meta property="og:description" content="PrefaceDue to Internet censorship in China (known as GFW, Great Firewall, 防火长城), many websites (e.g. Google, Google Scholar, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity i">
+<meta property="og:description" content="This is an unfinished blog.  PrefaceDue to Internet censorship in China (known as GFW, Great Firewall, 防火长城), many websites (e.g. Google, Twitter) are blocked, and some websites (e.g. GitHub) suffer">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-11-08T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-11-08T23:13:51.310Z">
+<meta property="article:modified_time" content="2023-11-08T23:24:44.756Z">
 <meta property="article:author" content="Monsoon">
 <meta property="article:tag" content="proxy">
 <meta property="article:tag" content="warp">
@@ -119,7 +119,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Preface"><span class="nav-number">1.</span> <span class="nav-text">Preface</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Target"><span class="nav-number">2.</span> <span class="nav-text">Target</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Preface"><span class="nav-number">1.</span> <span class="nav-text">Preface</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Target"><span class="nav-number">2.</span> <span class="nav-text">Target</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Available-Resources"><span class="nav-number">3.</span> <span class="nav-text">Available Resources</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CERNET"><span class="nav-number">3.1.</span> <span class="nav-text">CERNET</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cloudflare-WARP"><span class="nav-number">3.2.</span> <span class="nav-text">Cloudflare WARP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VPS"><span class="nav-number">3.3.</span> <span class="nav-text">VPS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Server-in-USTC"><span class="nav-number">3.4.</span> <span class="nav-text">Server in USTC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Anti-Censorship-Tools"><span class="nav-number">3.5.</span> <span class="nav-text">Anti-Censorship Tools</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adopted-Solution"><span class="nav-number">4.</span> <span class="nav-text">Adopted Solution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Deployment"><span class="nav-number">5.</span> <span class="nav-text">Deployment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Problems"><span class="nav-number">6.</span> <span class="nav-text">Problems</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Client-Initialization"><span class="nav-number">6.1.</span> <span class="nav-text">Client Initialization</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Compatibility"><span class="nav-number">6.2.</span> <span class="nav-text">Compatibility</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conclusion"><span class="nav-number">7.</span> <span class="nav-text">Conclusion</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -205,7 +205,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2023-11-09 00:00:00 / Modified: 07:13:51" itemprop="dateCreated datePublished" datetime="2023-11-09T00:00:00+08:00">2023-11-09</time>
+      <time title="Created: 2023-11-09 00:00:00 / Modified: 07:24:44" itemprop="dateCreated datePublished" datetime="2023-11-09T00:00:00+08:00">2023-11-09</time>
     </span>
 
   
@@ -217,7 +217,10 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>Due to <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Internet_censorship_in_China">Internet censorship in China</a> (known as <em>GFW</em>, <em>Great Firewall</em>, <em>防火长城</em>), many websites (e.g. Google, Google Scholar, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity issues. In China, the means to circumvent (e.g. proxy) internet censorship is referred to as <em>翻墙</em> (means <em>climbing over the wall</em>).</p>
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>This is an unfinished blog.</p>
+</blockquote>
+<h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>Due to <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Internet_censorship_in_China">Internet censorship in China</a> (known as <em>GFW</em>, <em>Great Firewall</em>, <em>防火长城</em>), many websites (e.g. Google, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity issues. In China, the means to circumvent internet censorship is referred to as <em>翻墙</em> (means <em>climbing over the wall</em>).</p>
 <p>In China, to freely access the Internet, a proxy is essential. Despite various commercial options available, they may not be suitable for everyone. Therefore, I have constructed a user-friendly and easy-to-maintain proxy system for my research group, as a part of my responsibilities as a system administrator.</p>
 <h2 id="Target"><a href="#Target" class="headerlink" title="Target"></a>Target</h2><ol>
 <li><strong>Easy to use</strong>. Team members only need some simple configurations.The proxy client should be able to automatically update configuration.</li>
@@ -228,7 +231,9 @@
 <li><strong>Easy to maintain</strong>. Frequent maintenance is unacceptable, and only simple changes of the configuration are required for new function.</li>
 <li><strong>Concealment</strong>. The cat-and-mouse game between GFW and anti-censorship tools has been escalating. Ten years ago (2013), only an OpenVPN client was all your need to <a target="_blank" rel="noopener" href="https://www.cnnic.com.cn/IDR/hlwfzdsj/201306/t20130628_40563.htm">“Across the Great Wall and reach every corner in the world”</a>. Now, you must use much more sophisticated solutions to prevent your “unusual” traffic from being detected by GFW. According to <a target="_blank" rel="noopener" href="https://gfw.report/">GFW Report</a>, popular <a target="_blank" rel="noopener" href="https://shadowsocks.org/">Shadowsocks</a> (a proxy protocol which simply encrypt all traffic using pre-shared key) was <a target="_blank" rel="noopener" href="https://gfw.report/blog/gfw_shadowsocks/">detected and blocked</a>, and the TLS-based proxy also <a target="_blank" rel="noopener" href="https://github.com/net4people/bbs/issues/129">encountered large-scale blocking in Oct 2022</a>. The tools and protocols used must be concealed enough to allow the service to run for a long time.</li>
 </ol>
+<h2 id="Available-Resources"><a href="#Available-Resources" class="headerlink" title="Available Resources"></a>Available Resources</h2><h3 id="CERNET"><a href="#CERNET" class="headerlink" title="CERNET"></a>CERNET</h3><h3 id="Cloudflare-WARP"><a href="#Cloudflare-WARP" class="headerlink" title="Cloudflare WARP"></a>Cloudflare WARP</h3><h3 id="VPS"><a href="#VPS" class="headerlink" title="VPS"></a>VPS</h3><h3 id="Server-in-USTC"><a href="#Server-in-USTC" class="headerlink" title="Server in USTC"></a>Server in USTC</h3><h3 id="Anti-Censorship-Tools"><a href="#Anti-Censorship-Tools" class="headerlink" title="Anti-Censorship Tools"></a>Anti-Censorship Tools</h3><h2 id="Adopted-Solution"><a href="#Adopted-Solution" class="headerlink" title="Adopted Solution"></a>Adopted Solution</h2><!-- draw a picture -->
 
+<h2 id="Deployment"><a href="#Deployment" class="headerlink" title="Deployment"></a>Deployment</h2><h2 id="Problems"><a href="#Problems" class="headerlink" title="Problems"></a>Problems</h2><h3 id="Client-Initialization"><a href="#Client-Initialization" class="headerlink" title="Client Initialization"></a>Client Initialization</h3><h3 id="Compatibility"><a href="#Compatibility" class="headerlink" title="Compatibility"></a>Compatibility</h3><h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2>
     </div>
 
     
