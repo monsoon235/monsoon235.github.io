@@ -122,12 +122,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -155,6 +155,86 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-11-09-proxy-for-team/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023-11-09-proxy-for-team/" class="post-title-link" itemprop="url">Building Proxy Service for Team</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2023-11-09 00:00:00 / Modified: 07:13:51" itemprop="dateCreated datePublished" datetime="2023-11-09T00:00:00+08:00">2023-11-09</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>Due to <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Internet_censorship_in_China">Internet censorship in China</a> (known as <em>GFW</em>, <em>Great Firewall</em>, <em>防火长城</em>), many websites (e.g. Google, Google Scholar, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity issues. In China, the means to circumvent (e.g. proxy) internet censorship is referred to as <em>翻墙</em> (means <em>climbing over the wall</em>).</p>
+<p>In China, to freely access the Internet, a proxy is essential. Despite various commercial options available, they may not be suitable for everyone. Therefore, I have constructed a user-friendly and easy-to-maintain proxy system for my research group, as a part of my responsibilities as a system administrator.</p>
+<h2 id="Target"><a href="#Target" class="headerlink" title="Target"></a>Target</h2><ol>
+<li><strong>Easy to use</strong>. Team members only need some simple configurations.The proxy client should be able to automatically update configuration.</li>
+<li><strong>Stability</strong>.</li>
+<li><strong>Sufficient traffic</strong>, to download large datasets.</li>
+<li><strong>Low Latency</strong>, to provide good experience for web.</li>
+<li><strong>Low Cost</strong>.</li>
+<li><strong>Easy to maintain</strong>. Frequent maintenance is unacceptable, and only simple changes of the configuration are required for new function.</li>
+<li><strong>Concealment</strong>. The cat-and-mouse game between GFW and anti-censorship tools has been escalating. Ten years ago (2013), only an OpenVPN client was all your need to <a target="_blank" rel="noopener" href="https://www.cnnic.com.cn/IDR/hlwfzdsj/201306/t20130628_40563.htm">“Across the Great Wall and reach every corner in the world”</a>. Now, you must use much more sophisticated solutions to prevent your “unusual” traffic from being detected by GFW. According to <a target="_blank" rel="noopener" href="https://gfw.report/">GFW Report</a>, popular <a target="_blank" rel="noopener" href="https://shadowsocks.org/">Shadowsocks</a> (a proxy protocol which simply encrypt all traffic using pre-shared key) was <a target="_blank" rel="noopener" href="https://gfw.report/blog/gfw_shadowsocks/">detected and blocked</a>, and the TLS-based proxy also <a target="_blank" rel="noopener" href="https://github.com/net4people/bbs/issues/129">encountered large-scale blocking in Oct 2022</a>. The tools and protocols used must be concealed enough to allow the service to run for a long time.</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -192,9 +272,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2023-11-05 00:00:00 / Modified: 00:15:17" itemprop="dateCreated datePublished" datetime="2023-11-05T00:00:00+08:00">2023-11-05</time>
+      <time title="Created: 2023-11-05 00:00:00" itemprop="dateCreated datePublished" datetime="2023-11-05T00:00:00+08:00">2023-11-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-11-09 07:13:51" itemprop="dateModified" datetime="2023-11-09T07:13:51+08:00">2023-11-09</time>
     </span>
 
   
@@ -402,7 +488,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-11-05 00:15:17" itemprop="dateModified" datetime="2023-11-05T00:15:17+08:00">2023-11-05</time>
+      <time title="Modified: 2023-11-09 07:13:51" itemprop="dateModified" datetime="2023-11-09T07:13:51+08:00">2023-11-09</time>
     </span>
 
   
@@ -493,7 +579,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-11-05 00:15:17" itemprop="dateModified" datetime="2023-11-05T00:15:17+08:00">2023-11-05</time>
+      <time title="Modified: 2023-11-09 07:13:51" itemprop="dateModified" datetime="2023-11-09T07:13:51+08:00">2023-11-09</time>
     </span>
 
   
@@ -589,7 +675,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-11-05 00:15:17" itemprop="dateModified" datetime="2023-11-05T00:15:17+08:00">2023-11-05</time>
+      <time title="Modified: 2023-11-09 07:13:51" itemprop="dateModified" datetime="2023-11-09T07:13:51+08:00">2023-11-09</time>
     </span>
 
   
@@ -676,7 +762,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-11-05 00:15:17" itemprop="dateModified" datetime="2023-11-05T00:15:17+08:00">2023-11-05</time>
+      <time title="Modified: 2023-11-09 07:13:51" itemprop="dateModified" datetime="2023-11-09T07:13:51+08:00">2023-11-09</time>
     </span>
 
   
@@ -776,7 +862,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-11-05 00:15:17" itemprop="dateModified" datetime="2023-11-05T00:15:17+08:00">2023-11-05</time>
+      <time title="Modified: 2023-11-09 07:13:51" itemprop="dateModified" datetime="2023-11-09T07:13:51+08:00">2023-11-09</time>
     </span>
 
   
@@ -1351,7 +1437,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-11-05 00:15:17" itemprop="dateModified" datetime="2023-11-05T00:15:17+08:00">2023-11-05</time>
+      <time title="Modified: 2023-11-09 07:13:51" itemprop="dateModified" datetime="2023-11-09T07:13:51+08:00">2023-11-09</time>
     </span>
 
   

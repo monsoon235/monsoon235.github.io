@@ -21,27 +21,32 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="My first post on blog!">
+    <meta name="description" content="PrefaceDue to Internet censorship in China (known as GFW, Great Firewall, 防火长城), many websites (e.g. Google, Google Scholar, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity i">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="https://monsoon-cs.moe/2023-03-29-hello-world/">
+<meta property="og:title" content="Building Proxy Service for Team">
+<meta property="og:url" content="https://monsoon-cs.moe/2023-11-09-proxy-for-team/">
 <meta property="og:site_name" content="Monsoon&#39;s Blog">
-<meta property="og:description" content="My first post on blog!">
+<meta property="og:description" content="PrefaceDue to Internet censorship in China (known as GFW, Great Firewall, 防火长城), many websites (e.g. Google, Google Scholar, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity i">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2023-03-28T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-11-08T23:13:51.270Z">
+<meta property="article:published_time" content="2023-11-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-08T23:13:51.310Z">
 <meta property="article:author" content="Monsoon">
+<meta property="article:tag" content="proxy">
+<meta property="article:tag" content="warp">
+<meta property="article:tag" content="network">
+<meta property="article:tag" content="sing-box">
+<meta property="article:tag" content="clash">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://monsoon-cs.moe/2023-03-29-hello-world/">
+<link rel="canonical" href="https://monsoon-cs.moe/2023-11-09-proxy-for-team/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://monsoon-cs.moe/2023-03-29-hello-world/","path":"2023-03-29-hello-world/","title":"Hello World"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://monsoon-cs.moe/2023-11-09-proxy-for-team/","path":"2023-11-09-proxy-for-team/","title":"Building Proxy Service for Team"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Hello World | Monsoon's Blog</title>
+<title>Building Proxy Service for Team | Monsoon's Blog</title>
   
 
 
@@ -101,7 +106,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -114,6 +119,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Preface"><span class="nav-number">1.</span> <span class="nav-text">Preface</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Target"><span class="nav-number">2.</span> <span class="nav-text">Target</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -169,7 +175,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-03-29-hello-world/">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-11-09-proxy-for-team/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -182,12 +188,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Hello World | Monsoon's Blog">
+      <meta itemprop="name" content="Building Proxy Service for Team | Monsoon's Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Hello World
+          Building Proxy Service for Team
         </h1>
 
         <div class="post-meta-container">
@@ -197,15 +203,9 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
+      
 
-      <time title="Created: 2023-03-29 00:00:00" itemprop="dateCreated datePublished" datetime="2023-03-29T00:00:00+08:00">2023-03-29</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-11-09 07:13:51" itemprop="dateModified" datetime="2023-11-09T07:13:51+08:00">2023-11-09</time>
+      <time title="Created: 2023-11-09 00:00:00 / Modified: 07:13:51" itemprop="dateCreated datePublished" datetime="2023-11-09T00:00:00+08:00">2023-11-09</time>
     </span>
 
   
@@ -217,7 +217,17 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>My first post on blog!</strong></p>
+    <div class="post-body" itemprop="articleBody"><h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>Due to <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Internet_censorship_in_China">Internet censorship in China</a> (known as <em>GFW</em>, <em>Great Firewall</em>, <em>防火长城</em>), many websites (e.g. Google, Google Scholar, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity issues. In China, the means to circumvent (e.g. proxy) internet censorship is referred to as <em>翻墙</em> (means <em>climbing over the wall</em>).</p>
+<p>In China, to freely access the Internet, a proxy is essential. Despite various commercial options available, they may not be suitable for everyone. Therefore, I have constructed a user-friendly and easy-to-maintain proxy system for my research group, as a part of my responsibilities as a system administrator.</p>
+<h2 id="Target"><a href="#Target" class="headerlink" title="Target"></a>Target</h2><ol>
+<li><strong>Easy to use</strong>. Team members only need some simple configurations.The proxy client should be able to automatically update configuration.</li>
+<li><strong>Stability</strong>.</li>
+<li><strong>Sufficient traffic</strong>, to download large datasets.</li>
+<li><strong>Low Latency</strong>, to provide good experience for web.</li>
+<li><strong>Low Cost</strong>.</li>
+<li><strong>Easy to maintain</strong>. Frequent maintenance is unacceptable, and only simple changes of the configuration are required for new function.</li>
+<li><strong>Concealment</strong>. The cat-and-mouse game between GFW and anti-censorship tools has been escalating. Ten years ago (2013), only an OpenVPN client was all your need to <a target="_blank" rel="noopener" href="https://www.cnnic.com.cn/IDR/hlwfzdsj/201306/t20130628_40563.htm">“Across the Great Wall and reach every corner in the world”</a>. Now, you must use much more sophisticated solutions to prevent your “unusual” traffic from being detected by GFW. According to <a target="_blank" rel="noopener" href="https://gfw.report/">GFW Report</a>, popular <a target="_blank" rel="noopener" href="https://shadowsocks.org/">Shadowsocks</a> (a proxy protocol which simply encrypt all traffic using pre-shared key) was <a target="_blank" rel="noopener" href="https://gfw.report/blog/gfw_shadowsocks/">detected and blocked</a>, and the TLS-based proxy also <a target="_blank" rel="noopener" href="https://github.com/net4people/bbs/issues/129">encountered large-scale blocking in Oct 2022</a>. The tools and protocols used must be concealed enough to allow the service to run for a long time.</li>
+</ol>
 
     </div>
 
@@ -235,7 +245,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>Post link: </strong>
-      <a href="https://monsoon-cs.moe/2023-03-29-hello-world/" title="Hello World">https://monsoon-cs.moe/2023-03-29-hello-world/</a>
+      <a href="https://monsoon-cs.moe/2023-11-09-proxy-for-team/" title="Building Proxy Service for Team">https://monsoon-cs.moe/2023-11-09-proxy-for-team/</a>
   </li>
   <li class="post-copyright-license">
       <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
@@ -243,16 +253,23 @@
 </ul>
 </div>
 
+          <div class="post-tags">
+              <a href="/tags/proxy/" rel="tag"># proxy</a>
+              <a href="/tags/warp/" rel="tag"># warp</a>
+              <a href="/tags/network/" rel="tag"># network</a>
+              <a href="/tags/sing-box/" rel="tag"># sing-box</a>
+              <a href="/tags/clash/" rel="tag"># clash</a>
+          </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
+                <a href="/2023-11-05-toefl-exp/" rel="prev" title="我的 TOEFL 经验">
+                  <i class="fa fa-angle-left"></i> 我的 TOEFL 经验
+                </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2023-05-25-vcb/" rel="next" title="VCB-Studio Technical Director Entry Test 2023 and My Answer">
-                  VCB-Studio Technical Director Entry Test 2023 and My Answer <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>
