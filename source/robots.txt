@@ -1,5 +1,6 @@
 User-agent: *
-Allow: /
-Disallow: /about
 
-Sitemap: /sitemap.xml
+Disallow: /about
+Allow: /
+
+Sitemap: https://monsoon-cs.moe/sitemap.xml
