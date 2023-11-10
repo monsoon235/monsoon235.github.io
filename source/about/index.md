@@ -2,6 +2,7 @@
 title: About Me
 updated: 2023-06-19
 lang: en
+sitemap: false
 ---
 
 I'm a 3rd year graduate student at the University of Science and Technology of China (USTC) since 2021. I received my bachelor degree from the same university, majoring in computer science.
