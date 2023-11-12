@@ -13,18 +13,18 @@ Now I'm doing researches in [ADSLab](https://adsl.ustc.edu.cn), focusing on mach
 
 ## Education
 
-- **MS** in Computer Science, University of Science and Technology of China, 2021 - 2024 (expected)
+- **Master** in Control Science and Engineering, University of Science and Technology of China, 2021 - 2024 (expected)
 - **BEng** in Computer Science, University of Science and Technology of China, 2017 - 2021
 
 ## Publications
 
 {% publications %}
-yu2023adaptive,chang2023structured
+Yu_2023_CVPR,Chang_2023_CVPR,Jang_2023_ICCV
 {% endpublications %}
 
 ## Research Experience
 
-- **Postgraduate Student**, University of Science and Technology of China, 2021 - present
+- **Graduate Student**, University of Science and Technology of China, 2021 - Now
 - **Research Internship**, University of Hong Kong, Jul 2020 - Aug 2020
 
 ## Work Experience
