@@ -128,11 +128,11 @@ AddCustom
 ├── framework
 ├── op_host
 │   ├── add_custom_tiling.h    // 定义 length 和 tiling 相关信息
-│   ├── add_custom.cpp
+│   ├── add_custom.cpp         // 算子 host 侧实现
 │   ├── CMakeLists.txt
 ├── op_kernel
 │   ├── CMakeLists.txt
-│   ├── add_custom.cpp         // 算子实现
+│   ├── add_custom.cpp         // 算子 kernel 侧实现
 └── scripts
 ```
 
@@ -150,6 +150,12 @@ END_TILING_DATA_DEF;
 
 REGISTER_TILING_DATA_CLASS(AddCustom, AddCustomTilingData)
 }
+```
+
+`op_host/add_custom.cpp` 中修改算子调用时的 `block_dim`：
+
+```c++
+context->SetBlockDim(20); // 910B3 的 block_dim
 ```
 
 `op_kernel/add_custom.cpp` 是算子的具体实现：
