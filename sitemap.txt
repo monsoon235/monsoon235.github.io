@@ -1,10 +1,11 @@
-https://monsoon-cs.moe/2023-11-05-toefl-exp/
-https://monsoon-cs.moe/2023-11-09-proxy-for-team/
-https://monsoon-cs.moe/2023-11-14-ascend-910b-custom-op/
 https://monsoon-cs.moe/2023-06-19-mkl-on-amd/
 https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/
 https://monsoon-cs.moe/2023-10-20-bitahub/
 https://monsoon-cs.moe/2023-11-01-catching-mining-virus/
+https://monsoon-cs.moe/2023-11-05-toefl-exp/
+https://monsoon-cs.moe/2023-11-09-proxy-for-team/
+https://monsoon-cs.moe/2023-11-14-ascend-910b-custom-op/
+https://monsoon-cs.moe/2023-11-24-storage-system-desgin/
 https://monsoon-cs.moe/2023-03-29-hello-world/
 https://monsoon-cs.moe/2023-05-25-vcb/
 https://monsoon-cs.moe/
@@ -31,3 +32,7 @@ https://monsoon-cs.moe/tags/clash/
 https://monsoon-cs.moe/tags/pytorch/
 https://monsoon-cs.moe/tags/ascend/
 https://monsoon-cs.moe/tags/machine-learning/
+https://monsoon-cs.moe/tags/zfs/
+https://monsoon-cs.moe/tags/nfs/
+https://monsoon-cs.moe/tags/rdma/
+https://monsoon-cs.moe/tags/storage/
