@@ -122,12 +122,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-count">11</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -155,6 +155,93 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-01-29-wg-for-cluster/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024-01-29-wg-for-cluster/" class="post-title-link" itemprop="url">Building WireGuard VPN for Machine Learning Server Cluster</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2024-01-29 00:00:00 / Modified: 20:55:39" itemprop="dateCreated datePublished" datetime="2024-01-29T00:00:00+08:00">2024-01-29</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h2><p>机器学习集群需要一个安全的方式向用户暴露服务，以及跨公网服务器互联，为此需要部署 VPN 网络。</p>
+<p>VPN 网络的部署需要考虑如下因素：</p>
+<ol>
+<li>网络拓扑：需要选择合适的拓扑结构以尽可能降低延迟；</li>
+<li>用户管理：可以方便地进行用户的增减和授权；</li>
+<li>使用和维护简单。</li>
+</ol>
+<h2 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h2><h3 id="网络拓扑"><a href="#网络拓扑" class="headerlink" title="网络拓扑"></a>网络拓扑</h3><p>网络拓扑决定着延迟。</p>
+<p>延迟最低的方案显然是 full-mesh，即每一对 peer 之间都有直接的 P2P 连接。但这种拓扑结构的管理复杂度是 $\mathcal{O}(n^2)$ 的，并且每添加一个新的 peer 就需要修改所有其他 peer 的配置文件，还需要解决 NAT 带来的问题，这必须借助一些自动化的软件管理。我尝试了 <a target="_blank" rel="noopener" href="https://www.netmaker.io/">Netmaker</a> 和 <a target="_blank" rel="noopener" href="https://headscale.net/">Headscale</a>，但它们似乎都无法正确处理学校内的<strong>复杂网络环境</strong>，比如各种企业级路由器使用的 symmetric NAT，<strong>成功建立 P2P 的概率非常之低</strong>。</p>
+<p>最终我选择了 <strong>full-mesh 和 hub-and-spoke 相结合的拓扑</strong>。由于服务器数量和 IP 很少变化，手动配置一个服务器间的 full-mesh 网络是可行的。与此同时，提供一个 gateway server 作为用户接入的 hub，用户只需要与 gateway server 建立连接。由于大部分用户其实是在校内使用 VPN 的，因此连接到校内的 gateway server 并转发流量并不会带来太多额外延迟。这种结构可以平衡延迟与管理复杂度，用户的增减和授权也只需要在 gateway server 上操作。</p>
+<p><img src="/2024-01-29-wg-for-cluster/topo.png" alt="Network Topology"></p>
+<h3 id="协议选择"><a href="#协议选择" class="headerlink" title="协议选择"></a>协议选择</h3><p>流行的 OpenVPN 和 IPSec 都足够优秀，但新兴的 WireGuard 具有无可比拟的配置简单性。对于服务端，WireGuard 可以用几行配置文件定义一个 peer 和路由；对于用户，由于 WireGuard 采用基于密钥对的认证方式，只需要一个配置文件即可接入 VPN 网络，不需要额外的密码记忆和登录操作。</p>
+<h3 id="管理方式"><a href="#管理方式" class="headerlink" title="管理方式"></a>管理方式</h3><p>出于可预测性和稳定性的考量，我选择了手动配置的方法。服务器间的 full-mesh 网络一次配置后就不需要再频繁更改。而用户管理则通过一个脚本实现，当需要添加一个新用户时，脚本生成密钥对并分配 IP，把公钥和路由信息加入 gateway server 的 peer list 中，然后生成包含私钥和分配的 IP 的配置文件，并发给用户。</p>
+<p>Gateway server 上的用户 peer 配置示例：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Peer]</span></span><br><span class="line"><span class="attr">PublicKey</span> = &lt;redacted&gt;</span><br><span class="line"><span class="attr">AllowedIPs</span> = <span class="number">10.1</span>.x.y/<span class="number">32</span></span><br><span class="line"><span class="attr">AllowedIPs</span> = fd01::x:y/<span class="number">128</span></span><br><span class="line"><span class="attr">PersistentKeepalive</span> = <span class="number">25</span></span><br></pre></td></tr></table></figure>
+
+<p>用户的接入配置文件示例：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Interface]</span></span><br><span class="line"><span class="attr">PrivateKey</span> = &lt;redacted&gt;</span><br><span class="line"><span class="attr">Address</span> = <span class="number">10.1</span>.x.y/<span class="number">16</span></span><br><span class="line"><span class="attr">Address</span> = fd01::x:y/<span class="number">64</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Peer]</span></span><br><span class="line"><span class="attr">PublicKey</span> = &lt;redacted&gt;</span><br><span class="line"><span class="attr">AllowedIPs</span> = <span class="number">10.1</span>.<span class="number">0.0</span>/<span class="number">16</span>  <span class="comment"># route all VPN traffic to gateway server</span></span><br><span class="line"><span class="attr">AllowedIPs</span> = fd01::/<span class="number">64</span></span><br><span class="line"><span class="attr">Endpoint</span> = wg.ustcaigroup.xyz:<span class="number">51820</span>  <span class="comment"># gateway server is dual stack</span></span><br><span class="line"><span class="comment"># Endpoint = wg.ustcaigroup.xyz:51820  # IPv4</span></span><br><span class="line"><span class="comment"># Endpoint = wg.ustcaigroup.xyz:51820  # IPv6</span></span><br><span class="line"><span class="attr">PersistentKeepalive</span> = <span class="number">25</span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -200,7 +287,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-12-20 18:48:39" itemprop="dateModified" datetime="2023-12-20T18:48:39+08:00">2023-12-20</time>
+      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
     </span>
 
   
@@ -278,7 +365,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-12-20 18:48:39" itemprop="dateModified" datetime="2023-12-20T18:48:39+08:00">2023-12-20</time>
+      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
     </span>
 
   
@@ -400,7 +487,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-12-20 18:48:39" itemprop="dateModified" datetime="2023-12-20T18:48:39+08:00">2023-12-20</time>
+      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
     </span>
 
   
@@ -491,7 +578,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-12-20 18:48:39" itemprop="dateModified" datetime="2023-12-20T18:48:39+08:00">2023-12-20</time>
+      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
     </span>
 
   
@@ -699,7 +786,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-12-20 18:48:39" itemprop="dateModified" datetime="2023-12-20T18:48:39+08:00">2023-12-20</time>
+      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
     </span>
 
   
@@ -790,7 +877,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-12-20 18:48:39" itemprop="dateModified" datetime="2023-12-20T18:48:39+08:00">2023-12-20</time>
+      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
     </span>
 
   
@@ -886,7 +973,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-12-20 18:48:39" itemprop="dateModified" datetime="2023-12-20T18:48:39+08:00">2023-12-20</time>
+      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
     </span>
 
   
@@ -973,7 +1060,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-12-20 18:48:39" itemprop="dateModified" datetime="2023-12-20T18:48:39+08:00">2023-12-20</time>
+      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
     </span>
 
   
@@ -1073,7 +1160,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-12-20 18:48:39" itemprop="dateModified" datetime="2023-12-20T18:48:39+08:00">2023-12-20</time>
+      <time title="Modified: 2024-01-29 20:55:38" itemprop="dateModified" datetime="2024-01-29T20:55:38+08:00">2024-01-29</time>
     </span>
 
   
@@ -1604,82 +1691,9 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-03-29-hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Monsoon">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023-03-29-hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2023-03-29 00:00:00" itemprop="dateCreated datePublished" datetime="2023-03-29T00:00:00+08:00">2023-03-29</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-12-20 18:48:39" itemprop="dateModified" datetime="2023-12-20T18:48:39+08:00">2023-12-20</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>My first post on blog!</strong></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" title="Next page" aria-label="Next page" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
 
 </div>
   </main>
@@ -1688,8 +1702,8 @@
     <div class="footer-inner">
 
   <div class="copyright">
-    &copy; 
-    <span itemprop="copyrightYear">2023</span>
+    &copy; 2023 – 
+    <span itemprop="copyrightYear">2024</span>
     <span class="with-love">
       <i class="fa fa-heart"></i>
     </span>
@@ -1736,7 +1750,7 @@
 
   
 
-  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
 <script src="/js/third-party/math/mathjax.js"></script>
 
 
