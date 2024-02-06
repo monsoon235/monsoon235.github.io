@@ -48,7 +48,9 @@ Common problems of existing solutions:
 
 2. They do not handle scenarios where incoming jobs must be distributed among multiple GPUs to satisfy QoS constraints.
 
-![Figure 1. Simulated system throughput of co-running `parb_spmv` and `rod_hotspot` at various TBs/SM settings](tb_sm.png)
+![](tb_sm.png)
+
+<center>Figure 1. Simulated system throughput of co-running `parb_spmv` and `rod_hotspot` at various TBs/SM settings</center>
 
 **Problems of hardware TB scheduler** which hinder the fine-grained sharing:
 
@@ -91,7 +93,9 @@ This paper changes the default behavior of CUDA runtime to make it more suitable
 
 2. Once we have predicted which job pairs can co-execute without violating QoS requirements, the scheduling task can be reduced to the classic maximum cardinality matching problem in graph theory.
 
-![Figure 2. Overall System Design of GPUPool](system-design.png)
+![](system-design.png)
+
+<center>Figure 2. Overall System Design of GPUPool</center>
 
 Based on these 2 observations, the author proposed GPUPool. Its overall system design is shown in Figure 2. It consists of 4 steps:
 
@@ -103,9 +107,13 @@ Based on these 2 observations, the author proposed GPUPool. Its overall system d
 
    2. **Job-wise Predictor**. It gets an *interference matrix* (shown in Figure 3) based on the **predicted NP** (under optimal TBs/SM setting) from former stage, which indicates how will two kernels slow down when they are co-running. Then, GPUPool using this matrix to calculate the **co-running time of two jobs**. Here, the authors found that a whole calculation may require tens of thousands iterations, but the result will **coverage to a steady-state** after several iterations. So the authors used an **approximation algorithm** (shown in Figure 4) -- stops timeline calculation once the accumulated slowdown values of each job is within a small delta over the past epoch.
 
-![Figure 3. Interference Matrix](interference_matrix.png)
+![](interference_matrix.png)
 
-![Figure 4. Concurrent Application Timeline](stage2.2.png)
+<center>Figure 3. Interference Matrix</center>
+
+![](stage2.2.png)
+
+<center>Figure 4. Concurrent Application Timeline</center>
 
 3. **Job dispatcher**. It decides which job pairs should co-run to maximize system performance while satisfying QoS. The decisions are found by solving a **maximum cardinality matching problem** -- each node represent a job, when two jobs can co-run and will not violate the QoS requirement, connecting an edge between them. Then a graph theory algorithm is used to maximum cardinality matching, which means a largest subset of edges that do not share a common end node. Due to the potential unreliability of the performance predictor, GPUPool also add **a safety margin** $\delta$ to edge formulation.
 
@@ -125,13 +133,21 @@ The paper compare GPUPool against three baseline systems:
 
 The metrics is system throughput $STP=\sum_{i=1}^n \cfrac{t_{isolated}^i}{t_{shared}^i}$. $t_{isolated}^i$ and $t_{shared}^i$ are turnaround time of the i-th concurrent job when executing in an isolated and shared environment respectively. The paper also uses we use ${QoS}_{reached}$ to evaluate QoS fulfilment rate.
 
-![Comparison of GPU Sharing Systems](gpu_sharing_compare.png)
+![](gpu_sharing_compare.png)
 
-![Sorted STP on GPUs](sorted_stp.png)
+<center>Comparison of GPU Sharing Systems</center>
 
-![Throughput Normalized to QoS Target](throughput.png)
+![](sorted_stp.png)
 
-![Prediction Accuracy of Different ML Techniques](ml_pred.png)
+<center>Sorted STP on GPUs</center>
+
+![](throughput.png)
+
+<center>Throughput Normalized to QoS Target</center>
+
+![](ml_pred.png)
+
+<center>Prediction Accuracy of Different ML Techniques</center>
 
 ## Comments
 
@@ -171,7 +187,9 @@ This paper also has some potential weaknesses:
 
 4. This paper does not clearly take into account **the impact of memory hierarchy on performance**, such as shared memory (or just implicitly consider it using a ML model). Some CUDA kernels are optimized by carefully utilizing CUDA SM shared memory, such as *Flash Attention*. When two kernels run together, does it lead to shared memory contention? Could it result in runtime errors or shared memory overflowing into global memory, causing a severe performance decline? Experiments in the paper can not answer these questions. Also, the selected profiling metrics to train stage 1 model listed in Figure 5 do not contains any metrics about shared memory capacity. Another possibility is that a ML model is already good enough to handle this problem. Regardless, the impact of memory hierarchy on GPU-sharing deserves further study.
 
-![Figure 5. Metrics Used to Train Stage 1 Prediction Model](metrics.png)
+![](metrics.png)
+
+<center>Figure 5. Metrics Used to Train Stage 1 Prediction Model</center>
 
 ### Possible Improvements
 
