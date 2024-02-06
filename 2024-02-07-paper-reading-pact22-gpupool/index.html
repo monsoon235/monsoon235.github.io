@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.28/fancybox/fancybox.css" integrity="sha256-6cQIC71/iBIYXFK+0RHAvwmjwWzkWd+r7v/BX3/vZDc=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="This blog is a write-up of the paper “GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud“ from PACT’22.  MotivationThis paper focuses on the GPU sharing in cloud scenarios. Current">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT&#39;22)">
+<meta property="og:url" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/">
+<meta property="og:site_name" content="Monsoon&#39;s Blog">
+<meta property="og:description" content="This blog is a write-up of the paper “GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud“ from PACT’22.  MotivationThis paper focuses on the GPU sharing in cloud scenarios. Current">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/tb_sm.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/system-design.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/interference_matrix.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/stage2.2.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/gpu_sharing_compare.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/sorted_stp.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/throughput.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/ml_pred.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/metrics.png">
+<meta property="article:published_time" content="2024-02-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-02-06T20:25:33.721Z">
+<meta property="article:author" content="Monsoon">
+<meta property="article:tag" content="paper-reading">
+<meta property="article:tag" content="ml-system">
+<meta property="article:tag" content="gpu">
+<meta property="article:tag" content="resource-scheduling">
+<meta property="article:tag" content="pact">
+<meta property="article:tag" content="pact22">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/tb_sm.png">
+
+
+<link rel="canonical" href="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/","path":"2024-02-07-paper-reading-pact22-gpupool/","title":"[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT'22)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT'22) | Monsoon's Blog</title>
+  
+
+
+
+  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;3c9e3103682b4f6fbc36342486e67640&quot;}'></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Monsoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>Sitemap</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Motivation"><span class="nav-number">1.</span> <span class="nav-text">Motivation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Design"><span class="nav-number">2.</span> <span class="nav-text">Design</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hardware"><span class="nav-number">2.1.</span> <span class="nav-text">Hardware</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Software"><span class="nav-number">2.2.</span> <span class="nav-text">Software</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Evaluations"><span class="nav-number">3.</span> <span class="nav-text">Evaluations</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Comments"><span class="nav-number">4.</span> <span class="nav-text">Comments</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Strengths"><span class="nav-number">4.1.</span> <span class="nav-text">Strengths</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Weaknesses"><span class="nav-number">4.2.</span> <span class="nav-text">Weaknesses</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Possible-Improvements"><span class="nav-number">4.3.</span> <span class="nav-text">Possible Improvements</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Monsoon</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/monsoon235" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;monsoon235" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://t.me/monsoon235" title="Telegram → https:&#x2F;&#x2F;t.me&#x2F;monsoon235" rel="noopener me" target="_blank"><i class="fab fa-telegram fa-fw"></i>Telegram</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/big/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT'22) | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT'22)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2024-02-07 00:00:00 / Modified: 04:25:33" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00+08:00">2024-02-07</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>This blog is a write-up of the paper “<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/3559009.3569650">GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud</a>“ from PACT’22.</p>
+</blockquote>
+<h2 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h2><p>This paper focuses on the <strong>GPU sharing in cloud scenarios</strong>.</p>
+<p>Currently, existing GPU sharing techniques can be categorized into 2 types:</p>
+<ul>
+<li><p><strong>Time-sharing</strong> means executing each concurrent VM on a full device in a round-robin fashion. <strong>Pros</strong>: Simple and mature. <strong>Cons</strong>: VMs could still under-utilize the hardware within each time slice.</p>
+</li>
+<li><p><strong>Shape-sharing</strong>: split a device into partitions and allows multiple workloads to execute on different partitions simultaneously.</p>
+</li>
+</ul>
+<p>Space-sharing can be categorized into 2 types：</p>
+<ul>
+<li><p><strong>Coarse-grained</strong> assigns disjoint sets of streaming multiprocessors (SMs) and memory channels to concurrent workloads. For example, Nvidia MIG. <strong>Pros</strong>: offers great performance isolation among tenants of the same GPU. <strong>Cons</strong>: (i) resource under-utilization within each SM consisting of heterogeneous functional units (e.g., FP32, INT, FP64, Tensor Cores) meant for different workload types. (ii) inefficient memory bandwidth usage caused by the bursty nature of GPU memory traffic.</p>
+</li>
+<li><p><strong>Fine-grained</strong> allows different workloads to co-run on the same SMs and request memory bandwidth flexibly, such as CUDA Stream and MPS. <strong>Pros</strong>: Better hardware utilization.</p>
+</li>
+</ul>
+<p>The key problem of GPU sharing in data center is <strong>performance unpredictability</strong>. It contains 2 <strong>key challenges</strong>:</p>
+<ol>
+<li><p><strong>Mitigating interference</strong>. The amount of performance improvement from fine-grained sharing varies drastically depending on how compatible the concurrent workloads are in terms of resource usage. Also, the interference cannot be statically estimated. So, <strong>it is non-trivial to determine compatibility</strong> among a large number of incoming jobs in the cluster.</p>
+</li>
+<li><p><strong>Providing QoS guarantees</strong>.</p>
+</li>
+</ol>
+<p>Existing solutions:</p>
+<ul>
+<li><p><strong>Software-based</strong>: kernel slicing or a persistent thread model. <strong>Cons</strong>: high scheduling overhead.</p>
+</li>
+<li><p><strong>Hardware-based</strong>: integrate sophisticated resource management logic into hardware to allocate resources for concurrent kernels. <strong>Cons</strong>: expensive and also inflexible.</p>
+</li>
+</ul>
+<p>Common problems of existing solutions:</p>
+<ol>
+<li><p>They do not concern with interference mitigation at the cluster level.</p>
+</li>
+<li><p>They do not handle scenarios where incoming jobs must be distributed among multiple GPUs to satisfy QoS constraints.</p>
+</li>
+</ol>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/tb_sm.png" alt="Figure 1. Simulated system throughput of co-running `parb_spmv` and `rod_hotspot` at various TBs/SM settings"></p>
+<p><strong>Problems of hardware TB scheduler</strong> which hinder the fine-grained sharing:</p>
+<ol>
+<li><p>It always attempts to <strong>launch as many thread blocks per SM</strong> (TBs&#x2F;SM) for each kernel as allowed by the execution context storage constraints (e.g., registers, shared memory, thread slots). <strong>It leaves insufficient resources for concurrent kernels</strong>. As showed in Figure 1, if we can individually set the TBs&#x2F;SM for each kernel, we may achieve a higher throughput.</p>
+</li>
+<li><p>It only dispatches concurrent kernels onto SMs after the earlier arriving one completes launching all the thread blocks specified by the kernel grid size. This will force an <strong>almost serially execution</strong> of kernels in some scenarios.</p>
+</li>
+</ol>
+<p>GPU applications in the cloud fall into two main categories: latency-sensitive, and <strong>throughput-oriented</strong>. Throughput-oriented workloads are good candidates for hardware space-sharing. They have the following characteristics:</p>
+<ol>
+<li><p>Most workloads involve a large variety of kernels with <strong>different hardware resource utilization</strong> characteristics (e.g., CNN: compute-intensive, batch-norm: memory-intensive).</p>
+</li>
+<li><p>Active SMs are <strong>underutilized</strong> in some resources (FP, tensor core, memory bandwidth).</p>
+</li>
+<li><p>They typically repeatedly execute the same sequence of kernels (e.g., ML).</p>
+</li>
+<li><p>Relaxed QoS Requirements.</p>
+</li>
+</ol>
+<h2 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h2><p>This paper proposed a <strong>hardware-software co-designed</strong> strategy to solve these challenges.</p>
+<h3 id="Hardware"><a href="#Hardware" class="headerlink" title="Hardware"></a>Hardware</h3><p>This paper changes the default behavior of CUDA runtime to make it more suitable for fine-grained sharing:</p>
+<ol>
+<li><p>Allows CUDA runtime to program the <strong>TBs&#x2F;SM setting</strong> as one of the kernel launch parameters. The value of TBs&#x2F;SM is selected by the performance predictor.</p>
+</li>
+<li><p>Make the TB scheduler <strong>launch TBs from any concurrent kernels</strong> whenever they are running under their TBs&#x2F;SM quota.</p>
+</li>
+</ol>
+<h3 id="Software"><a href="#Software" class="headerlink" title="Software"></a>Software</h3><blockquote>
+<p>Concept Explanation:</p>
+<ul>
+<li>Job: a task submitted by user, such as a DNN training task. It may be iterative and contains multiple kernels.</li>
+<li>Kernel: CUDA kernel.</li>
+<li>Normalized Progress (NP): $t_{isolate} &#x2F; t_{co-execute}$.</li>
+</ul>
+</blockquote>
+<p><strong>Two key observations</strong>:</p>
+<ol>
+<li><p>Co-execution performance of GPU kernels is highly correlated with resource utilization of individual kernels measured when running in isolation.</p>
+</li>
+<li><p>Once we have predicted which job pairs can co-execute without violating QoS requirements, the scheduling task can be reduced to the classic maximum cardinality matching problem in graph theory.</p>
+</li>
+</ol>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/system-design.png" alt="Figure 2. Overall System Design of GPUPool"></p>
+<p>Based on these 2 observations, the author proposed GPUPool. Its overall system design is shown in Figure 2. It consists of 4 steps:</p>
+<ol>
+<li><p><strong>Kernel Profiler</strong>. GPUPool <strong>groups all incoming GPU job into a batch</strong> for every scheduling window (e.g., 30 seconds). User should provide application executable and execution time budget. Then GPUPool automatically <strong>profiles</strong> the application for one iteration of the job in isolation on hardware, to collect the <strong>performance counter metrics</strong> of each kernel of data.</p>
+</li>
+<li><p><strong>Co-execution Performance Predictor</strong>. This step decides the <strong>compatibility</strong> of all possible job pairs within the batch using the profiling result. It contains 2 stages:</p>
+<ol>
+<li><p><strong>Kernel-wise Predictors</strong>. It predicts how well each kernel from one job will co-run with the ones in the other job. This stage uses a <em>Gradient Boosting Tree</em> (GBT) model to <strong>predict the performance of each kernel when co-running with another kernel</strong> (based on the 1st key observation). The model takes the profiling data of kernels as input and outputs the <strong>NP</strong>. This prediction will be done for <strong>each feasible TBs&#x2F;SM</strong> settings.</p>
+</li>
+<li><p><strong>Job-wise Predictor</strong>. It gets an <em>interference matrix</em> (shown in Figure 3) based on the <strong>predicted NP</strong> (under optimal TBs&#x2F;SM setting) from former stage, which indicates how will two kernels slow down when they are co-running. Then, GPUPool using this matrix to calculate the <strong>co-running time of two jobs</strong>. Here, the authors found that a whole calculation may require tens of thousands iterations, but the result will <strong>coverage to a steady-state</strong> after several iterations. So the authors used an <strong>approximation algorithm</strong> (shown in Figure 4) – stops timeline calculation once the accumulated slowdown values of each job is within a small delta over the past epoch.</p>
+</li>
+</ol>
+</li>
+</ol>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/interference_matrix.png" alt="Figure 3. Interference Matrix"></p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/stage2.2.png" alt="Figure 4. Concurrent Application Timeline"></p>
+<ol start="3">
+<li><strong>Job dispatcher</strong>. It decides which job pairs should co-run to maximize system performance while satisfying QoS. The decisions are found by solving a <strong>maximum cardinality matching problem</strong> – each node represent a job, when two jobs can co-run and will not violate the QoS requirement, connecting an edge between them. Then a graph theory algorithm is used to maximum cardinality matching, which means a largest subset of edges that do not share a common end node. Due to the potential unreliability of the performance predictor, GPUPool also add <strong>a safety margin</strong> $\delta$ to edge formulation.</li>
+</ol>
+<p>$$E &#x3D; { ( {job} _ i, {job} _ j ) \mid {job} _ i,{job} _ j \in V\ \text{and}\ {NP} _ {job _ x} &gt; {QoS} _ {job _ x} \times (1 + \delta ), x \in {i, j} }$$</p>
+<ol start="4">
+<li><strong>Execution</strong>. The batch of jobs are assigned to the modified GPU hardware.</li>
+</ol>
+<h2 id="Evaluations"><a href="#Evaluations" class="headerlink" title="Evaluations"></a>Evaluations</h2><p>The paper compare GPUPool against three baseline systems:</p>
+<ol>
+<li><p>No-Sharing.</p>
+</li>
+<li><p>Coarse: packing the jobs onto <strong>as few GPUs as possible</strong> using a greedy scheduling algorithm.</p>
+</li>
+<li><p>Heuristic: pairing up jobs with the <strong>highest and lowest bandwidth utilization</strong> (profiled offline) from a batch of incoming jobs.</p>
+</li>
+</ol>
+<p>The metrics is system throughput $STP&#x3D;\sum_{i&#x3D;1}^n \cfrac{t_{isolated}^i}{t_{shared}^i}$. $t_{isolated}^i$ and $t_{shared}^i$ are turnaround time of the i-th concurrent job when executing in an isolated and shared environment respectively. The paper also uses we use ${QoS}_{reached}$ to evaluate QoS fulfilment rate.</p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/gpu_sharing_compare.png" alt="Comparison of GPU Sharing Systems"></p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/sorted_stp.png" alt="Sorted STP on GPUs"></p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/throughput.png" alt="Throughput Normalized to QoS Target"></p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/ml_pred.png" alt="Prediction Accuracy of Different ML Techniques"></p>
+<h2 id="Comments"><a href="#Comments" class="headerlink" title="Comments"></a>Comments</h2><h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>This paper targets the fine-grained GPU sharing problem in the cloud. I believe this work provides a valuable solution to this problem.</p>
+<p>From my perspective, fine-grained GPU sharing presents three key challenges:</p>
+<ol>
+<li><p><strong>Limitations imposed by hardware and CUDA</strong>, which make it difficult for programmers to flexibly control kernel execution.</p>
+</li>
+<li><p><strong>Reliable and low-cost performance prediction</strong> for concurrent kernel execution. Establishing an analytical performance prediction model is highly challenging. One naive approach is using real hardware to profile, but due to the $\mathcal{O}(n^2)$ ($n$ representing the number of jobs) time complexity, this method is not scalable to larger clusters.</p>
+</li>
+<li><p><strong>Efficient algorithms to find appropriate job combinations</strong>. If we allow an arbitrary number of jobs to execute concurrently, this becomes an NP-hard problem.</p>
+</li>
+</ol>
+<p>This paper cleverly addresses or bypasses these challenges through the following strategies:</p>
+<ol>
+<li><p><strong>Hardware-software co-design</strong>, which involves modifying hardware to provide more flexible API for upper-layer application. While this prevents the authors from testing their method on actual hardware and forces them perform experiments on simulator (GPGPU-Sim), I believe such simulations can provide valuable insights for adjustments on real hardware.</p>
+</li>
+<li><p>Predicting kernel concurrent execution performance <strong>by a ML model</strong>. This is <strong>a standout aspect</strong> of the paper (which is also my <strong>favorite novelty</strong>). The authors introducing ML with a good motivation to effectively addresses a challenging performance modeling problem, bypassing a complicated analytical modeling. Also, this ML model has good <strong>interpretability</strong>, top-10 import metrics (show in Figure) align well with human’s intuition. Furthermore, in my research experiences about Deep Learning Compiler (e.g., TVM), I also found many paper introduce such ML models for performance prediction. I believe the thought that <strong>leveraging ML techniques to bypass some complicated modeling problems</strong> is highly valuable in system research, which is the most important thing I learned from this paper.</p>
+</li>
+<li><p>Instead of solving the whole NP-hard job combination problem, the authors limit the number of concurrently executed jobs to 2, considering this simpler case. It is <strong>a fantastic tradeoff</strong>. The simplified problem can be solved by a maximum cardinality matching algorithm, which may not find the optimal combination, but exchanging reasonable scheduling overhead for a substantial performance improvement.</p>
+</li>
+</ol>
+<h3 id="Weaknesses"><a href="#Weaknesses" class="headerlink" title="Weaknesses"></a>Weaknesses</h3><p>This paper also has some potential weaknesses:</p>
+<ol>
+<li><p>It seems to ignore the situation which <strong>two concurrent jobs have different execution times</strong>. For instance, when a longer job and a shorter job are executed together, after the shorter job finishes, GPUPool seems unable to schedule a new job to the GPU. Instead, the remaining GPU time is monopolized by the longer job. This could result in a lower resource utilization.</p>
+</li>
+<li><p>The concurrent execution of multiple jobs on a single GPU may also be <strong>constrained by GPU memory capacity</strong>. A possible improvement is to ask users to indicate maximum GPU memory usage of their applications and consider the these constraints when constructing the graphs.</p>
+</li>
+<li><p>This paper does not consider <strong>the job which leverages multiple GPUs</strong>. These jobs are quite common in reality. When a job can occupy multiple GPUs, there are some additional constraints:</p>
+<ol>
+<li><p><strong>Inter-GPU connection</strong> (e.g., NVLink or InfiniBand) bandwidth is the potential bottleneck, especially for distributed training strategies relying on high GPU interconnect bandwidth, such as <em>Data Parallelism</em>. Improper job scheduling may lead to contention for bandwidth among multiple jobs, or jobs requiring high GPU interconnect bandwidth may run on different nodes.</p>
+</li>
+<li><p>When a single job leverages multiple GPUs, <strong>the workload types on different GPUs may not be the same</strong>. For example, in <em>Pipeline Parallelism</em>, different GPUs run different stages of the neural network.</p>
+</li>
+</ol>
+</li>
+<li><p>This paper does not clearly take into account <strong>the impact of memory hierarchy on performance</strong>, such as shared memory (or just implicitly consider it using a ML model). Some CUDA kernels are optimized by carefully utilizing CUDA SM shared memory, such as <em>Flash Attention</em>. When two kernels run together, does it lead to shared memory contention? Could it result in runtime errors or shared memory overflowing into global memory, causing a severe performance decline? Experiments in the paper can not answer these questions. Also, the selected profiling metrics to train stage 1 model listed in Figure 5 do not contains any metrics about shared memory capacity. Another possibility is that a ML model is already good enough to handle this problem. Regardless, the impact of memory hierarchy on GPU-sharing deserves further study.</p>
+</li>
+</ol>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/metrics.png" alt="Figure 5. Metrics Used to Train Stage 1 Prediction Model"></p>
+<h3 id="Possible-Improvements"><a href="#Possible-Improvements" class="headerlink" title="Possible Improvements"></a>Possible Improvements</h3><p>I have some potential ideas to improve this work:</p>
+<ol>
+<li><p>As response to the first weakness mentioned above, we can extend GPUPool to enable it to schedule a new job to the GPU after the shorter job finishes. This improvement can be achieved by a simple modification: <strong>keep the running jobs in the incoming window, and if two jobs are still running in the same GPU, also keep the edge between them in the pairing graph</strong>. With this modification, if shorter job finishes, we can re-run the matching algorithm to find a new job to pair with it.</p>
+</li>
+<li><p>We can extend GPUPool to support <strong>multiple GPU job</strong>. To achieve that, we should consider inter-GPU connection bandwidth. This may include following modifications:</p>
+<ol>
+<li><p>Ask users to <strong>indicate the required inter-GPU bandwidth or connection types</strong> (e.g., NVLink&#x2F;PCIe&#x2F;Infiniband&#x2F;Ethernet).</p>
+</li>
+<li><p>Take a multiple GPU task as several sub-jobs. <strong>Each of sub-job is a single GPU job</strong>, with interconnection constraints. Then we can reuse the infrastructure of GPUPool to find the co-running chances.</p>
+</li>
+<li><p>Extend the last <strong>step “Execution” to consider the interconnection constraints</strong>, so it can dispatch sub-jobs to nodes that meet the constraints. This may require an efficient graph algorithm to find job placement, which requires a further research.</p>
+</li>
+</ol>
+</li>
+<li><p>Sometimes the goal of a data center is not just to improve resource utilization, but also to <strong>save energy</strong>. Improving resource utilization does not necessarily mean energy saving, because the chip’s speed $S$, power consumption $P$, and frequency $f$ have the following approximate relationship:</p>
+</li>
+</ol>
+<p>$$S \propto f$$<br>$$P \propto f^\alpha, \text{while}\ \alpha \in [2, 3]$$</p>
+<p>We can extend the optimization target of GPUPool to power consumption. This can be achieved by add a power prediction model with similar methods. Then we can use a multi-objective optimization algorithm to find the best job combination, considering both performance and power consumption.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Monsoon
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/" title="[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT&#39;22)">https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/paper-reading/" rel="tag"># paper-reading</a>
+              <a href="/tags/ml-system/" rel="tag"># ml-system</a>
+              <a href="/tags/gpu/" rel="tag"># gpu</a>
+              <a href="/tags/resource-scheduling/" rel="tag"># resource-scheduling</a>
+              <a href="/tags/pact/" rel="tag"># pact</a>
+              <a href="/tags/pact22/" rel="tag"># pact22</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024-01-29-wg-for-cluster/" rel="prev" title="Building WireGuard VPN for Machine Learning Server Cluster">
+                  <i class="fa fa-angle-left"></i> Building WireGuard VPN for Machine Learning Server Cluster
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024-02-07-paper-reading-arxiv24-acs/" rel="next" title="[Paper Reading] ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs (arXiv'24)">
+                  [Paper Reading] ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs (arXiv'24) <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2023 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Monsoon</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/monsoon235" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.28/fancybox/fancybox.umd.js" integrity="sha256-ytMJGN3toR+a84u7g7NuHm91VIR06Q41kMWDr2pq7Zo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -122,12 +122,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-count">37</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -155,6 +155,427 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024-02-07-paper-reading-arxiv24-acs/" class="post-title-link" itemprop="url">[Paper Reading] ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs (arXiv'24)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2024-02-07 00:00:00 / Modified: 04:25:33" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00+08:00">2024-02-07</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>This blog is a write-up of the paper “<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.12377">ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs</a>“ from arXiv’24.</p>
+</blockquote>
+<h2 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h2><p>Some workloads (e.g., Simulation Engines for Deep RL, Dynamic DNNs) cannot fully utilize the massive parallelism of GPUs (see Figure 1). The main reason is that these workloads contain lots of <strong>small kernels</strong> which cannot fully utilize the GPU, and these kernels are not executed concurrently, although <strong>most of them are independent and in theory can be executed concurrently</strong>.</p>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/achieved_occ.png" alt="Figure 1. Achieved Occupancy of simulation engines (up) and dynamic DNN (down)"></p>
+<p>But there are some challenges to execute these kernels concurrently:</p>
+<ol>
+<li><strong>Input-dependent kernel dependencies</strong>. For some workload, the the dependencies between kernels are only <strong>determined at runtime</strong> for each input. Constructing full computational graph and resolving dependencies before execution will introduce <strong>high latency</strong> (see Figure 2,average of 47% of overall execution time as the paper says).</li>
+</ol>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/dag_time.png" alt="Figure 2. DAG construction time as % of execution time"></p>
+<ol start="2">
+<li><strong>Irregular kernel dependencies</strong>. Some workloads have irregular computational graphs. We can partitioned the computational graph of the workload into independent streams of kernels. But this would require <strong>fine-grained scheduling</strong> and <strong>synchronization</strong>, with <strong>large overhead</strong> (see Figure 3).</li>
+</ol>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/sync_overhead.png" alt="Figure 3. Kernel launch and synchronization overheads"></p>
+<p>Existed solutions:</p>
+<ol>
+<li><p>CUDA Graph and AMD ATMI. They allow users specify dependencies between different kernels as DAG, and can eliminate the synchronization and kernel launch overhead. But the DAG needs to be constructed in <strong>full before execution</strong>, which imakes them not suitable for dynamic kernel dependencies (such as Dynamic DNNs).</p>
+</li>
+<li><p>Using events provided by the CUDA stream management API, which allows synchronization between kernels across streams through the <code>cudaStreamWaitEvent</code> API, without blocking the host. But approach still requires deriving dependencies between all kernels beforehand.</p>
+</li>
+<li><p>Persistent threads (PT) can eliminate the scheduling and launch overheads, but are only effective when all kernels are homogeneous.</p>
+<blockquote>
+<p>PT is just like coroutine in some programming languages.</p>
+</blockquote>
+</li>
+<li><p>CUDA dynamic parallelism (CDP) or AMD’s device enqueue (DE) enables parent kernels to launch child kernels, but , only allowing data dependencies between one parent and its children (so cannot be use to synchronize between multiple tasks).</p>
+</li>
+</ol>
+<h2 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h2><p>The <strong>goal</strong> of this paper is to design a framework that enables efficient concurrent execution of GPU kernels with:</p>
+<ol>
+<li><p>lightweight detection of inter-kernel dependencies at runtime,</p>
+</li>
+<li><p>low overhead kernel scheduling and synchronization.</p>
+</li>
+</ol>
+<p><strong>The key idea is to perform the dependence checking and scheduling within a small window of kernels at runtime similar to out-of-order instruction scheduling.</strong></p>
+<p>The authors proposed Automatic Concurrent Scheduling (ACS) as solution. The overall design of ACS-SW is shown in Figure 4. It contains three main functionalities:</p>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/acs_overview.png" alt="Figure 4. ACS-SW Overview"></p>
+<ol>
+<li><p><strong>Determining inter-kernel dependencies</strong>. By checking for <strong>overlaps between read segments and write segments</strong>, we determine dependencies between kernels. For a wide range of commonly used kernels (e.g., matrix multiplication, convolution), we can infer the read and write segments from the input easily. But for some kernels, it’s impossible to determine the range of memory accessed statically because of the potential indirect memory accesses, so the authors just assume the <strong>entire GPU memory may be accessed</strong>.</p>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/seg.png" alt="Memory regions written to/accessed by the kernel"></p>
+<p>The authors use a kernel wrapper to finish the dependency detection. <code>get_addresses()</code> is called to get <code>__read_segments__</code> and <code>__write_segments__</code>.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ACE_wrapper</span> &#123;</span> </span><br><span class="line">  <span class="comment">//list of read,write segments defined as</span></span><br><span class="line">  <span class="comment">//[&#123;start_adr1,size1&#125;,&#123;start_adr2,size2&#125;..]</span></span><br><span class="line">  <span class="built_in">list</span> __read_segments__;</span><br><span class="line">  <span class="built_in">list</span> __write_segments__;</span><br><span class="line">  <span class="comment">// function which gets called at kernel</span></span><br><span class="line">  <span class="comment">// launch to populate read,write segments</span></span><br><span class="line">  <span class="type">void</span> <span class="title function_">get_addresses</span><span class="params">(</span></span><br><span class="line"><span class="params">    dim3 blocks, dim3 threads, ...</span></span><br><span class="line"><span class="params">  )</span>;</span><br><span class="line">  <span class="comment">// function declaration of the kernel</span></span><br><span class="line">  <span class="type">static</span> __global__ <span class="type">void</span> <span class="title function_">kernel</span><span class="params">(...)</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Tracking kernel state at runtime. The kernels in the window can be three states:</p>
+<ol>
+<li><strong>Ready</strong>: kernels it is dependent on complete execution.</li>
+<li><strong>Pending</strong>: upstream kernels are still pending or executing.</li>
+<li><strong>Executing</strong>.</li>
+</ol>
+</li>
+</ol>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/window.png" alt="Kernels in the scheduling window with their state and corresponding upstream kernels"></p>
+<ol start="3">
+<li>Eliminating CPU synchronization overheads. See ACS-HW for more details.</li>
+</ol>
+<p>ACS has two variants:</p>
+<ol>
+<li><p>ACS-SW: software-only implementation which emulates the out-of-order kernel scheduling mechanism.</p>
+</li>
+<li><p>ACS-HW: hardware-facilitated implementation which is more efficient as it also alleviates synchronization overheads.</p>
+</li>
+</ol>
+<h3 id="ACS-SW"><a href="#ACS-SW" class="headerlink" title="ACS-SW"></a>ACS-SW</h3><h4 id="Window-Module"><a href="#Window-Module" class="headerlink" title="Window Module"></a>Window Module</h4><p>This module is to determining inter-kernel dependencies. It is implemented as a separate thread that manages the input FIFO queue and the scheduling window. The kernel state tracking is implemented in the hardware.</p>
+<h4 id="Scheduler-Module"><a href="#Scheduler-Module" class="headerlink" title="Scheduler Module"></a>Scheduler Module</h4><p>This module schedules and launches ready kernels for execution. It has fixed number of CUDA streams. Each stream contains only one kernel at any given time. Threads with empty streams poll the scheduling window for a ready kernel.</p>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/acs_hw_scheduler.png" alt="ACS-SW: The scheduler module"></p>
+<h3 id="ACS-HW"><a href="#ACS-HW" class="headerlink" title="ACS-HW"></a>ACS-HW</h3><p>ACS-SW incurs kernel synchronization and launch overheads because scheduler module launches a kernel in the CPU. ACS-HW solves these problems by a software-hardware co-design.</p>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/acs_hw.png" alt="ACS-HW Overview"></p>
+<p>Software-side: maintains an input FIFO queue like ACS-SW, and a list of kernels in the GPU’s scheduling window, <strong>but it can be stale</strong>.</p>
+<p>Hardware-side: the scheduling window and its management are implemented in hardware on the GPU side.</p>
+<p>A key novelty in hardware design is <strong>two stage dependency detections</strong>. First, ACS use software to perform initial detection using stale kernel information (without frequent synchronize overhead), then utilizes hardware to correct outdated dependency information. This two-stage approach significantly reduces the hardware complexity.</p>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/hw_scheduler.png" alt="ACS-HW Scheduler"></p>
+<h2 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h2><ol>
+<li>Baseline: cuDNN implementation (for DNNs) and a jax implementation (for deep RL simulation), both using CUDA streams.</li>
+<li>ACS-SW: on real hardware.</li>
+<li>ACS-SW-Sim: ACS-SW on the GPU simulator.</li>
+<li>ACS-HW: on the GPU simulator.</li>
+<li>CUDAGraph.</li>
+</ol>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl.png" alt="Deep RL physics simulations: Normalized Speedup"></p>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl_sim.png" alt="Deep RL physics simulations: Normalized Speedup on GPU simulator"></p>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl_occ.png" alt="Deep RL physics simulations: Achieved occupancy"></p>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_dcnn.png" alt="Dynamic DNNs: Normalized speedup"></p>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_dcnn_occ.png" alt="Dynamic DNNs: Achieved occupancy"></p>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_scnn.png" alt="Static DNNs: Normalized speedup"></p>
+<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_scnn_occ.png" alt="Static DNNs: Achieved occupancy"></p>
+<h2 id="Comments"><a href="#Comments" class="headerlink" title="Comments"></a>Comments</h2><h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>This paper focuses on the problem of low GPU utilization caused by the serial execution of numerous small CUDA kernels. I believe this paper effectively addresses this problem, particularly with the following innovative points that are impressive me:</p>
+<ol>
+<li><p><strong>Out-of-order dependency detection and scheduling</strong>. Out-of-order (OoO) is a common technique in micro-architecture and software (e.g., hard disk I&#x2F;O queue) designs. It’s an impressive and innovative idea to introduce OoO into this area to find the dynamic dependencies efficiently.</p>
+</li>
+<li><p>A good <strong>trade-off</strong>. When I first read the Introduction section of the paper, I thought the read-write dependencies detection may be a difficulty task. To my knowledge, there aren’t reliable static binary memory access analysis techniques (otherwise, segmentation fault wouldn’t be a common problem). However, the authors made a good <strong>simplification</strong> and <strong>trade-off</strong> regarding this problem. For most common kernels, memory access areas can be inferred from input parameters. For the rest kernels, it can be assumed that they access the entire memory. Since few common operators occupy most of the execution time, this trade-off leads to significant performance improvements with a relatively low scheduling overhead. This innovation is my <strong>favorite</strong> aspect of this paper.</p>
+</li>
+<li><p><strong>Two-stage dependency detection</strong> in ACS-HW. While a complete hardware dependency detection approach is theoretically feasible, it could incur significant <strong>chip area costs</strong> (as we know, the re-order buffer in microprocessor carries large area). The authors proposed a two-stage software-hardware co-design dependency detection, significantly simplifying the difficulty of hardware design. It is a brilliant idea.</p>
+</li>
+</ol>
+<h3 id="Weaknesses"><a href="#Weaknesses" class="headerlink" title="Weaknesses"></a>Weaknesses</h3><p>This paper has some potential weaknesses:</p>
+<ol>
+<li><p>To each type of kernel, we must custom <code>get_addresses</code> function int the kernel wrapper. This weakness may limit the adoption of ACS.</p>
+</li>
+<li><p>Deciding whether kernels should be executed concurrently requires considering <strong>more factors</strong> than just data dependencies. If there are resource conflict (e.g., memory bandwidth, shared memory size) between two <strong>large kernels</strong>, performance may degrade if they co-execute.</p>
+</li>
+</ol>
+<h3 id="Improvements"><a href="#Improvements" class="headerlink" title="Improvements"></a>Improvements</h3><p>I propose some potential improvements to this paper:</p>
+<ol>
+<li><p>In response to the first weakness mentioned above, I propose a <strong>profiling-rollback</strong> strategy to achieve safe automatic dependency detection. This strategy leverages the commonly used <strong>paging</strong> technique in OS virtual memory management: we can set a memory page as <strong>read-only</strong> or <strong>write-only</strong>. When a program is running, if a <strong>page fault</strong> is triggered, we can know that a read&#x2F;write occurs. While I’m unsure if Nvidia GPUs provide APIs for user to control page tables, let’s assume such APIs exist. Given that many workloads are iterative (e.g., neural network training), we can profile the workload just one iteration, utilizing the aforementioned paging trick to <strong>record the memory access segments</strong> of each kernel. Obviously this may introduce some inaccuracies, we need a <strong>rollback strategy</strong> to ensure correct program execution. During runtime, we set known <code>__write_segments__</code> as read-write, while other areas are set as read-only. Upon encountering a page fault, we detect an error and revert to the default strategy (assuming all memory areas will be read and wrote). With this strategy, we can eliminate the need of manual <code>get_addresses</code> function, and maximize the potential parallelism.</p>
+</li>
+<li><p>Regarding the second weakness, I suggest adopting the method of <strong>GPUPool</strong> to determine which kernels are suitable for concurrent execution. A naive solution involves tracking the number of SMs each kernel occupies. When the SMs of a GPU are fully occupied, even if there are kernels in the <code>ready</code> state and available CUDA streams, no new kernels are scheduled.</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024-02-07-paper-reading-pact22-gpupool/" class="post-title-link" itemprop="url">[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT'22)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2024-02-07 00:00:00 / Modified: 04:25:33" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00+08:00">2024-02-07</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>This blog is a write-up of the paper “<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/3559009.3569650">GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud</a>“ from PACT’22.</p>
+</blockquote>
+<h2 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h2><p>This paper focuses on the <strong>GPU sharing in cloud scenarios</strong>.</p>
+<p>Currently, existing GPU sharing techniques can be categorized into 2 types:</p>
+<ul>
+<li><p><strong>Time-sharing</strong> means executing each concurrent VM on a full device in a round-robin fashion. <strong>Pros</strong>: Simple and mature. <strong>Cons</strong>: VMs could still under-utilize the hardware within each time slice.</p>
+</li>
+<li><p><strong>Shape-sharing</strong>: split a device into partitions and allows multiple workloads to execute on different partitions simultaneously.</p>
+</li>
+</ul>
+<p>Space-sharing can be categorized into 2 types：</p>
+<ul>
+<li><p><strong>Coarse-grained</strong> assigns disjoint sets of streaming multiprocessors (SMs) and memory channels to concurrent workloads. For example, Nvidia MIG. <strong>Pros</strong>: offers great performance isolation among tenants of the same GPU. <strong>Cons</strong>: (i) resource under-utilization within each SM consisting of heterogeneous functional units (e.g., FP32, INT, FP64, Tensor Cores) meant for different workload types. (ii) inefficient memory bandwidth usage caused by the bursty nature of GPU memory traffic.</p>
+</li>
+<li><p><strong>Fine-grained</strong> allows different workloads to co-run on the same SMs and request memory bandwidth flexibly, such as CUDA Stream and MPS. <strong>Pros</strong>: Better hardware utilization.</p>
+</li>
+</ul>
+<p>The key problem of GPU sharing in data center is <strong>performance unpredictability</strong>. It contains 2 <strong>key challenges</strong>:</p>
+<ol>
+<li><p><strong>Mitigating interference</strong>. The amount of performance improvement from fine-grained sharing varies drastically depending on how compatible the concurrent workloads are in terms of resource usage. Also, the interference cannot be statically estimated. So, <strong>it is non-trivial to determine compatibility</strong> among a large number of incoming jobs in the cluster.</p>
+</li>
+<li><p><strong>Providing QoS guarantees</strong>.</p>
+</li>
+</ol>
+<p>Existing solutions:</p>
+<ul>
+<li><p><strong>Software-based</strong>: kernel slicing or a persistent thread model. <strong>Cons</strong>: high scheduling overhead.</p>
+</li>
+<li><p><strong>Hardware-based</strong>: integrate sophisticated resource management logic into hardware to allocate resources for concurrent kernels. <strong>Cons</strong>: expensive and also inflexible.</p>
+</li>
+</ul>
+<p>Common problems of existing solutions:</p>
+<ol>
+<li><p>They do not concern with interference mitigation at the cluster level.</p>
+</li>
+<li><p>They do not handle scenarios where incoming jobs must be distributed among multiple GPUs to satisfy QoS constraints.</p>
+</li>
+</ol>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/tb_sm.png" alt="Figure 1. Simulated system throughput of co-running `parb_spmv` and `rod_hotspot` at various TBs/SM settings"></p>
+<p><strong>Problems of hardware TB scheduler</strong> which hinder the fine-grained sharing:</p>
+<ol>
+<li><p>It always attempts to <strong>launch as many thread blocks per SM</strong> (TBs&#x2F;SM) for each kernel as allowed by the execution context storage constraints (e.g., registers, shared memory, thread slots). <strong>It leaves insufficient resources for concurrent kernels</strong>. As showed in Figure 1, if we can individually set the TBs&#x2F;SM for each kernel, we may achieve a higher throughput.</p>
+</li>
+<li><p>It only dispatches concurrent kernels onto SMs after the earlier arriving one completes launching all the thread blocks specified by the kernel grid size. This will force an <strong>almost serially execution</strong> of kernels in some scenarios.</p>
+</li>
+</ol>
+<p>GPU applications in the cloud fall into two main categories: latency-sensitive, and <strong>throughput-oriented</strong>. Throughput-oriented workloads are good candidates for hardware space-sharing. They have the following characteristics:</p>
+<ol>
+<li><p>Most workloads involve a large variety of kernels with <strong>different hardware resource utilization</strong> characteristics (e.g., CNN: compute-intensive, batch-norm: memory-intensive).</p>
+</li>
+<li><p>Active SMs are <strong>underutilized</strong> in some resources (FP, tensor core, memory bandwidth).</p>
+</li>
+<li><p>They typically repeatedly execute the same sequence of kernels (e.g., ML).</p>
+</li>
+<li><p>Relaxed QoS Requirements.</p>
+</li>
+</ol>
+<h2 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h2><p>This paper proposed a <strong>hardware-software co-designed</strong> strategy to solve these challenges.</p>
+<h3 id="Hardware"><a href="#Hardware" class="headerlink" title="Hardware"></a>Hardware</h3><p>This paper changes the default behavior of CUDA runtime to make it more suitable for fine-grained sharing:</p>
+<ol>
+<li><p>Allows CUDA runtime to program the <strong>TBs&#x2F;SM setting</strong> as one of the kernel launch parameters. The value of TBs&#x2F;SM is selected by the performance predictor.</p>
+</li>
+<li><p>Make the TB scheduler <strong>launch TBs from any concurrent kernels</strong> whenever they are running under their TBs&#x2F;SM quota.</p>
+</li>
+</ol>
+<h3 id="Software"><a href="#Software" class="headerlink" title="Software"></a>Software</h3><blockquote>
+<p>Concept Explanation:</p>
+<ul>
+<li>Job: a task submitted by user, such as a DNN training task. It may be iterative and contains multiple kernels.</li>
+<li>Kernel: CUDA kernel.</li>
+<li>Normalized Progress (NP): $t_{isolate} &#x2F; t_{co-execute}$.</li>
+</ul>
+</blockquote>
+<p><strong>Two key observations</strong>:</p>
+<ol>
+<li><p>Co-execution performance of GPU kernels is highly correlated with resource utilization of individual kernels measured when running in isolation.</p>
+</li>
+<li><p>Once we have predicted which job pairs can co-execute without violating QoS requirements, the scheduling task can be reduced to the classic maximum cardinality matching problem in graph theory.</p>
+</li>
+</ol>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/system-design.png" alt="Figure 2. Overall System Design of GPUPool"></p>
+<p>Based on these 2 observations, the author proposed GPUPool. Its overall system design is shown in Figure 2. It consists of 4 steps:</p>
+<ol>
+<li><p><strong>Kernel Profiler</strong>. GPUPool <strong>groups all incoming GPU job into a batch</strong> for every scheduling window (e.g., 30 seconds). User should provide application executable and execution time budget. Then GPUPool automatically <strong>profiles</strong> the application for one iteration of the job in isolation on hardware, to collect the <strong>performance counter metrics</strong> of each kernel of data.</p>
+</li>
+<li><p><strong>Co-execution Performance Predictor</strong>. This step decides the <strong>compatibility</strong> of all possible job pairs within the batch using the profiling result. It contains 2 stages:</p>
+<ol>
+<li><p><strong>Kernel-wise Predictors</strong>. It predicts how well each kernel from one job will co-run with the ones in the other job. This stage uses a <em>Gradient Boosting Tree</em> (GBT) model to <strong>predict the performance of each kernel when co-running with another kernel</strong> (based on the 1st key observation). The model takes the profiling data of kernels as input and outputs the <strong>NP</strong>. This prediction will be done for <strong>each feasible TBs&#x2F;SM</strong> settings.</p>
+</li>
+<li><p><strong>Job-wise Predictor</strong>. It gets an <em>interference matrix</em> (shown in Figure 3) based on the <strong>predicted NP</strong> (under optimal TBs&#x2F;SM setting) from former stage, which indicates how will two kernels slow down when they are co-running. Then, GPUPool using this matrix to calculate the <strong>co-running time of two jobs</strong>. Here, the authors found that a whole calculation may require tens of thousands iterations, but the result will <strong>coverage to a steady-state</strong> after several iterations. So the authors used an <strong>approximation algorithm</strong> (shown in Figure 4) – stops timeline calculation once the accumulated slowdown values of each job is within a small delta over the past epoch.</p>
+</li>
+</ol>
+</li>
+</ol>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/interference_matrix.png" alt="Figure 3. Interference Matrix"></p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/stage2.2.png" alt="Figure 4. Concurrent Application Timeline"></p>
+<ol start="3">
+<li><strong>Job dispatcher</strong>. It decides which job pairs should co-run to maximize system performance while satisfying QoS. The decisions are found by solving a <strong>maximum cardinality matching problem</strong> – each node represent a job, when two jobs can co-run and will not violate the QoS requirement, connecting an edge between them. Then a graph theory algorithm is used to maximum cardinality matching, which means a largest subset of edges that do not share a common end node. Due to the potential unreliability of the performance predictor, GPUPool also add <strong>a safety margin</strong> $\delta$ to edge formulation.</li>
+</ol>
+<p>$$E &#x3D; { ( {job} _ i, {job} _ j ) \mid {job} _ i,{job} _ j \in V\ \text{and}\ {NP} _ {job _ x} &gt; {QoS} _ {job _ x} \times (1 + \delta ), x \in {i, j} }$$</p>
+<ol start="4">
+<li><strong>Execution</strong>. The batch of jobs are assigned to the modified GPU hardware.</li>
+</ol>
+<h2 id="Evaluations"><a href="#Evaluations" class="headerlink" title="Evaluations"></a>Evaluations</h2><p>The paper compare GPUPool against three baseline systems:</p>
+<ol>
+<li><p>No-Sharing.</p>
+</li>
+<li><p>Coarse: packing the jobs onto <strong>as few GPUs as possible</strong> using a greedy scheduling algorithm.</p>
+</li>
+<li><p>Heuristic: pairing up jobs with the <strong>highest and lowest bandwidth utilization</strong> (profiled offline) from a batch of incoming jobs.</p>
+</li>
+</ol>
+<p>The metrics is system throughput $STP&#x3D;\sum_{i&#x3D;1}^n \cfrac{t_{isolated}^i}{t_{shared}^i}$. $t_{isolated}^i$ and $t_{shared}^i$ are turnaround time of the i-th concurrent job when executing in an isolated and shared environment respectively. The paper also uses we use ${QoS}_{reached}$ to evaluate QoS fulfilment rate.</p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/gpu_sharing_compare.png" alt="Comparison of GPU Sharing Systems"></p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/sorted_stp.png" alt="Sorted STP on GPUs"></p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/throughput.png" alt="Throughput Normalized to QoS Target"></p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/ml_pred.png" alt="Prediction Accuracy of Different ML Techniques"></p>
+<h2 id="Comments"><a href="#Comments" class="headerlink" title="Comments"></a>Comments</h2><h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>This paper targets the fine-grained GPU sharing problem in the cloud. I believe this work provides a valuable solution to this problem.</p>
+<p>From my perspective, fine-grained GPU sharing presents three key challenges:</p>
+<ol>
+<li><p><strong>Limitations imposed by hardware and CUDA</strong>, which make it difficult for programmers to flexibly control kernel execution.</p>
+</li>
+<li><p><strong>Reliable and low-cost performance prediction</strong> for concurrent kernel execution. Establishing an analytical performance prediction model is highly challenging. One naive approach is using real hardware to profile, but due to the $\mathcal{O}(n^2)$ ($n$ representing the number of jobs) time complexity, this method is not scalable to larger clusters.</p>
+</li>
+<li><p><strong>Efficient algorithms to find appropriate job combinations</strong>. If we allow an arbitrary number of jobs to execute concurrently, this becomes an NP-hard problem.</p>
+</li>
+</ol>
+<p>This paper cleverly addresses or bypasses these challenges through the following strategies:</p>
+<ol>
+<li><p><strong>Hardware-software co-design</strong>, which involves modifying hardware to provide more flexible API for upper-layer application. While this prevents the authors from testing their method on actual hardware and forces them perform experiments on simulator (GPGPU-Sim), I believe such simulations can provide valuable insights for adjustments on real hardware.</p>
+</li>
+<li><p>Predicting kernel concurrent execution performance <strong>by a ML model</strong>. This is <strong>a standout aspect</strong> of the paper (which is also my <strong>favorite novelty</strong>). The authors introducing ML with a good motivation to effectively addresses a challenging performance modeling problem, bypassing a complicated analytical modeling. Also, this ML model has good <strong>interpretability</strong>, top-10 import metrics (show in Figure) align well with human’s intuition. Furthermore, in my research experiences about Deep Learning Compiler (e.g., TVM), I also found many paper introduce such ML models for performance prediction. I believe the thought that <strong>leveraging ML techniques to bypass some complicated modeling problems</strong> is highly valuable in system research, which is the most important thing I learned from this paper.</p>
+</li>
+<li><p>Instead of solving the whole NP-hard job combination problem, the authors limit the number of concurrently executed jobs to 2, considering this simpler case. It is <strong>a fantastic tradeoff</strong>. The simplified problem can be solved by a maximum cardinality matching algorithm, which may not find the optimal combination, but exchanging reasonable scheduling overhead for a substantial performance improvement.</p>
+</li>
+</ol>
+<h3 id="Weaknesses"><a href="#Weaknesses" class="headerlink" title="Weaknesses"></a>Weaknesses</h3><p>This paper also has some potential weaknesses:</p>
+<ol>
+<li><p>It seems to ignore the situation which <strong>two concurrent jobs have different execution times</strong>. For instance, when a longer job and a shorter job are executed together, after the shorter job finishes, GPUPool seems unable to schedule a new job to the GPU. Instead, the remaining GPU time is monopolized by the longer job. This could result in a lower resource utilization.</p>
+</li>
+<li><p>The concurrent execution of multiple jobs on a single GPU may also be <strong>constrained by GPU memory capacity</strong>. A possible improvement is to ask users to indicate maximum GPU memory usage of their applications and consider the these constraints when constructing the graphs.</p>
+</li>
+<li><p>This paper does not consider <strong>the job which leverages multiple GPUs</strong>. These jobs are quite common in reality. When a job can occupy multiple GPUs, there are some additional constraints:</p>
+<ol>
+<li><p><strong>Inter-GPU connection</strong> (e.g., NVLink or InfiniBand) bandwidth is the potential bottleneck, especially for distributed training strategies relying on high GPU interconnect bandwidth, such as <em>Data Parallelism</em>. Improper job scheduling may lead to contention for bandwidth among multiple jobs, or jobs requiring high GPU interconnect bandwidth may run on different nodes.</p>
+</li>
+<li><p>When a single job leverages multiple GPUs, <strong>the workload types on different GPUs may not be the same</strong>. For example, in <em>Pipeline Parallelism</em>, different GPUs run different stages of the neural network.</p>
+</li>
+</ol>
+</li>
+<li><p>This paper does not clearly take into account <strong>the impact of memory hierarchy on performance</strong>, such as shared memory (or just implicitly consider it using a ML model). Some CUDA kernels are optimized by carefully utilizing CUDA SM shared memory, such as <em>Flash Attention</em>. When two kernels run together, does it lead to shared memory contention? Could it result in runtime errors or shared memory overflowing into global memory, causing a severe performance decline? Experiments in the paper can not answer these questions. Also, the selected profiling metrics to train stage 1 model listed in Figure 5 do not contains any metrics about shared memory capacity. Another possibility is that a ML model is already good enough to handle this problem. Regardless, the impact of memory hierarchy on GPU-sharing deserves further study.</p>
+</li>
+</ol>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/metrics.png" alt="Figure 5. Metrics Used to Train Stage 1 Prediction Model"></p>
+<h3 id="Possible-Improvements"><a href="#Possible-Improvements" class="headerlink" title="Possible Improvements"></a>Possible Improvements</h3><p>I have some potential ideas to improve this work:</p>
+<ol>
+<li><p>As response to the first weakness mentioned above, we can extend GPUPool to enable it to schedule a new job to the GPU after the shorter job finishes. This improvement can be achieved by a simple modification: <strong>keep the running jobs in the incoming window, and if two jobs are still running in the same GPU, also keep the edge between them in the pairing graph</strong>. With this modification, if shorter job finishes, we can re-run the matching algorithm to find a new job to pair with it.</p>
+</li>
+<li><p>We can extend GPUPool to support <strong>multiple GPU job</strong>. To achieve that, we should consider inter-GPU connection bandwidth. This may include following modifications:</p>
+<ol>
+<li><p>Ask users to <strong>indicate the required inter-GPU bandwidth or connection types</strong> (e.g., NVLink&#x2F;PCIe&#x2F;Infiniband&#x2F;Ethernet).</p>
+</li>
+<li><p>Take a multiple GPU task as several sub-jobs. <strong>Each of sub-job is a single GPU job</strong>, with interconnection constraints. Then we can reuse the infrastructure of GPUPool to find the co-running chances.</p>
+</li>
+<li><p>Extend the last <strong>step “Execution” to consider the interconnection constraints</strong>, so it can dispatch sub-jobs to nodes that meet the constraints. This may require an efficient graph algorithm to find job placement, which requires a further research.</p>
+</li>
+</ol>
+</li>
+<li><p>Sometimes the goal of a data center is not just to improve resource utilization, but also to <strong>save energy</strong>. Improving resource utilization does not necessarily mean energy saving, because the chip’s speed $S$, power consumption $P$, and frequency $f$ have the following approximate relationship:</p>
+</li>
+</ol>
+<p>$$S \propto f$$<br>$$P \propto f^\alpha, \text{while}\ \alpha \in [2, 3]$$</p>
+<p>We can extend the optimization target of GPUPool to power consumption. This can be achieved by add a power prediction model with similar methods. Then we can use a multi-objective optimization algorithm to find the best job combination, considering both performance and power consumption.</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -192,9 +613,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2024-01-29 00:00:00 / Modified: 20:55:39" itemprop="dateCreated datePublished" datetime="2024-01-29T00:00:00+08:00">2024-01-29</time>
+      <time title="Created: 2024-01-29 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-29T00:00:00+08:00">2024-01-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
     </span>
 
   
@@ -287,7 +714,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
+      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
     </span>
 
   
@@ -365,7 +792,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
+      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
     </span>
 
   
@@ -487,7 +914,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
+      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
     </span>
 
   
@@ -578,7 +1005,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
+      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
     </span>
 
   
@@ -786,7 +1213,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
+      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
     </span>
 
   
@@ -877,7 +1304,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
+      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
     </span>
 
   
@@ -973,7 +1400,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
+      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
     </span>
 
   
@@ -998,681 +1425,6 @@
 <li><a target="_blank" rel="noopener" href="https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html">https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html</a></li>
 <li><a target="_blank" rel="noopener" href="https://nginx.org/en/docs/http/ngx_http_v3_module.html">https://nginx.org/en/docs/http/ngx_http_v3_module.html</a></li>
 </ul>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-06-19-mkl-on-amd/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Monsoon">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023-06-19-mkl-on-amd/" class="post-title-link" itemprop="url">优化 MKL 在 AMD CPU 上的性能</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2023-06-19 00:00:00" itemprop="dateCreated datePublished" datetime="2023-06-19T00:00:00+08:00">2023-06-19</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-01-29 20:55:39" itemprop="dateModified" datetime="2024-01-29T20:55:39+08:00">2024-01-29</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>实验室有一些 AMD EPYC 7713 的服务器，采购的原因是组里有一些人的程序有非常高的 CPU 负载（我也不知道是什么负载，为什么不能跑在 GPU 上，我也没有精力去逐个帮助解决），框框多的 AMD 处理器非常适合这种需求。</p>
-<p>不过 AMD 的处理器虽然香，用在炼丹实验室会有额外的问题：Anaconda 安装的 numpy 和 PyTorch 默认都使用了 MKL 作为 BLAS 的实现，MKL 的 library function 也是大部分高 CPU 负载程序的热点，但 <strong>MKL 会判断自己是否在 Intel CPU 上运行，如果不是，则没有优化效果。</strong></p>
-<p>由于这是炼丹实验室，大家很少有足够的 HPC 基础去自己编译适合的 numpy 和 PyTorch 版本，也很难脱离 Anaconda，对于 MKL 的依赖因此很难去除。为此需要一个<strong>对一般用户无感知的解决方案</strong>。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>通过搜索引擎可以搜索到一个广为流传解决方案：设置环境变量 <code>MKL_DEBUG_CPU_TYPE=5</code>。这是个曾经有效的解决方案，但<strong>对于 MKL 2020 及之后的版本不再有效</strong>。</p>
-<p>最终我在<a target="_blank" rel="noopener" href="https://documentation.sigma2.no/jobs/mkl.html">此处</a>找到了更巧妙的解决方案。</p>
-<p>MKL 会调用一个 <code>mkl_serv_intel_cpu_true()</code> 函数以检查自己是否运行在 Intel CPU 上，只要提供一个虚假的、始终返回 <code>1</code> 的 <code>mkl_serv_intel_cpu_true()</code>，即可欺骗 MKL 让它认为自己在 Intel CPU 上运行。</p>
-<p>为此，可以利用 Linux 的 <strong><code>LD_PRELOAD</code> 机制</strong>。<code>LD_PRELOAD</code> 指向的动态链接库有最高的加载优先级，只要编译一个想要的 <code>mkl_serv_intel_cpu_true()</code> 函数为 <code>so</code> 文件，并用 <code>LD_PRELOAD</code> 指向它，即可抢先完成此函数的加载。</p>
-<blockquote>
-<p>笔者也经常有耳闻 <code>LD_PRELOAD</code> 机制被用于库函数劫持攻击，此处算是一种妙用。</p>
-</blockquote>
-<h2 id="具体实施"><a href="#具体实施" class="headerlink" title="具体实施"></a>具体实施</h2><p>新建 <code>mkl_trick.c</code>:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">mkl_serv_intel_cpu_true</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>使用 <code>gcc -shared -fPIC -o libmkl_trick.so mkl_trick.c</code> 编译，并将生成的 <code>libmkl_trick.so</code> 复制到 <code>/usr/local/lib</code>。</p>
-<p>在 Shell 的全局初始化文件中加入：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> MKL_DEBUG_CPU_TYPE=5  <span class="comment"># 兼容旧版本 MKL</span></span><br><span class="line"><span class="built_in">export</span> MKL_ENABLE_INSTRUCTIONS=AVX2  <span class="comment"># 可选，指明 MKL 可以使用 AVX2</span></span><br><span class="line"><span class="built_in">export</span> LD_PRELOAD=/usr/local/lib/libmkl_trick.so</span><br></pre></td></tr></table></figure>
-
-<p>实验室的同学有的用 Bash 也有的用 ZSH，所以两者都要修改：</p>
-<ul>
-<li>Bash: 新建文件 <code>/etc/profile.d/mkl.sh</code> 并添加上述内容</li>
-<li>ZSH: 添加到 <code>/etc/zsh/zshenv</code></li>
-</ul>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://documentation.sigma2.no/jobs/mkl.html">https://documentation.sigma2.no/jobs/mkl.html</a></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-05-25-vcb/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Monsoon">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023-05-25-vcb/" class="post-title-link" itemprop="url">VCB-Studio Technical Director Entry Test 2023 and My Answer</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2023-05-25 00:00:00" itemprop="dateCreated datePublished" datetime="2023-05-25T00:00:00+08:00">2023-05-25</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-01-29 20:55:38" itemprop="dateModified" datetime="2024-01-29T20:55:38+08:00">2024-01-29</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>See <a target="_blank" rel="noopener" href="https://vcb-s.com/archives/15949">original publication page</a> for more details.</p>
-<p>All my answer files can be browsed in <a target="_blank" rel="noopener" href="https://static.monsoon-cs.moe/public/VCB-Studio%20Entry%20Test%202023%20Answers/">here</a>, or you can download <a target="_blank" rel="noopener" href="https://static.monsoon-cs.moe/public/VCB-Studio%20Entry%20Test%202023%20Answers.zip">zipped file</a> (5.9G).</p>
-<h2 id="Requirements"><a href="#Requirements" class="headerlink" title="Requirements"></a>Requirements</h2><blockquote><p>This is a test for candidates who wish to participate in the training class organized by VCB-Studio. Finish as many problems as you can, and then do the following things:</p>
-<ol>
-<li>Pack your answers, result files, and necessary attachments into a <strong>zip&#x2F;rar&#x2F;7z</strong> file. Source files we provided and intermediate file in your encoding should not be packed in.</li>
-<li>Register a Baidu Net Disk account (<a target="_blank" rel="noopener" href="https://pan.baidu.com/">https://pan.baidu.com</a>), upload the zipped file and create a sharing link. Whether you like it or not, Baidu Net Disk has been the most effective way to share files within our team since day one. Other sharing methods will NOT be considered.</li>
-<li>Send the link via email to <a href="mailto:vcbs.training@gmail.com">vcbs.training@gmail.com</a> before <strong>Beijing Time (UTC+8) Monday, 23 Jan 2023, 23:59:59</strong>. Late submissions will NOT be considered.</li>
-<li>Prepare a QQ account. The follow-up training courses will be conducted in the QQ group.</li>
-</ol>
-<p>You should independently complete the answers without any public discussion. Any form of plagiarism will NOT be tolerated.</p>
-<p>This test has 5 questions. For question 2 and 3, you can choose ONE of them. Choosing both then we will pick one with higher points. The answers should be made in English.</p>
-</blockquote>
-
-<h2 id="Question1-15pt"><a href="#Question1-15pt" class="headerlink" title="Question1 (15pt)"></a>Question1 (15pt)</h2><blockquote><p>Please describe yourself as who you are, where do you study, how do you come to know VCB-Studio and why are you interested in this project, etc. Please do not write more than 500 words, or approximately 1 page. (15pt)</p>
-</blockquote>
-
-<p><em>Answers are hidden for privacy reasons.</em></p>
-<h2 id="Question2-30pt"><a href="#Question2-30pt" class="headerlink" title="Question2 (30pt)"></a>Question2 (30pt)</h2><blockquote><p>Scanned pictures (or simply scans) are an important part of BDRips, which are often released as lossless PNG, TIFF format or lossy JPG format. Scans feature high resolution and large size. In the file <strong>Q2.7z</strong>, two sets of pictures have been provided for you. PNGs are the source scans, and WEBPs are transcoded from PNGs according to VCB-Studio Collation specifications. Your tasks are:</p>
-<ol>
-<li>Summarize the format conversion rules of scans in VCB-Studio Collation specifications. (6pt)</li>
-<li>Convert the sources to AVIF and JPEG-XL format, with sizes comparable to the WEBPs. (12pt)</li>
-<li>Comment on the quality, encoding speed, and compatibility of AVIF and JPEG- XL, and why&#x2F;why not you may recommend us switching to the new format as the upgrade for WEBP in 2023. (12pt)</li>
-</ol>
-<p>You are free to utilize existing tools, but you need to describe clearly where you find the tool and how to use it.</p>
-</blockquote>
-
-<h3 id="1-Format-conversion-rules-of-scans-in-VCB-Studio-Collation-specifications"><a href="#1-Format-conversion-rules-of-scans-in-VCB-Studio-Collation-specifications" class="headerlink" title="(1) Format conversion rules of scans in VCB-Studio Collation specifications"></a>(1) Format conversion rules of scans in VCB-Studio Collation specifications</h3><p>Choosing a format with better image quality at the same size when ensuring compatibility.</p>
-<h3 id="2-Converting-test"><a href="#2-Converting-test" class="headerlink" title="(2) Converting test"></a>(2) Converting test</h3><p>See <code>Q2/convert.py</code> for my conversion code. <code>Pillow</code>, <code>pillow_avif_plugin</code> and <code>jxlpy</code> are used libraries. <code>Pillow</code> is the image processing library which I often use, it supports <code>WEBP</code> but not <code>AVIF</code> and <code>JPEG-XL</code>. So I find two <code>Pillow</code> plugins by Google to support <code>AVIF</code> and <code>JPEG-XL</code>.</p>
-<p><code>PNG</code> and <code>WEBP Ref</code> are given images, and <code>WEBP Cus</code>, <code>AVIF</code>, <code>JPEG-XL</code> are custom encoded images.</p>
-<p><code>WEBP Custom</code> is encoded by <code>Pillow</code>, which is backed by <code>libwebp</code>. Encoding speed is set to slowest(<code>6</code>), and quality is set to <code>90</code> to keep the same size with reference webp images.</p>
-<p><code>AVIF</code> is encoded by <code>pillow-avif-plugin</code>, which is backed by <code>libavif</code>. Encoding speed is set to slowest(<code>0</code>), and quality is set to <code>84</code> to get the comparable size with reference webp images.</p>
-<p><code>JPEG-XL</code> is encoded by <code>jxlpy</code>, which is backed by <code>libjxl</code>. Encoding speed is set to slowest(<code>9</code>), decoding speed is also slowest(<code>0</code>), and quality is set to <code>92</code> to get the comparable size with reference webp images.</p>
-<p>The following table shows the result:</p>
-<table>
-<thead>
-<tr>
-<th align="center">Image</th>
-<th align="center">PNG (size)</th>
-<th align="center">WEBP Ref (size)</th>
-<th align="center">WEBP Cus (size&#x2F;time)</th>
-<th align="center">AVIF (size&#x2F;time)</th>
-<th align="center">JPEG-XL (size&#x2F;time)</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">01</td>
-<td align="center">26.97 MB</td>
-<td align="center">2.95 MB</td>
-<td align="center">2.95 MB &#x2F; 3.36 s</td>
-<td align="center">2.77 MB &#x2F; 37.77 s</td>
-<td align="center">2.56 MB &#x2F; 32.00 s</td>
-</tr>
-<tr>
-<td align="center">02</td>
-<td align="center">26.25 MB</td>
-<td align="center">2.93 MB</td>
-<td align="center">2.94 MB &#x2F; 3.27 s</td>
-<td align="center">2.71 MB &#x2F; 34.87 s</td>
-<td align="center">2.48 MB &#x2F; 33.07 s</td>
-</tr>
-<tr>
-<td align="center">03</td>
-<td align="center">3.60 MB</td>
-<td align="center">0.26 MB</td>
-<td align="center">0.26 MB &#x2F; 0.37 s</td>
-<td align="center">0.28 MB &#x2F; 11.48 s</td>
-<td align="center">0.28 MB &#x2F; 5.12 s</td>
-</tr>
-<tr>
-<td align="center">04</td>
-<td align="center">21.78 MB</td>
-<td align="center">1.03 MB</td>
-<td align="center">1.03 MB &#x2F; 2.06 s</td>
-<td align="center">1.32 MB &#x2F; 29.56 s</td>
-<td align="center">1.39 MB &#x2F; 32.25 s</td>
-</tr>
-<tr>
-<td align="center">05</td>
-<td align="center">2.65 MB</td>
-<td align="center">0.13 MB</td>
-<td align="center">0.13 MB &#x2F; 0.24 s</td>
-<td align="center">0.15 MB &#x2F; 9.29 s</td>
-<td align="center">0.18 MB &#x2F; 4.11 s</td>
-</tr>
-<tr>
-<td align="center">06</td>
-<td align="center">2.66 MB</td>
-<td align="center">0.13 MB</td>
-<td align="center">0.13 MB &#x2F; 0.25 s</td>
-<td align="center">0.15 MB &#x2F; 9.39 s</td>
-<td align="center">0.16 MB &#x2F; 3.81 s</td>
-</tr>
-<tr>
-<td align="center">07</td>
-<td align="center">24.38 MB</td>
-<td align="center">1.71 MB</td>
-<td align="center">1.71 MB &#x2F; 2.25 s</td>
-<td align="center">1.67 MB &#x2F; 27.78 s</td>
-<td align="center">1.68 MB &#x2F; 35.59 s</td>
-</tr>
-<tr>
-<td align="center">08</td>
-<td align="center">55.52 MB</td>
-<td align="center">7.58 MB</td>
-<td align="center">7.58 MB &#x2F; 26.48 s</td>
-<td align="center">7.93 MB &#x2F; 83.44 s</td>
-<td align="center">6.36 MB &#x2F; 72.90 s</td>
-</tr>
-<tr>
-<td align="center">09</td>
-<td align="center">44.39 MB</td>
-<td align="center">2.00 MB</td>
-<td align="center">2.00 MB &#x2F; 3.53 s</td>
-<td align="center">1.99 MB &#x2F; 59.79 s</td>
-<td align="center">2.47 MB &#x2F; 71.73 s</td>
-</tr>
-<tr>
-<td align="center">10</td>
-<td align="center">41.59 MB</td>
-<td align="center">1.21 MB</td>
-<td align="center">1.21 MB &#x2F; 3.11 s</td>
-<td align="center">1.16 MB &#x2F; 59.99 s</td>
-<td align="center">1.70 MB &#x2F; 63.65 s</td>
-</tr>
-</tbody></table>
-<p><strong>PS</strong>: <code>pillow-avif-plugin</code> uses 8 threads to encode images (on i7-11700), and I didn’t find an option to turn it off. Other encoders use only 1 thread. <code>jxlpy</code> example shows that it supports setting multithreading, but it doesn’t work.</p>
-<h3 id="3-Comparison-and-comment"><a href="#3-Comparison-and-comment" class="headerlink" title="(3) Comparison and comment"></a>(3) Comparison and comment</h3><p>Quality comparison:</p>
-<table>
-<thead>
-<tr>
-<th align="center"><code>PNG</code></th>
-<th align="center"><code>WEBP Ref</code></th>
-<th align="center"><code>AVIF</code></th>
-<th align="center"><code>JPEG-XL</code></th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"><img src="/2023-05-25-vcb/pics/Q2_png.png"></td>
-<td align="center"><img src="/2023-05-25-vcb/pics/Q2_webp.png"></td>
-<td align="center"><img src="/2023-05-25-vcb/pics/Q2_avif.png"></td>
-<td align="center"><img src="/2023-05-25-vcb/pics/Q2_jxl.png"></td>
-</tr>
-</tbody></table>
-<p>Above is a cropped part from 03 for the given encoding. The <code>WEBP</code> image has severe smearing in dark areas, and obvious color shift occurs in the red dots on the upper left and lower right. The <code>AVIF</code> image is better in smearing, but the color shift is the same as <code>WEBP</code>. The <code>JPEG-XL</code> image is relatively closest to reference <code>PNG</code> image.</p>
-<p>Detailed compatibility:</p>
-<table>
-<thead>
-<tr>
-<th align="center">Format</th>
-<th align="center">Windows</th>
-<th align="center">macOS</th>
-<th align="center">Android</th>
-<th align="center">iOS</th>
-<th align="center">Chrome</th>
-<th align="center">Firefox</th>
-<th align="center">Safari</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"><code>WEBP</code></td>
-<td align="center">≥10</td>
-<td align="center">≥11</td>
-<td align="center">≥4</td>
-<td align="center">≥14</td>
-<td align="center">✅</td>
-<td align="center">✅</td>
-<td align="center">✅</td>
-</tr>
-<tr>
-<td align="center"><code>AVIF</code></td>
-<td align="center">≥10-1903</td>
-<td align="center">≥13</td>
-<td align="center">≥12</td>
-<td align="center">≥16</td>
-<td align="center">✅</td>
-<td align="center">✅</td>
-<td align="center">✅</td>
-</tr>
-<tr>
-<td align="center"><code>JPEG-XL</code></td>
-<td align="center">❌</td>
-<td align="center">❌</td>
-<td align="center">❌</td>
-<td align="center">❌</td>
-<td align="center">❌</td>
-<td align="center">❌</td>
-<td align="center">❌</td>
-</tr>
-</tbody></table>
-<p>PS: Results on Windows, macOS, Android and iOS are got by Google. Browser compatibility information can be found at <a target="_blank" rel="noopener" href="https://caniuse.com/">https://caniuse.com</a>.</p>
-<p>Summary:</p>
-<table>
-<thead>
-<tr>
-<th align="center">Format</th>
-<th align="center">Quality</th>
-<th align="center">Encoding Speed</th>
-<th align="center">Compatibility</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"><code>WEBP</code></td>
-<td align="center">worst</td>
-<td align="center">fast</td>
-<td align="center">good</td>
-</tr>
-<tr>
-<td align="center"><code>AVIF</code></td>
-<td align="center">medium</td>
-<td align="center">slow</td>
-<td align="center">medium</td>
-</tr>
-<tr>
-<td align="center"><code>JPEG-XL</code></td>
-<td align="center">best</td>
-<td align="center">slow</td>
-<td align="center">bad</td>
-</tr>
-</tbody></table>
-<p>Due to the bad compatibility of <code>JPEG-XL</code>, it should not be considered an appropriate option. <code>AVIF</code> features the better image quality than <code>WEBP</code>, but is only well supported in new platforms, which needs time for adoption, especially for fragmented Android and Windows. Although <code>WBEP</code> takes huge advantage in encoding speed, I don’t think encoding speed is a factor that needs to be considered because even for large images, the encoding time is only about 1 minute, and the number of images not large. Compared with video encoding, this is a completely negligible time overhead.</p>
-<p>Summarily, I think <strong>now</strong> is not a suitable time to switch to <code>AVIF</code> or <code>JPEG-XL</code>. But two years later, it will be time for <code>AVIF</code> to show its strength.</p>
-<h2 id="Question3-30pt"><a href="#Question3-30pt" class="headerlink" title="Question3 (30pt)"></a>Question3 (30pt)</h2><blockquote><p>Recently 32-bit audio tracks have appeared in some of the latest Hi-Res music. Although now we would not see these annoying 32-bit tracks in the Blu-ray, we have to start working on them in advance. In the file <strong>Q3.7z</strong>, two 32-bit PCM files are provided for you. Your tasks are:</p>
-<ol>
-<li>Learn about 32-bit tracks and tell the difference between these two files. (6pt)</li>
-<li>Try to convert them to FLAC, ALAC, and WavPack losslessly. (15pt)</li>
-<li>Consider various aspects such as compression rate, encoding speed, and playback compatibility and select the format you recommend most for 32-bit audio. (9pt)</li>
-</ol>
-<p>You are free to utilize existing tools, but you need to describe clearly where you find the tool and how to use it.</p>
-</blockquote>
-
-<h3 id="1"><a href="#1" class="headerlink" title="(1)"></a>(1)</h3><p>Using <code>ffprobe</code> to get audio encoding info:</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Input #0, wav, from &#x27;01.wav&#x27;:</span><br><span class="line">  Duration: 00:03:52.48, bitrate: 6144 kb/s</span><br><span class="line">  Stream #0:0: Audio: pcm_s32le ([1][0][0][0] / 0x0001), 96000 Hz, 2 channels, s32, 6144 kb/s</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Input #0, wav, from &#x27;02.wav&#x27;:</span><br><span class="line">  Duration: 00:07:03.00, bitrate: 6144 kb/s</span><br><span class="line">  Stream #0:0: Audio: pcm_f32le ([3][0][0][0] / 0x0003), 96000 Hz, 2 channels, flt, 6144 kb/s</span><br></pre></td></tr></table></figure>
-
-<p>The difference is: <code>01.wav</code> is encoded by <code>pcm_s32le</code>, and <code>02.wav</code> is encoded by <code>pcm_f32le</code>.</p>
-<p><code>pcm_s32le</code> means PCM encoding by 32-bit signed integer with little-endian byte ordering, while <code>pcm_s32le</code> means PCM encoding by 32-bit floating point with little-endian byte ordering.</p>
-<h3 id="2"><a href="#2" class="headerlink" title="(2)"></a>(2)</h3><p>I first tried to convert them losslessly using FFmpeg. If FFmpeg failed, I used Google to find a suitable codec.</p>
-<p>This is the result of my attempt:</p>
-<table>
-<thead>
-<tr>
-<th align="center">Format</th>
-<th align="center">32-bit integer</th>
-<th align="center">32-bit float</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"><code>FLAC</code></td>
-<td align="center">FFmpeg ❌<br><a target="_blank" rel="noopener" href="https://github.com/xiph/flac"><code>flac</code></a> (from v1.4.0) ✅</td>
-<td align="center">FFmpeg ❌</td>
-</tr>
-<tr>
-<td align="center"><code>ALAC</code></td>
-<td align="center">FFmpeg (decoding only)<br><a target="_blank" rel="noopener" href="https://github.com/nu774/qaac"><code>qaac</code></a> (backed by Apple <code>CoreAudioToolbox</code>) ✅</td>
-<td align="center">FFmpeg ❌</td>
-</tr>
-<tr>
-<td align="center"><code>WavPack</code></td>
-<td align="center">FFmpeg ✅</td>
-<td align="center">FFmpeg ✅</td>
-</tr>
-</tbody></table>
-<p>The conversion command:</p>
-<table>
-<thead>
-<tr>
-<th align="center">Format</th>
-<th align="center">32-bit integer</th>
-<th align="center">32-bit float</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"><code>FLAC</code></td>
-<td align="center"><code>flac -o 01.flac 01.wav</code></td>
-<td align="center">❌</td>
-</tr>
-<tr>
-<td align="center"><code>ALAC</code></td>
-<td align="center"><code>qaac64 -b 32 --alac -i 01.wav -o 01.m4a</code></td>
-<td align="center">❌</td>
-</tr>
-<tr>
-<td align="center"><code>WavPack</code></td>
-<td align="center"><code>ffmpeg -i 01.wav 01.wv</code></td>
-<td align="center"><code>ffmpeg -i 02.wav 02.wv</code></td>
-</tr>
-</tbody></table>
-<p>The resulting files are <code>Q3/01.flac</code>, <code>Q3/01.m4a</code>, <code>Q3/01.wv</code> and <code>Q3/02.wv</code>.</p>
-<h3 id="3"><a href="#3" class="headerlink" title="(3)"></a>(3)</h3><p>Encoding speed and compression rate of different encoding methods:</p>
-<table>
-<thead>
-<tr>
-<th align="center">Format</th>
-<th align="center"><code>WAV</code> file size &#x2F; encoded file size</th>
-<th align="center">audio time &#x2F; encoding time</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"><code>FLAC s32</code></td>
-<td align="center">1.337</td>
-<td align="center">128.44</td>
-</tr>
-<tr>
-<td align="center"><code>ALAC s32</code></td>
-<td align="center">1.304</td>
-<td align="center">69.81</td>
-</tr>
-<tr>
-<td align="center"><code>WavPack s32</code></td>
-<td align="center">1.280</td>
-<td align="center">121.08</td>
-</tr>
-<tr>
-<td align="center"><code>WavPack f32</code></td>
-<td align="center">1.489</td>
-<td align="center">109.02</td>
-</tr>
-</tbody></table>
-<p>Summary:</p>
-<table>
-<thead>
-<tr>
-<th align="center"></th>
-<th align="center"><code>FLAC s32</code></th>
-<th align="center"><code>FLAC f32</code></th>
-<th align="center"><code>ALAC s32</code></th>
-<th align="center"><code>ALAC f32</code></th>
-<th align="center"><code>WavPack s32</code></th>
-<th align="center"><code>WavPack f32</code></th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">Compression rate</td>
-<td align="center">best</td>
-<td align="center">❌</td>
-<td align="center">medium</td>
-<td align="center">❌</td>
-<td align="center">worst</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td align="center">Encoding speed</td>
-<td align="center">very fast</td>
-<td align="center">❌</td>
-<td align="center">fast</td>
-<td align="center">❌</td>
-<td align="center">very fast</td>
-<td align="center">very fast</td>
-</tr>
-<tr>
-<td align="center">Playback compatibility</td>
-<td align="center">bad (<code>flac</code> only)</td>
-<td align="center">❌</td>
-<td align="center">good (FFmpeg)</td>
-<td align="center">❌</td>
-<td align="center">good (FFmpeg)</td>
-<td align="center">good (FFmpeg)</td>
-</tr>
-</tbody></table>
-<p>Because FFmpeg is the de facto standard multimedia codec library used by most video players, <code>FLAC</code> is not suitable, which can only be decoded by <code>flac</code>. Also, <code>WavPack</code> shows advantage in encoding speed compared to <code>ALAC</code>, but considering that all of three formats are fast in absolute speed (compared to video encoding), this advantage is not greatly valuable. Last, <code>ALAC</code> shows better compression rate than <code>WavPack</code>, thus file size can be saved.</p>
-<p>To sum up, I recommend <code>ALAC</code> for encoding 32-bit audio. But if float point encoding is required (which is rare), <code>WavPack</code> is the only choice.</p>
-<h2 id="Question4-35pt"><a href="#Question4-35pt" class="headerlink" title="Question4 (35pt)"></a>Question4 (35pt)</h2><blockquote><p>MSU publishes video encoder tests every year, with the latest one here:<br><a target="_blank" rel="noopener" href="https://compression.ru/video/codec_comparison/2021/main_report.html">https://compression.ru/video/codec_comparison&#x2F;2021&#x2F;main_report.html</a>.</p>
-<p>For the first time last year, H.266 (VVC) encoders participated in the tests and they performed well in terms of encoding quality in the slow encoding (1 fps) test.</p>
-<ol>
-<li>Choose any of the H.266 (VVC) or AV1 encoders in the figure below, and then encode the source file <em>Q4 [E46686C4].m2ts</em> with no more than 2500 Kbps of video bitrate. You’d better use 10bit variants of these encoders, which facilitates the comparison later. In addition, you need to describe clearly where you found the encoder and state the version and parameters you used. If you use H.266 (VVC) encoder, you will get additional 5pt. (10pt+5pt)</li>
-<li>We provide an AV1 video file <em>Q4_AV1 [41A7EDDA].mkv</em>, which was encoded via SVT-AV1 10bit encoder without any pre-processing. Comment on the picture quality compared to the source file. When you compare the picture quality, you may want to sample a few frames, attach some screenshots, and comment on the performance of dark scenes and moving scenes. (10pt)</li>
-<li>Now compare your own encoding to the given AV1 file in terms of picture quality, encoding speed, and playback compatibility. As a reference, we encoded the above AV1 file at 1.0 fps. (10pt)</li>
-</ol>
-</blockquote>
-
-<p><img src="/2023-05-25-vcb/pics/Q4.png"></p>
-<h3 id="1-VVC-encoding"><a href="#1-VVC-encoding" class="headerlink" title="(1) VVC encoding"></a>(1) VVC encoding</h3><p>The testing hardware and software environment is:</p>
-<ul>
-<li>Encoder: <a target="_blank" rel="noopener" href="https://github.com/fraunhoferhhi/vvenc">VVenC</a> v1.7.0.</li>
-<li>Compiler: AMD Optimizing C&#x2F;C++ Compiler 4.0.0.</li>
-<li>CPU: 2 x AMD EPYC 7713, 128 cores &#x2F; 256 threads in total.</li>
-<li>RAM: 16 channel DDR4-3200.</li>
-<li>OS: Ubuntu 18.04.6.</li>
-</ul>
-<p>First, use <code>ffmpeg</code> to convert <code>Q4 [E46686C4].m2ts</code> to raw <code>yuv420p10</code> video:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i &quot;Q4 [E46686C4].m2ts&quot; -pix_fmt yuv420p10 Q4_yuv420p10.yuv</span><br></pre></td></tr></table></figure>
-
-<p>Parameter <code>-pix_fmt yuv420p10</code> indicates <code>ffmpeg</code> to output raw video use <code>yuv420p10</code> format:</p>
-<p>Then, use <code>vvencapp</code> to encode the raw video:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vvencapp --input Q4_yuv420p10.yuv --size 1920x1080 --format yuv420_10 --fps 24000/1001 --preset &lt;preset&gt; --bitrate 2500kbps --output Q4_VVC.vvc</span><br></pre></td></tr></table></figure>
-
-<p>Parameters meaning:</p>
-<ul>
-<li><code>--size 1920x1080</code>: indicating the input raw video frame size is 1920x1080.</li>
-<li><code>--format yuv420_10</code>: same as <code>yuv420p10</code> meaning in <code>ffmpeg</code>.</li>
-<li><code>--fps 24000/1001</code>: indicating the output video fps is <code>23.976</code> (same as original <code>m2ts</code> file).</li>
-<li><code>--preset &lt;preset&gt;</code>: Preset vvc encoding parameter combination. Available options are <code>faster</code>, <code>fast</code>, <code>meadium</code>, <code>slow</code> and <code>slower</code>. Detailed settings are listed in <a target="_blank" rel="noopener" href="https://github.com/fraunhoferhhi/vvenc/blob/master/cfg/">https://github.com/fraunhoferhhi/vvenc/blob/master/cfg/randomaccess_*.cfg</a>.</li>
-<li><code>--bitrate 2500kbps</code>: controlling the output encoded video bitrate to about <code>2500kbps</code>.</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="center">File</th>
-<th align="center">Preset</th>
-<th align="center">FPS</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"><code>Q4_VVC_faster.vvc</code></td>
-<td align="center"><code>faster</code></td>
-<td align="center">5.762</td>
-</tr>
-<tr>
-<td align="center"><code>Q4_VVC_fast.vvc</code></td>
-<td align="center"><code>fast</code></td>
-<td align="center">2.156</td>
-</tr>
-<tr>
-<td align="center"><code>Q4_VVC_medium.vvc</code></td>
-<td align="center"><code>medium</code></td>
-<td align="center">0.557</td>
-</tr>
-<tr>
-<td align="center"><code>Q4_VVC_slow.vvc</code></td>
-<td align="center"><code>slow</code></td>
-<td align="center">0.177</td>
-</tr>
-<tr>
-<td align="center"><code>Q4_VVC_slower.vvc</code></td>
-<td align="center"><code>slower</code></td>
-<td align="center">0.058</td>
-</tr>
-</tbody></table>
-<h3 id="2-Comparing-source-video-and-reference-AV1-encoded-video"><a href="#2-Comparing-source-video-and-reference-AV1-encoded-video" class="headerlink" title="(2) Comparing source video and reference AV1 encoded video"></a>(2) Comparing source video and reference <code>AV1</code> encoded video</h3><p>The video player used is <a target="_blank" rel="noopener" href="https://github.com/MartinEesmaa/VVCEasy">MPV with libvvdec &amp; xHE-AAC support</a>, configured according to <a target="_blank" rel="noopener" href="https://vcb-s.com/archives/7594">https://vcb-s.com/archives/7594</a>.</p>
-<p>Dynamic fire with a dark background is a highly challenging scene. Compared to the original video, There are color blocks around hte flame in AV1 video, which is a common problem when the bitrate is insufficient.</p>
-<table>
-<thead>
-<tr>
-<th align="center">Encoding Method</th>
-<th align="center">Capture</th>
-<th align="center">File</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">Original</td>
-<td align="center"><img src="/2023-05-25-vcb/pics/m2ts-flame.png"></td>
-<td align="center"><code>pics/m2ts-flame.png</code></td>
-</tr>
-<tr>
-<td align="center">AV1</td>
-<td align="center"><img src="/2023-05-25-vcb/pics/av1-flame.png"></td>
-<td align="center"><code>pics/av1-flame.png</code></td>
-</tr>
-</tbody></table>
-<h3 id="3-Comparing-custom-VVC-encoded-video-and-reference-AV1-encoded-video"><a href="#3-Comparing-custom-VVC-encoded-video-and-reference-AV1-encoded-video" class="headerlink" title="(3) Comparing custom VVC encoded video and reference AV1 encoded video"></a>(3) Comparing custom <code>VVC</code> encoded video and reference <code>AV1</code> encoded video</h3><p>Using the same player as (2). In order to be comparable to the video encoded by AV1, I chose the medium preset encoded VVC video, which has an encoding speed of 0.557 fps.</p>
-<p>The VVC encoded video is much better than the AV1 video in flame scene. The color blocks are less obvious and closer to the original video.</p>
-<table>
-<thead>
-<tr>
-<th align="center">Encoding Method</th>
-<th align="center">Capture</th>
-<th align="center">File</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">Original</td>
-<td align="center"><img src="/2023-05-25-vcb/pics/m2ts-flame.png"></td>
-<td align="center"><code>pics/m2ts-flame.png</code></td>
-</tr>
-<tr>
-<td align="center">AV1</td>
-<td align="center"><img src="/2023-05-25-vcb/pics/av1-flame.png"></td>
-<td align="center"><code>pics/av1-flame.png</code></td>
-</tr>
-<tr>
-<td align="center">VVC (medium)</td>
-<td align="center"><img src="/2023-05-25-vcb/pics/vvc-flame.png"></td>
-<td align="center"><code>pics/vvc-flame.png</code></td>
-</tr>
-</tbody></table>
-<h2 id="Question5-20pt"><a href="#Question5-20pt" class="headerlink" title="Question5 (20pt)"></a>Question5 (20pt)</h2><blockquote><p>When we check an encoded file, we need to locate frames that have been encoded exceptionally awful. We use algorithms like PSNR to evaluate the similarity of each frame in the encoded file to the source file. The result is an array of scores, where the i-th score is tied to the i-th frame. These scores are called raw scores. However, what we are concerned about is the standard score, which is the raw score minus a threshold. A frame with a standard score less than 0 is considered a bad frame. The tasks are:</p>
-<ol>
-<li><p>Find the worst frame, i.e. the one with the lowest standard score among the bad frames, and output its index. If there is more than one worst frame, output the first. If there are no bad frames, output <code>-1</code>. Frames with a standard score of exactly <code>0</code> are not considered as bad frames. (10pt)</p>
-<p> <strong>Input:</strong><br> 2 lines. The first line is two integers that represent the number of frames <code>N</code> and the threshold value <code>S</code>. The second row is an array of integers <code>A[N]</code>, representing the raw score of each frame.</p>
-<p> For all the data, <code>1&lt;=N&lt;=200000</code>, <code>0&lt;S&lt;100</code>, <code>0&lt;=A[i]&lt;=100</code></p>
-<p> <strong>Output:</strong><br> An integer, the index of the worst frame. The index starts from <code>0</code>. If there is more than one worst frame, output the first. If there are no bad frames, output <code>-1</code>.</p>
-<p> <strong>Sample:</strong></p>
- <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Input</span><br><span class="line">10 30</span><br><span class="line">42 31 44 23 21 26 31 41 50 72</span><br><span class="line"></span><br><span class="line">Output</span><br><span class="line">10</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Find a continuous sequence of frames that minimizes the sum of their standard scores and output this minimum value. Full scores will only be given if the time complexity of your algorithm is optimal. (10pt)</p>
-<p> <strong>Input:</strong><br> The same as (1).</p>
-<p> <strong>Output:</strong><br> An integer, the minimum sum value.</p>
-<p> <strong>Sample:</strong></p>
- <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Input</span><br><span class="line">10 30</span><br><span class="line">42 31 44 23 21 26 31 41 50 72</span><br><span class="line"></span><br><span class="line">Output</span><br><span class="line">-20</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p>For each sub question, use C&#x2F;C++&#x2F;Java&#x2F;Python&#x2F;C# to write a console program. Read the input from the standard input and write it to standard output. Do NOT use libraries other than built-in ones (for example, no “import numpy as np”). Submit your source code.</p>
-</blockquote>
-
-<h3 id="1-Find-the-worst-frame"><a href="#1-Find-the-worst-frame" class="headerlink" title="(1) Find the worst frame"></a>(1) Find the worst frame</h3><p>The following code is consisted with <code>Q5/q5-1.c</code>:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> frame_num;</span><br><span class="line">    <span class="type">int</span> threshold;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>, &amp;frame_num, &amp;threshold);</span><br><span class="line">    <span class="type">int</span> worst_idx = <span class="number">-1</span>;</span><br><span class="line">    <span class="type">int</span> worst_rate = <span class="number">101</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; frame_num; i||) &#123;</span><br><span class="line">        <span class="type">int</span> rate;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;rate);</span><br><span class="line">        <span class="keyword">if</span> (rate &lt; threshold &amp;&amp; rate &lt; worst_rate) &#123;</span><br><span class="line">            worst_rate = rate;</span><br><span class="line">            worst_idx = i;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>, worst_idx);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-Find-minimum-subsequence-sum"><a href="#2-Find-minimum-subsequence-sum" class="headerlink" title="(2) Find minimum subsequence sum"></a>(2) Find minimum subsequence sum</h3><p><strong>PS:</strong> Due to the ambiguity of the problem, I can‘t determine whether a sequence of 0 length satisfies the requirement. This determines whether the output should be 0 (indicating that a subsequence of length 0 is selected) or the smallest score (indicating that the sequence length is at least 1) when the input standard scores are all positive. The code I submitted is consistent with the second understanding (sequence length is at least 1), if the first understanding (0 length is allowed) is correct, please comment <code>int min_sum = 101;</code> and uncomment <code>int min_sum = 0;</code>.</p>
-<p>The following code is consisted with <code>Q5/q5-2.c</code>:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> frame_num;</span><br><span class="line">    <span class="type">int</span> threshold;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>, &amp;frame_num, &amp;threshold);</span><br><span class="line">    <span class="type">int</span> min_sum = <span class="number">101</span>; <span class="comment">// when all scores &gt; 0, output the minimum</span></span><br><span class="line">    <span class="comment">// int min_sum = 0; // when all scores &gt; 0, output 0</span></span><br><span class="line">    <span class="type">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; frame_num; i||) &#123;</span><br><span class="line">        <span class="type">int</span> rate;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;rate);</span><br><span class="line">        rate -= threshold;</span><br><span class="line">        sum |= rate;</span><br><span class="line">        <span class="keyword">if</span> (sum &lt; min_sum) &#123;</span><br><span class="line">            min_sum = sum;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (sum &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            sum = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>, min_sum);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>
