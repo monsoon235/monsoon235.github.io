@@ -194,7 +194,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2024-02-07 00:00:00 / Modified: 05:08:11" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00+08:00">2024-02-07</time>
+      <time title="Created: 2024-02-07 00:00:00 / Modified: 05:18:38" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00+08:00">2024-02-07</time>
     </span>
 
   
@@ -246,7 +246,9 @@
 <li><p>They do not handle scenarios where incoming jobs must be distributed among multiple GPUs to satisfy QoS constraints.</p>
 </li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/tb_sm.png" alt="Figure 1. Simulated system throughput of co-running `parb_spmv` and `rod_hotspot` at various TBs/SM settings"></p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/tb_sm.png"></p>
+<center>Figure 1. Simulated system throughput of co-running `parb_spmv` and `rod_hotspot` at various TBs/SM settings</center>
+
 <p><strong>Problems of hardware TB scheduler</strong> which hinder the fine-grained sharing:</p>
 <ol>
 <li><p>It always attempts to <strong>launch as many thread blocks per SM</strong> (TBs&#x2F;SM) for each kernel as allowed by the execution context storage constraints (e.g., registers, shared memory, thread slots). <strong>It leaves insufficient resources for concurrent kernels</strong>. As showed in Figure 1, if we can individually set the TBs&#x2F;SM for each kernel, we may achieve a higher throughput.</p>
@@ -288,7 +290,9 @@
 <li><p>Once we have predicted which job pairs can co-execute without violating QoS requirements, the scheduling task can be reduced to the classic maximum cardinality matching problem in graph theory.</p>
 </li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/system-design.png" alt="Figure 2. Overall System Design of GPUPool"></p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/system-design.png"></p>
+<center>Figure 2. Overall System Design of GPUPool</center>
+
 <p>Based on these 2 observations, the author proposed GPUPool. Its overall system design is shown in Figure 2. It consists of 4 steps:</p>
 <ol>
 <li><p><strong>Kernel Profiler</strong>. GPUPool <strong>groups all incoming GPU job into a batch</strong> for every scheduling window (e.g., 30 seconds). User should provide application executable and execution time budget. Then GPUPool automatically <strong>profiles</strong> the application for one iteration of the job in isolation on hardware, to collect the <strong>performance counter metrics</strong> of each kernel of data.</p>
@@ -302,8 +306,12 @@
 </ol>
 </li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/interference_matrix.png" alt="Figure 3. Interference Matrix"></p>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/stage2.2.png" alt="Figure 4. Concurrent Application Timeline"></p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/interference_matrix.png"></p>
+<center>Figure 3. Interference Matrix</center>
+
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/stage2.2.png"></p>
+<center>Figure 4. Concurrent Application Timeline</center>
+
 <ol start="3">
 <li><strong>Job dispatcher</strong>. It decides which job pairs should co-run to maximize system performance while satisfying QoS. The decisions are found by solving a <strong>maximum cardinality matching problem</strong> – each node represent a job, when two jobs can co-run and will not violate the QoS requirement, connecting an edge between them. Then a graph theory algorithm is used to maximum cardinality matching, which means a largest subset of edges that do not share a common end node. Due to the potential unreliability of the performance predictor, GPUPool also add <strong>a safety margin</strong> $\delta$ to edge formulation.</li>
 </ol>
@@ -321,10 +329,18 @@
 </li>
 </ol>
 <p>The metrics is system throughput $STP&#x3D;\sum_{i&#x3D;1}^n \cfrac{t_{isolated}^i}{t_{shared}^i}$. $t_{isolated}^i$ and $t_{shared}^i$ are turnaround time of the i-th concurrent job when executing in an isolated and shared environment respectively. The paper also uses we use ${QoS}_{reached}$ to evaluate QoS fulfilment rate.</p>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/gpu_sharing_compare.png" alt="Comparison of GPU Sharing Systems"></p>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/sorted_stp.png" alt="Sorted STP on GPUs"></p>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/throughput.png" alt="Throughput Normalized to QoS Target"></p>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/ml_pred.png" alt="Prediction Accuracy of Different ML Techniques"></p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/gpu_sharing_compare.png"></p>
+<center>Comparison of GPU Sharing Systems</center>
+
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/sorted_stp.png"></p>
+<center>Sorted STP on GPUs</center>
+
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/throughput.png"></p>
+<center>Throughput Normalized to QoS Target</center>
+
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/ml_pred.png"></p>
+<center>Prediction Accuracy of Different ML Techniques</center>
+
 <h2 id="Comments"><a href="#Comments" class="headerlink" title="Comments"></a>Comments</h2><h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>This paper targets the fine-grained GPU sharing problem in the cloud. I believe this work provides a valuable solution to this problem.</p>
 <p>From my perspective, fine-grained GPU sharing presents three key challenges:</p>
 <ol>
@@ -361,7 +377,9 @@
 <li><p>This paper does not clearly take into account <strong>the impact of memory hierarchy on performance</strong>, such as shared memory (or just implicitly consider it using a ML model). Some CUDA kernels are optimized by carefully utilizing CUDA SM shared memory, such as <em>Flash Attention</em>. When two kernels run together, does it lead to shared memory contention? Could it result in runtime errors or shared memory overflowing into global memory, causing a severe performance decline? Experiments in the paper can not answer these questions. Also, the selected profiling metrics to train stage 1 model listed in Figure 5 do not contains any metrics about shared memory capacity. Another possibility is that a ML model is already good enough to handle this problem. Regardless, the impact of memory hierarchy on GPU-sharing deserves further study.</p>
 </li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/metrics.png" alt="Figure 5. Metrics Used to Train Stage 1 Prediction Model"></p>
+<p><img src="/2024-02-07-paper-reading-pact22-gpupool/metrics.png"></p>
+<center>Figure 5. Metrics Used to Train Stage 1 Prediction Model</center>
+
 <h3 id="Possible-Improvements"><a href="#Possible-Improvements" class="headerlink" title="Possible Improvements"></a>Possible Improvements</h3><p>I have some potential ideas to improve this work:</p>
 <ol>
 <li><p>As response to the first weakness mentioned above, we can extend GPUPool to enable it to schedule a new job to the GPU after the shorter job finishes. This improvement can be achieved by a simple modification: <strong>keep the running jobs in the incoming window, and if two jobs are still running in the same GPU, also keep the edge between them in the pairing graph</strong>. With this modification, if shorter job finishes, we can re-run the matching algorithm to find a new job to pair with it.</p>
@@ -443,7 +461,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 05:08:11" itemprop="dateModified" datetime="2024-02-07T05:08:11+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 05:18:38" itemprop="dateModified" datetime="2024-02-07T05:18:38+08:00">2024-02-07</time>
     </span>
 
   
@@ -536,7 +554,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 05:08:11" itemprop="dateModified" datetime="2024-02-07T05:08:11+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 05:18:38" itemprop="dateModified" datetime="2024-02-07T05:18:38+08:00">2024-02-07</time>
     </span>
 
   
@@ -614,7 +632,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 05:08:11" itemprop="dateModified" datetime="2024-02-07T05:08:11+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 05:18:38" itemprop="dateModified" datetime="2024-02-07T05:18:38+08:00">2024-02-07</time>
     </span>
 
   
@@ -736,7 +754,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 05:08:11" itemprop="dateModified" datetime="2024-02-07T05:08:11+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 05:18:38" itemprop="dateModified" datetime="2024-02-07T05:18:38+08:00">2024-02-07</time>
     </span>
 
   
@@ -827,7 +845,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 05:08:11" itemprop="dateModified" datetime="2024-02-07T05:08:11+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 05:18:38" itemprop="dateModified" datetime="2024-02-07T05:18:38+08:00">2024-02-07</time>
     </span>
 
   
@@ -1035,7 +1053,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 05:08:11" itemprop="dateModified" datetime="2024-02-07T05:08:11+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 05:18:38" itemprop="dateModified" datetime="2024-02-07T05:18:38+08:00">2024-02-07</time>
     </span>
 
   
@@ -1126,7 +1144,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 05:08:11" itemprop="dateModified" datetime="2024-02-07T05:08:11+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 05:18:38" itemprop="dateModified" datetime="2024-02-07T05:18:38+08:00">2024-02-07</time>
     </span>
 
   
@@ -1222,7 +1240,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 05:08:11" itemprop="dateModified" datetime="2024-02-07T05:08:11+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 05:18:38" itemprop="dateModified" datetime="2024-02-07T05:18:38+08:00">2024-02-07</time>
     </span>
 
   
@@ -1309,7 +1327,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 05:08:11" itemprop="dateModified" datetime="2024-02-07T05:08:11+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 05:18:38" itemprop="dateModified" datetime="2024-02-07T05:18:38+08:00">2024-02-07</time>
     </span>
 
   

@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/</loc>
+    
+    <lastmod>2024-02-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://monsoon-cs.moe/2023-06-19-mkl-on-amd/</loc>
     
     <lastmod>2024-02-06</lastmod>
@@ -75,15 +84,6 @@
   
   <url>
     <loc>https://monsoon-cs.moe/2024-01-29-wg-for-cluster/</loc>
-    
-    <lastmod>2024-02-06</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/</loc>
     
     <lastmod>2024-02-06</lastmod>
     
