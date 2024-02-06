@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/</loc>
+    <loc>https://monsoon-cs.moe/2023-06-19-mkl-on-amd/</loc>
     
     <lastmod>2024-02-06</lastmod>
     
@@ -83,16 +83,7 @@
   </url>
   
   <url>
-    <loc>https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/</loc>
-    
-    <lastmod>2024-02-06</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/2023-06-19-mkl-on-amd/</loc>
+    <loc>https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/</loc>
     
     <lastmod>2024-02-06</lastmod>
     
@@ -338,14 +329,14 @@
   </url>
   
   <url>
-    <loc>https://monsoon-cs.moe/tags/arxiv/</loc>
+    <loc>https://monsoon-cs.moe/tags/pact/</loc>
     <lastmod>2024-02-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://monsoon-cs.moe/tags/arxiv24/</loc>
+    <loc>https://monsoon-cs.moe/tags/pact22/</loc>
     <lastmod>2024-02-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -367,20 +358,6 @@
   
   <url>
     <loc>https://monsoon-cs.moe/tags/resource-scheduling/</loc>
-    <lastmod>2024-02-06</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/pact/</loc>
-    <lastmod>2024-02-06</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/pact22/</loc>
     <lastmod>2024-02-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

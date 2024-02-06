@@ -122,12 +122,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-count">35</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -155,184 +155,6 @@
     </div>
 
     <div class="main-inner index posts-expand">
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Monsoon">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024-02-07-paper-reading-arxiv24-acs/" class="post-title-link" itemprop="url">[Paper Reading] ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs (arXiv'24)</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2024-02-07 00:00:00 / Modified: 04:25:33" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00+08:00">2024-02-07</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>This blog is a write-up of the paper “<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.12377">ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs</a>“ from arXiv’24.</p>
-</blockquote>
-<h2 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h2><p>Some workloads (e.g., Simulation Engines for Deep RL, Dynamic DNNs) cannot fully utilize the massive parallelism of GPUs (see Figure 1). The main reason is that these workloads contain lots of <strong>small kernels</strong> which cannot fully utilize the GPU, and these kernels are not executed concurrently, although <strong>most of them are independent and in theory can be executed concurrently</strong>.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/achieved_occ.png" alt="Figure 1. Achieved Occupancy of simulation engines (up) and dynamic DNN (down)"></p>
-<p>But there are some challenges to execute these kernels concurrently:</p>
-<ol>
-<li><strong>Input-dependent kernel dependencies</strong>. For some workload, the the dependencies between kernels are only <strong>determined at runtime</strong> for each input. Constructing full computational graph and resolving dependencies before execution will introduce <strong>high latency</strong> (see Figure 2,average of 47% of overall execution time as the paper says).</li>
-</ol>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/dag_time.png" alt="Figure 2. DAG construction time as % of execution time"></p>
-<ol start="2">
-<li><strong>Irregular kernel dependencies</strong>. Some workloads have irregular computational graphs. We can partitioned the computational graph of the workload into independent streams of kernels. But this would require <strong>fine-grained scheduling</strong> and <strong>synchronization</strong>, with <strong>large overhead</strong> (see Figure 3).</li>
-</ol>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/sync_overhead.png" alt="Figure 3. Kernel launch and synchronization overheads"></p>
-<p>Existed solutions:</p>
-<ol>
-<li><p>CUDA Graph and AMD ATMI. They allow users specify dependencies between different kernels as DAG, and can eliminate the synchronization and kernel launch overhead. But the DAG needs to be constructed in <strong>full before execution</strong>, which imakes them not suitable for dynamic kernel dependencies (such as Dynamic DNNs).</p>
-</li>
-<li><p>Using events provided by the CUDA stream management API, which allows synchronization between kernels across streams through the <code>cudaStreamWaitEvent</code> API, without blocking the host. But approach still requires deriving dependencies between all kernels beforehand.</p>
-</li>
-<li><p>Persistent threads (PT) can eliminate the scheduling and launch overheads, but are only effective when all kernels are homogeneous.</p>
-<blockquote>
-<p>PT is just like coroutine in some programming languages.</p>
-</blockquote>
-</li>
-<li><p>CUDA dynamic parallelism (CDP) or AMD’s device enqueue (DE) enables parent kernels to launch child kernels, but , only allowing data dependencies between one parent and its children (so cannot be use to synchronize between multiple tasks).</p>
-</li>
-</ol>
-<h2 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h2><p>The <strong>goal</strong> of this paper is to design a framework that enables efficient concurrent execution of GPU kernels with:</p>
-<ol>
-<li><p>lightweight detection of inter-kernel dependencies at runtime,</p>
-</li>
-<li><p>low overhead kernel scheduling and synchronization.</p>
-</li>
-</ol>
-<p><strong>The key idea is to perform the dependence checking and scheduling within a small window of kernels at runtime similar to out-of-order instruction scheduling.</strong></p>
-<p>The authors proposed Automatic Concurrent Scheduling (ACS) as solution. The overall design of ACS-SW is shown in Figure 4. It contains three main functionalities:</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/acs_overview.png" alt="Figure 4. ACS-SW Overview"></p>
-<ol>
-<li><p><strong>Determining inter-kernel dependencies</strong>. By checking for <strong>overlaps between read segments and write segments</strong>, we determine dependencies between kernels. For a wide range of commonly used kernels (e.g., matrix multiplication, convolution), we can infer the read and write segments from the input easily. But for some kernels, it’s impossible to determine the range of memory accessed statically because of the potential indirect memory accesses, so the authors just assume the <strong>entire GPU memory may be accessed</strong>.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/seg.png" alt="Memory regions written to/accessed by the kernel"></p>
-<p>The authors use a kernel wrapper to finish the dependency detection. <code>get_addresses()</code> is called to get <code>__read_segments__</code> and <code>__write_segments__</code>.</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ACE_wrapper</span> &#123;</span> </span><br><span class="line">  <span class="comment">//list of read,write segments defined as</span></span><br><span class="line">  <span class="comment">//[&#123;start_adr1,size1&#125;,&#123;start_adr2,size2&#125;..]</span></span><br><span class="line">  <span class="built_in">list</span> __read_segments__;</span><br><span class="line">  <span class="built_in">list</span> __write_segments__;</span><br><span class="line">  <span class="comment">// function which gets called at kernel</span></span><br><span class="line">  <span class="comment">// launch to populate read,write segments</span></span><br><span class="line">  <span class="type">void</span> <span class="title function_">get_addresses</span><span class="params">(</span></span><br><span class="line"><span class="params">    dim3 blocks, dim3 threads, ...</span></span><br><span class="line"><span class="params">  )</span>;</span><br><span class="line">  <span class="comment">// function declaration of the kernel</span></span><br><span class="line">  <span class="type">static</span> __global__ <span class="type">void</span> <span class="title function_">kernel</span><span class="params">(...)</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Tracking kernel state at runtime. The kernels in the window can be three states:</p>
-<ol>
-<li><strong>Ready</strong>: kernels it is dependent on complete execution.</li>
-<li><strong>Pending</strong>: upstream kernels are still pending or executing.</li>
-<li><strong>Executing</strong>.</li>
-</ol>
-</li>
-</ol>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/window.png" alt="Kernels in the scheduling window with their state and corresponding upstream kernels"></p>
-<ol start="3">
-<li>Eliminating CPU synchronization overheads. See ACS-HW for more details.</li>
-</ol>
-<p>ACS has two variants:</p>
-<ol>
-<li><p>ACS-SW: software-only implementation which emulates the out-of-order kernel scheduling mechanism.</p>
-</li>
-<li><p>ACS-HW: hardware-facilitated implementation which is more efficient as it also alleviates synchronization overheads.</p>
-</li>
-</ol>
-<h3 id="ACS-SW"><a href="#ACS-SW" class="headerlink" title="ACS-SW"></a>ACS-SW</h3><h4 id="Window-Module"><a href="#Window-Module" class="headerlink" title="Window Module"></a>Window Module</h4><p>This module is to determining inter-kernel dependencies. It is implemented as a separate thread that manages the input FIFO queue and the scheduling window. The kernel state tracking is implemented in the hardware.</p>
-<h4 id="Scheduler-Module"><a href="#Scheduler-Module" class="headerlink" title="Scheduler Module"></a>Scheduler Module</h4><p>This module schedules and launches ready kernels for execution. It has fixed number of CUDA streams. Each stream contains only one kernel at any given time. Threads with empty streams poll the scheduling window for a ready kernel.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/acs_hw_scheduler.png" alt="ACS-SW: The scheduler module"></p>
-<h3 id="ACS-HW"><a href="#ACS-HW" class="headerlink" title="ACS-HW"></a>ACS-HW</h3><p>ACS-SW incurs kernel synchronization and launch overheads because scheduler module launches a kernel in the CPU. ACS-HW solves these problems by a software-hardware co-design.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/acs_hw.png" alt="ACS-HW Overview"></p>
-<p>Software-side: maintains an input FIFO queue like ACS-SW, and a list of kernels in the GPU’s scheduling window, <strong>but it can be stale</strong>.</p>
-<p>Hardware-side: the scheduling window and its management are implemented in hardware on the GPU side.</p>
-<p>A key novelty in hardware design is <strong>two stage dependency detections</strong>. First, ACS use software to perform initial detection using stale kernel information (without frequent synchronize overhead), then utilizes hardware to correct outdated dependency information. This two-stage approach significantly reduces the hardware complexity.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/hw_scheduler.png" alt="ACS-HW Scheduler"></p>
-<h2 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h2><ol>
-<li>Baseline: cuDNN implementation (for DNNs) and a jax implementation (for deep RL simulation), both using CUDA streams.</li>
-<li>ACS-SW: on real hardware.</li>
-<li>ACS-SW-Sim: ACS-SW on the GPU simulator.</li>
-<li>ACS-HW: on the GPU simulator.</li>
-<li>CUDAGraph.</li>
-</ol>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl.png" alt="Deep RL physics simulations: Normalized Speedup"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl_sim.png" alt="Deep RL physics simulations: Normalized Speedup on GPU simulator"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl_occ.png" alt="Deep RL physics simulations: Achieved occupancy"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_dcnn.png" alt="Dynamic DNNs: Normalized speedup"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_dcnn_occ.png" alt="Dynamic DNNs: Achieved occupancy"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_scnn.png" alt="Static DNNs: Normalized speedup"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_scnn_occ.png" alt="Static DNNs: Achieved occupancy"></p>
-<h2 id="Comments"><a href="#Comments" class="headerlink" title="Comments"></a>Comments</h2><h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>This paper focuses on the problem of low GPU utilization caused by the serial execution of numerous small CUDA kernels. I believe this paper effectively addresses this problem, particularly with the following innovative points that are impressive me:</p>
-<ol>
-<li><p><strong>Out-of-order dependency detection and scheduling</strong>. Out-of-order (OoO) is a common technique in micro-architecture and software (e.g., hard disk I&#x2F;O queue) designs. It’s an impressive and innovative idea to introduce OoO into this area to find the dynamic dependencies efficiently.</p>
-</li>
-<li><p>A good <strong>trade-off</strong>. When I first read the Introduction section of the paper, I thought the read-write dependencies detection may be a difficulty task. To my knowledge, there aren’t reliable static binary memory access analysis techniques (otherwise, segmentation fault wouldn’t be a common problem). However, the authors made a good <strong>simplification</strong> and <strong>trade-off</strong> regarding this problem. For most common kernels, memory access areas can be inferred from input parameters. For the rest kernels, it can be assumed that they access the entire memory. Since few common operators occupy most of the execution time, this trade-off leads to significant performance improvements with a relatively low scheduling overhead. This innovation is my <strong>favorite</strong> aspect of this paper.</p>
-</li>
-<li><p><strong>Two-stage dependency detection</strong> in ACS-HW. While a complete hardware dependency detection approach is theoretically feasible, it could incur significant <strong>chip area costs</strong> (as we know, the re-order buffer in microprocessor carries large area). The authors proposed a two-stage software-hardware co-design dependency detection, significantly simplifying the difficulty of hardware design. It is a brilliant idea.</p>
-</li>
-</ol>
-<h3 id="Weaknesses"><a href="#Weaknesses" class="headerlink" title="Weaknesses"></a>Weaknesses</h3><p>This paper has some potential weaknesses:</p>
-<ol>
-<li><p>To each type of kernel, we must custom <code>get_addresses</code> function int the kernel wrapper. This weakness may limit the adoption of ACS.</p>
-</li>
-<li><p>Deciding whether kernels should be executed concurrently requires considering <strong>more factors</strong> than just data dependencies. If there are resource conflict (e.g., memory bandwidth, shared memory size) between two <strong>large kernels</strong>, performance may degrade if they co-execute.</p>
-</li>
-</ol>
-<h3 id="Improvements"><a href="#Improvements" class="headerlink" title="Improvements"></a>Improvements</h3><p>I propose some potential improvements to this paper:</p>
-<ol>
-<li><p>In response to the first weakness mentioned above, I propose a <strong>profiling-rollback</strong> strategy to achieve safe automatic dependency detection. This strategy leverages the commonly used <strong>paging</strong> technique in OS virtual memory management: we can set a memory page as <strong>read-only</strong> or <strong>write-only</strong>. When a program is running, if a <strong>page fault</strong> is triggered, we can know that a read&#x2F;write occurs. While I’m unsure if Nvidia GPUs provide APIs for user to control page tables, let’s assume such APIs exist. Given that many workloads are iterative (e.g., neural network training), we can profile the workload just one iteration, utilizing the aforementioned paging trick to <strong>record the memory access segments</strong> of each kernel. Obviously this may introduce some inaccuracies, we need a <strong>rollback strategy</strong> to ensure correct program execution. During runtime, we set known <code>__write_segments__</code> as read-write, while other areas are set as read-only. Upon encountering a page fault, we detect an error and revert to the default strategy (assuming all memory areas will be read and wrote). With this strategy, we can eliminate the need of manual <code>get_addresses</code> function, and maximize the potential parallelism.</p>
-</li>
-<li><p>Regarding the second weakness, I suggest adopting the method of <strong>GPUPool</strong> to determine which kernels are suitable for concurrent execution. A naive solution involves tracking the number of SMs each kernel occupies. When the SMs of a GPU are fully occupied, even if there are kernels in the <code>ready</code> state and available CUDA streams, no new kernels are scheduled.</p>
-</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
 
     
 
@@ -372,7 +194,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2024-02-07 00:00:00 / Modified: 04:25:33" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00+08:00">2024-02-07</time>
+      <time title="Created: 2024-02-07 00:00:00 / Modified: 04:33:26" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00+08:00">2024-02-07</time>
     </span>
 
   
@@ -621,7 +443,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 04:33:26" itemprop="dateModified" datetime="2024-02-07T04:33:26+08:00">2024-02-07</time>
     </span>
 
   
@@ -714,7 +536,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 04:33:26" itemprop="dateModified" datetime="2024-02-07T04:33:26+08:00">2024-02-07</time>
     </span>
 
   
@@ -792,7 +614,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 04:33:26" itemprop="dateModified" datetime="2024-02-07T04:33:26+08:00">2024-02-07</time>
     </span>
 
   
@@ -914,7 +736,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 04:33:26" itemprop="dateModified" datetime="2024-02-07T04:33:26+08:00">2024-02-07</time>
     </span>
 
   
@@ -1005,7 +827,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 04:33:26" itemprop="dateModified" datetime="2024-02-07T04:33:26+08:00">2024-02-07</time>
     </span>
 
   
@@ -1213,7 +1035,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 04:33:26" itemprop="dateModified" datetime="2024-02-07T04:33:26+08:00">2024-02-07</time>
     </span>
 
   
@@ -1304,7 +1126,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 04:33:26" itemprop="dateModified" datetime="2024-02-07T04:33:26+08:00">2024-02-07</time>
     </span>
 
   
@@ -1400,7 +1222,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-07 04:25:33" itemprop="dateModified" datetime="2024-02-07T04:25:33+08:00">2024-02-07</time>
+      <time title="Modified: 2024-02-07 04:33:26" itemprop="dateModified" datetime="2024-02-07T04:33:26+08:00">2024-02-07</time>
     </span>
 
   
@@ -1424,6 +1246,106 @@
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
 <li><a target="_blank" rel="noopener" href="https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html">https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html</a></li>
 <li><a target="_blank" rel="noopener" href="https://nginx.org/en/docs/http/ngx_http_v3_module.html">https://nginx.org/en/docs/http/ngx_http_v3_module.html</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-06-19-mkl-on-amd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023-06-19-mkl-on-amd/" class="post-title-link" itemprop="url">优化 MKL 在 AMD CPU 上的性能</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-06-19 00:00:00" itemprop="dateCreated datePublished" datetime="2023-06-19T00:00:00+08:00">2023-06-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-02-07 04:33:26" itemprop="dateModified" datetime="2024-02-07T04:33:26+08:00">2024-02-07</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>实验室有一些 AMD EPYC 7713 的服务器，采购的原因是组里有一些人的程序有非常高的 CPU 负载（我也不知道是什么负载，为什么不能跑在 GPU 上，我也没有精力去逐个帮助解决），框框多的 AMD 处理器非常适合这种需求。</p>
+<p>不过 AMD 的处理器虽然香，用在炼丹实验室会有额外的问题：Anaconda 安装的 numpy 和 PyTorch 默认都使用了 MKL 作为 BLAS 的实现，MKL 的 library function 也是大部分高 CPU 负载程序的热点，但 <strong>MKL 会判断自己是否在 Intel CPU 上运行，如果不是，则没有优化效果。</strong></p>
+<p>由于这是炼丹实验室，大家很少有足够的 HPC 基础去自己编译适合的 numpy 和 PyTorch 版本，也很难脱离 Anaconda，对于 MKL 的依赖因此很难去除。为此需要一个<strong>对一般用户无感知的解决方案</strong>。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>通过搜索引擎可以搜索到一个广为流传解决方案：设置环境变量 <code>MKL_DEBUG_CPU_TYPE=5</code>。这是个曾经有效的解决方案，但<strong>对于 MKL 2020 及之后的版本不再有效</strong>。</p>
+<p>最终我在<a target="_blank" rel="noopener" href="https://documentation.sigma2.no/jobs/mkl.html">此处</a>找到了更巧妙的解决方案。</p>
+<p>MKL 会调用一个 <code>mkl_serv_intel_cpu_true()</code> 函数以检查自己是否运行在 Intel CPU 上，只要提供一个虚假的、始终返回 <code>1</code> 的 <code>mkl_serv_intel_cpu_true()</code>，即可欺骗 MKL 让它认为自己在 Intel CPU 上运行。</p>
+<p>为此，可以利用 Linux 的 <strong><code>LD_PRELOAD</code> 机制</strong>。<code>LD_PRELOAD</code> 指向的动态链接库有最高的加载优先级，只要编译一个想要的 <code>mkl_serv_intel_cpu_true()</code> 函数为 <code>so</code> 文件，并用 <code>LD_PRELOAD</code> 指向它，即可抢先完成此函数的加载。</p>
+<blockquote>
+<p>笔者也经常有耳闻 <code>LD_PRELOAD</code> 机制被用于库函数劫持攻击，此处算是一种妙用。</p>
+</blockquote>
+<h2 id="具体实施"><a href="#具体实施" class="headerlink" title="具体实施"></a>具体实施</h2><p>新建 <code>mkl_trick.c</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">mkl_serv_intel_cpu_true</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>gcc -shared -fPIC -o libmkl_trick.so mkl_trick.c</code> 编译，并将生成的 <code>libmkl_trick.so</code> 复制到 <code>/usr/local/lib</code>。</p>
+<p>在 Shell 的全局初始化文件中加入：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> MKL_DEBUG_CPU_TYPE=5  <span class="comment"># 兼容旧版本 MKL</span></span><br><span class="line"><span class="built_in">export</span> MKL_ENABLE_INSTRUCTIONS=AVX2  <span class="comment"># 可选，指明 MKL 可以使用 AVX2</span></span><br><span class="line"><span class="built_in">export</span> LD_PRELOAD=/usr/local/lib/libmkl_trick.so</span><br></pre></td></tr></table></figure>
+
+<p>实验室的同学有的用 Bash 也有的用 ZSH，所以两者都要修改：</p>
+<ul>
+<li>Bash: 新建文件 <code>/etc/profile.d/mkl.sh</code> 并添加上述内容</li>
+<li>ZSH: 添加到 <code>/etc/zsh/zshenv</code></li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://documentation.sigma2.no/jobs/mkl.html">https://documentation.sigma2.no/jobs/mkl.html</a></li>
 </ul>
 
       
