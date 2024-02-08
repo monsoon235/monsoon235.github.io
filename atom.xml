@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Monsoon&#39;s Blog</title>
+  <icon>https://monsoon-cs.moe/icon.png</icon>
+  
+  <link href="https://monsoon-cs.moe/atom.xml" rel="self"/>
+  
+  <link href="https://monsoon-cs.moe/"/>
+  <updated>2024-02-08T11:53:30.394Z</updated>
+  <id>https://monsoon-cs.moe/</id>
+  
+  <author>
+    <name>Monsoon</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT&#39;22)</title>
+    <link href="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/"/>
+    <id>https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/</id>
+    <published>2024-02-06T16:00:00.000Z</published>
+    <updated>2024-02-08T11:53:30.394Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;This blog is a write-up of the paper “&lt;a href=&quot;https://dl.acm.org/doi/10.1145/3559009.3569650&quot;&gt;GPUPool: A Holistic Approach</summary>
+        
+      
+    
+    
+    
+    
+    <category term="paper-reading" scheme="https://monsoon-cs.moe/tags/paper-reading/"/>
+    
+    <category term="pact" scheme="https://monsoon-cs.moe/tags/pact/"/>
+    
+    <category term="pact22" scheme="https://monsoon-cs.moe/tags/pact22/"/>
+    
+    <category term="ml-system" scheme="https://monsoon-cs.moe/tags/ml-system/"/>
+    
+    <category term="gpu" scheme="https://monsoon-cs.moe/tags/gpu/"/>
+    
+    <category term="resource-scheduling" scheme="https://monsoon-cs.moe/tags/resource-scheduling/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Building WireGuard VPN for Machine Learning Server Cluster</title>
+    <link href="https://monsoon-cs.moe/2024-01-29-wg-for-cluster/"/>
+    <id>https://monsoon-cs.moe/2024-01-29-wg-for-cluster/</id>
+    <published>2024-01-28T16:00:00.000Z</published>
+    <updated>2024-02-08T11:53:30.394Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;Motivation&quot;&gt;&lt;a href=&quot;#Motivation&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="linux" scheme="https://monsoon-cs.moe/tags/linux/"/>
+    
+    <category term="network" scheme="https://monsoon-cs.moe/tags/network/"/>
+    
+    <category term="wireguard" scheme="https://monsoon-cs.moe/tags/wireguard/"/>
+    
+    <category term="vpn" scheme="https://monsoon-cs.moe/tags/vpn/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Building Storage System for Machine Learning Server Cluster</title>
+    <link href="https://monsoon-cs.moe/2023-11-24-storage-system-desgin/"/>
+    <id>https://monsoon-cs.moe/2023-11-24-storage-system-desgin/</id>
+    <published>2023-11-23T16:00:00.000Z</published>
+    <updated>2024-02-08T11:53:30.394Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;This is an unfinished</summary>
+        
+      
+    
+    
+    
+    
+    <category term="linux" scheme="https://monsoon-cs.moe/tags/linux/"/>
+    
+    <category term="zfs" scheme="https://monsoon-cs.moe/tags/zfs/"/>
+    
+    <category term="nfs" scheme="https://monsoon-cs.moe/tags/nfs/"/>
+    
+    <category term="rdma" scheme="https://monsoon-cs.moe/tags/rdma/"/>
+    
+    <category term="storage" scheme="https://monsoon-cs.moe/tags/storage/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Ascend 910B 自定义 PyTorch 算子</title>
+    <link href="https://monsoon-cs.moe/2023-11-14-ascend-910b-custom-op/"/>
+    <id>https://monsoon-cs.moe/2023-11-14-ascend-910b-custom-op/</id>
+    <published>2023-11-13T16:00:00.000Z</published>
+    <updated>2024-02-08T11:53:30.394Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;环境&quot;&gt;&lt;a href=&quot;#环境&quot; class=&quot;headerlink&quot; title=&quot;环境&quot;&gt;&lt;/a&gt;环境&lt;/h2&gt;&lt;p&gt;本文基于的硬件环境为 Ascend 910B3，基于的软件环境包括 &lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="linux" scheme="https://monsoon-cs.moe/tags/linux/"/>
+    
+    <category term="pytorch" scheme="https://monsoon-cs.moe/tags/pytorch/"/>
+    
+    <category term="ascend" scheme="https://monsoon-cs.moe/tags/ascend/"/>
+    
+    <category term="machine-learning" scheme="https://monsoon-cs.moe/tags/machine-learning/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Building Proxy Service for Team</title>
+    <link href="https://monsoon-cs.moe/2023-11-09-proxy-for-team/"/>
+    <id>https://monsoon-cs.moe/2023-11-09-proxy-for-team/</id>
+    <published>2023-11-08T16:00:00.000Z</published>
+    <updated>2024-02-08T11:53:30.394Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;This is an unfinished blog.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;Preface&quot;&gt;&lt;a href=&quot;#Preface&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="proxy" scheme="https://monsoon-cs.moe/tags/proxy/"/>
+    
+    <category term="warp" scheme="https://monsoon-cs.moe/tags/warp/"/>
+    
+    <category term="network" scheme="https://monsoon-cs.moe/tags/network/"/>
+    
+    <category term="sing-box" scheme="https://monsoon-cs.moe/tags/sing-box/"/>
+    
+    <category term="clash" scheme="https://monsoon-cs.moe/tags/clash/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>我的 TOEFL 经验</title>
+    <link href="https://monsoon-cs.moe/2023-11-05-toefl-exp/"/>
+    <id>https://monsoon-cs.moe/2023-11-05-toefl-exp/</id>
+    <published>2023-11-04T16:00:00.000Z</published>
+    <updated>2024-02-08T11:53:30.394Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;作为高考以来带给我最大焦虑感的考试，TOEFL 让我 2023</summary>
+        
+      
+    
+    
+    
+    
+    <category term="toefl" scheme="https://monsoon-cs.moe/tags/toefl/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Catching Mining Virus</title>
+    <link href="https://monsoon-cs.moe/2023-11-01-catching-mining-virus/"/>
+    <id>https://monsoon-cs.moe/2023-11-01-catching-mining-virus/</id>
+    <published>2023-10-31T16:00:00.000Z</published>
+    <updated>2024-02-08T11:53:30.394Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;Problem&quot;&gt;&lt;a href=&quot;#Problem&quot; class=&quot;headerlink&quot; title=&quot;Problem&quot;&gt;&lt;/a&gt;Problem&lt;/h2&gt;&lt;p&gt;On October 30, 2023, I received a warning message</summary>
+        
+      
+    
+    
+    
+    
+    <category term="linux" scheme="https://monsoon-cs.moe/tags/linux/"/>
+    
+    <category term="iptables" scheme="https://monsoon-cs.moe/tags/iptables/"/>
+    
+    <category term="anti-virus" scheme="https://monsoon-cs.moe/tags/anti-virus/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>利用 SSH 反向隧道登录 BitaHub 中的容器并长期占用 GPU</title>
+    <link href="https://monsoon-cs.moe/2023-10-20-bitahub/"/>
+    <id>https://monsoon-cs.moe/2023-10-20-bitahub/</id>
+    <published>2023-10-19T16:00:00.000Z</published>
+    <updated>2024-02-08T11:53:30.394Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;问题&quot;&gt;&lt;a href=&quot;#问题&quot; class=&quot;headerlink&quot; title=&quot;问题&quot;&gt;&lt;/a&gt;问题&lt;/h2&gt;&lt;p&gt;每年的 CVPR 前 GPU 总是供不应求，需要从其他地方借卡。USTC 有一个供校内用户使用的 &lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="docker" scheme="https://monsoon-cs.moe/tags/docker/"/>
+    
+    <category term="ssh" scheme="https://monsoon-cs.moe/tags/ssh/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Nginx 启用 QUIC 并和 SNI 分流共存</title>
+    <link href="https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/"/>
+    <id>https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/</id>
+    <published>2023-09-25T16:00:00.000Z</published>
+    <updated>2024-02-08T11:53:30.394Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;问题&quot;&gt;&lt;a href=&quot;#问题&quot; class=&quot;headerlink&quot; title=&quot;问题&quot;&gt;&lt;/a&gt;问题&lt;/h2&gt;&lt;p&gt;Nginx 自从 1.25.0 版本以来对 QUIC 的支持&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="nginx" scheme="https://monsoon-cs.moe/tags/nginx/"/>
+    
+    <category term="quic" scheme="https://monsoon-cs.moe/tags/quic/"/>
+    
+    <category term="http3" scheme="https://monsoon-cs.moe/tags/http3/"/>
+    
+    <category term="tls" scheme="https://monsoon-cs.moe/tags/tls/"/>
+    
+    <category term="sni-routing" scheme="https://monsoon-cs.moe/tags/sni-routing/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>优化 MKL 在 AMD CPU 上的性能</title>
+    <link href="https://monsoon-cs.moe/2023-06-19-mkl-on-amd/"/>
+    <id>https://monsoon-cs.moe/2023-06-19-mkl-on-amd/</id>
+    <published>2023-06-18T16:00:00.000Z</published>
+    <updated>2024-02-08T11:53:30.394Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;问题&quot;&gt;&lt;a href=&quot;#问题&quot; class=&quot;headerlink&quot; title=&quot;问题&quot;&gt;&lt;/a&gt;问题&lt;/h2&gt;&lt;p&gt;实验室有一些 AMD EPYC 7713 的服务器，采购的原因是组里有一些人的程序有非常高的 CPU</summary>
+        
+      
+    
+    
+    
+    
+    <category term="hpc" scheme="https://monsoon-cs.moe/tags/hpc/"/>
+    
+    <category term="mkl" scheme="https://monsoon-cs.moe/tags/mkl/"/>
+    
+    <category term="amd" scheme="https://monsoon-cs.moe/tags/amd/"/>
+    
+    <category term="linux" scheme="https://monsoon-cs.moe/tags/linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>VCB-Studio Technical Director Entry Test 2023 and My Answer</title>
+    <link href="https://monsoon-cs.moe/2023-05-25-vcb/"/>
+    <id>https://monsoon-cs.moe/2023-05-25-vcb/</id>
+    <published>2023-05-24T16:00:00.000Z</published>
+    <updated>2024-02-08T11:53:30.362Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;See &lt;a href=&quot;https://vcb-s.com/archives/15949&quot;&gt;original publication page&lt;/a&gt; for more details.&lt;/p&gt;
+&lt;p&gt;All my answer files can be browsed</summary>
+        
+      
+    
+    
+    
+    
+    <category term="anime" scheme="https://monsoon-cs.moe/tags/anime/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="https://monsoon-cs.moe/2023-03-29-hello-world/"/>
+    <id>https://monsoon-cs.moe/2023-03-29-hello-world/</id>
+    <published>2023-03-28T16:00:00.000Z</published>
+    <updated>2024-02-08T11:53:30.362Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;&lt;strong&gt;My first post on</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+</feed>
