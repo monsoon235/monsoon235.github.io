@@ -7,19 +7,19 @@ sitemap: false
 
 I'm a 3rd year graduate student at the University of Science and Technology of China (USTC) since 2021. I received my bachelor degree from the same university, majoring in computer science.
 
-Now I'm doing researches in [ADSLab](https://adsl.ustc.edu.cn), focusing on machine learning systems and deep learning compiler. Before this, I was in [Laboratory of Future Network](https://lfn.ustc.edu.cn) and studied in 3D vision, including feature matching, SLAM, MVS and NeRF.
+My research interests include machine learning systems and 3D visions.
 
 **I'm looking for PhD admission opportunity of 2024 Fall, targeting machine learning system.**
 
 ## Education
 
-- **Master** in Control Science and Engineering, University of Science and Technology of China, 2021 - 2024 (expected)
+- **MEng** in Control Science and Engineering, University of Science and Technology of China, 2021 - 2024 (expected)
 - **BEng** in Computer Science, University of Science and Technology of China, 2017 - 2021
 
 ## Publications
 
 {% publications %}
-Yu_2023_CVPR,Chang_2023_CVPR,Jang_2023_ICCV
+Yu_2023_CVPR,Chang_2023_CVPR,zhu2023tiface,Jang_2023_ICCV
 {% endpublications %}
 
 ## Research Experience
