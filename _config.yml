@@ -110,3 +110,18 @@ deploy:
   type: 'git'
   repo: https://github.com/monsoon235/monsoon235.github.io.git
   branch: gh-pages
+
+# RSS Feed
+feed:
+  enable: true
+  type: atom
+  path: atom.xml
+  limit: 20
+  hub:
+  content:
+  content_limit: 140
+  content_limit_delim: ' '
+  order_by: -date
+  icon: icon.png
+  autodiscovery: true
+  template:
