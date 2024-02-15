@@ -6,7 +6,7 @@
   <link href="https://monsoon-cs.moe/atom.xml" rel="self"/>
   
   <link href="https://monsoon-cs.moe/"/>
-  <updated>2024-02-06T16:00:00.000Z</updated>
+  <updated>2024-02-15T16:00:00.000Z</updated>
   <id>https://monsoon-cs.moe/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>NFS Performance Tuning</title>
+    <link href="https://monsoon-cs.moe/2024-02-16-nfs-tuning/"/>
+    <id>https://monsoon-cs.moe/2024-02-16-nfs-tuning/</id>
+    <published>2024-02-15T16:00:00.000Z</published>
+    <updated>2024-02-15T16:00:00.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;本文是我在实践中总结出的生产场景下 10 Gbps 网络下的 NFS</summary>
+        
+      
+    
+    
+    
+    
+    <category term="linux" scheme="https://monsoon-cs.moe/tags/linux/"/>
+    
+    <category term="nfs" scheme="https://monsoon-cs.moe/tags/nfs/"/>
+    
+    <category term="losf" scheme="https://monsoon-cs.moe/tags/losf/"/>
+    
+  </entry>
   
   <entry>
     <title>[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT&#39;22)</title>
