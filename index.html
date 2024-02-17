@@ -196,6 +196,13 @@
 
       <time title="Created: 2024-02-16 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-16T00:00:00+08:00">2024-02-16</time>
     </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-02-17 00:00:00" itemprop="dateModified" datetime="2024-02-17T00:00:00+08:00">2024-02-17</time>
+    </span>
 
   
 </div>
@@ -242,12 +249,22 @@
 <p>根据 [4]，<code>sunrpc.tcp_max_slot_table_entries</code> 可能会影响性能，可以适当调大（默认 <code>2</code>）。在我的测试中，我发现当遇到千万数量级的持续小文件访问负载时，NFS 有时候会卡住。当我把这个参数调大时，此问题得以解决。设置 <code>/etc/modprobe.d/sunrpc.conf</code>：</p>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options sunrpc <span class="attr">tcp_slot_table_entries</span>=<span class="number">16384</span></span><br></pre></td></tr></table></figure>
 
+<p>有时我会遇到 <code>nfsd</code> 占用大量 CPU 且性能急剧下降的问题，同时记录到大量 <code>delegreturn</code> RPC calls。根据 [5]，可以通过禁用 <code>fs.leases-enable</code> 解决，设置 <code>/etc/sysctl.conf</code>：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">fs.leases-enable</span> = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>当 <code>nfsd</code> 因为种种原因重启后，默认会有 90s 的 grace period 用于锁恢复，这段时间内 <code>nfsd</code> 会拒绝所有 <code>open</code> 请求，在内核日志中显示：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[1073511.138061] NFSD: starting 90-second grace period (net f0000000)</span><br></pre></td></tr></table></figure>
+
+<p>实践中发现这段时间可以适当调小，以减少 <code>nfsd</code> 重启带来的影响。设置 <code>/etc/default/nfs-kernel-server</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Options for rpc.svcgssd.</span></span><br><span class="line">RPCSVCGSSDOPTS=<span class="string">&quot;--lease-time 10 --grace-time 10&quot;</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>TODO</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>TODO</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a target="_blank" rel="noopener" href="https://man.archlinux.org/man/exports.5.en#no_subtree_check">https://man.archlinux.org/man/exports.5.en#no_subtree_check</a></p>
 <p>[2] <a target="_blank" rel="noopener" href="https://man.archlinux.org/man/nfs.5.en#Using_NFS_over_UDP_on_high-speed_links">https://man.archlinux.org/man/nfs.5.en#Using_NFS_over_UDP_on_high-speed_links</a></p>
 <p>[3] <a target="_blank" rel="noopener" href="https://man.archlinux.org/man/nfs.5.en#File_timestamp_maintenance">https://man.archlinux.org/man/nfs.5.en#File_timestamp_maintenance</a></p>
 <p>[4] <a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/azure-netapp-files/performance-linux-concurrency-session-slots">https://learn.microsoft.com/en-us/azure/azure-netapp-files/performance-linux-concurrency-session-slots</a></p>
+<p>[5] <a target="_blank" rel="noopener" href="https://docs.gitlab.com/ee/administration/nfs.html#disable-nfs-server-delegation">https://docs.gitlab.com/ee/administration/nfs.html#disable-nfs-server-delegation</a></p>
 
       
     </div>
