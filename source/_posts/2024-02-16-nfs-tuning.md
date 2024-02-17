@@ -1,6 +1,7 @@
 ---
 title: "NFS Performance Tuning"
 date: 2024-02-16
+updated: 2024-02-17
 lang: zh-CN
 tags:
   - linux
@@ -96,6 +97,25 @@ threads=128
 options sunrpc tcp_slot_table_entries=16384
 ```
 
+有时我会遇到 `nfsd` 占用大量 CPU 且性能急剧下降的问题，同时记录到大量 `delegreturn` RPC calls。根据 [5]，可以通过禁用 `fs.leases-enable` 解决，设置 `/etc/sysctl.conf`：
+
+```ini
+fs.leases-enable = 0
+```
+
+当 `nfsd` 因为种种原因重启后，默认会有 90s 的 grace period 用于锁恢复，这段时间内 `nfsd` 会拒绝所有 `open` 请求，在内核日志中显示：
+
+```txt
+[1073511.138061] NFSD: starting 90-second grace period (net f0000000)
+```
+
+实践中发现这段时间可以适当调小，以减少 `nfsd` 重启带来的影响。设置 `/etc/default/nfs-kernel-server`：
+
+```bash
+# Options for rpc.svcgssd.
+RPCSVCGSSDOPTS="--lease-time 10 --grace-time 10"
+```
+
 ## 测试
 
 TODO
@@ -113,3 +133,5 @@ TODO
 [3] https://man.archlinux.org/man/nfs.5.en#File_timestamp_maintenance
 
 [4] https://learn.microsoft.com/en-us/azure/azure-netapp-files/performance-linux-concurrency-session-slots
+
+[5] https://docs.gitlab.com/ee/administration/nfs.html#disable-nfs-server-delegation
