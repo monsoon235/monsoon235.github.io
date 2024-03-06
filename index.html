@@ -123,12 +123,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -156,155 +156,6 @@
     </div>
 
     <div class="main-inner index posts-expand">
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-03-06-quantization-gemm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Monsoon">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024-03-06-quantization-gemm/" class="post-title-link" itemprop="url">How Quantization Works: From a Matrix Multiplication Perspective</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2024-03-06 00:00:00" itemprop="dateCreated datePublished" datetime="2024-03-06T00:00:00+08:00">2024-03-06</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>量化是一种神经网络推理常用的加速技术。</p>
-<p>神经网络中主要的计算量来自卷积、线性层、Attention 等，这些算子在底层都是由 GEMM&#x2F;BMM 等实现的。本文旨在<strong>从矩阵乘法角度讨论量化（以及反量化）的原理，并说明为什么有些量化是没有实用价值的</strong>，也旨在从这个角度重新审视一些 LLM 中的量化方法。</p>
-<p>我把<strong>实用的量化</strong>定义为：</p>
-<ol>
-<li>量化后仍然<strong>可以使用 GEMM&#x2F;BMM 完成运算</strong>。这是能取得加速效果的基本要求。</li>
-<li>可以产生<strong>实际加速效果</strong>。加速可以来自更高的 INT8 硬件算力，也可以来自 INT8 更小的 memory footprint 所节约的内存带宽。重要的是，加速收益必须能大于量化开销。</li>
-</ol>
-<h2 id="Let’s-do-some-math"><a href="#Let’s-do-some-math" class="headerlink" title="Let’s do some math"></a>Let’s do some math</h2><p>设神经网络中的某一个算子可以写成矩阵乘法：<br>$$Y&#x3D;X W^\top,$$<br>其中 $X \in \mathbb{R}^{N \times C}$，$Y \in \mathbb{R}^{N \times D}$，$W \in \mathbb{R}^{D \times C}$，同时记量化后的版本为 $\hat{X}$，$\hat{Y}$，$\hat{W}$。</p>
-<p>我们的目标是量化后仍然能用 GEMM&#x2F;BMM 完成运算，即：<br>$$\hat{Y}&#x3D;\hat{X} \hat{W}^\top.$$<br>设 $X$，$Y$，$W$ 的 per-element 量化函数分别为 $p_ {nc}(\cdot)$，$q_ {nd}(\cdot)$，$r_ {dc}(\cdot)$，即<br>$$\begin{aligned}<br>    \hat{x}_ {nc} &amp;&#x3D; p_ {nc}(x_{nc}), \<br>    \hat{y}_ {nd} &amp;&#x3D; q_ {nd}(y_{nd}), \<br>    \hat{w}_ {dc} &amp;&#x3D; r_ {dc}(w_{dc}).<br>\end{aligned}$$<br>对应的反量化函数记为 $p_ {nc}^{-1}(\cdot)$，$q_ {nd}^{-1}(\cdot)$，$r_ {dc}^{-1}(\cdot)$。那么有<br>$$\begin{aligned}<br>y_ {nd}<br>&amp;&#x3D; \sum_ {c&#x3D;1}^{C_ i} x_ {nc} w_ {dc}, \<br>q_ {nd}^{-1}(\hat{y}_ {nd}) &amp;&#x3D; \sum_ {c&#x3D;1}^{C_ i} p_ {nc}^{-1}(\hat{x}_ {nc}) r_ {dc}^{-1}(\hat{w}_ {dc}).<br>\end{aligned}$$<br>上述公式即是<strong>实用的量化</strong>所需要满足的<strong>基本约束条件</strong>。</p>
-<h2 id="Some-basic-quantization-methods"><a href="#Some-basic-quantization-methods" class="headerlink" title="Some basic quantization methods"></a>Some basic quantization methods</h2><p>有了这个基本约束条件，我们就能讨论几种基本的量化方法。</p>
-<h3 id="Per-element-and-Per-channel"><a href="#Per-element-and-Per-channel" class="headerlink" title="Per-element and Per-channel"></a>Per-element and Per-channel</h3><p>上述公式中，左边的反量化函数 $q_ {nd}^{-1}(\cdot)$ 与 $c$ 无关。<br>显然如果右侧的量化函数 $p_ {nc}^{-1}(\cdot)$ 和 $r_ {dc}^{-1}(\cdot)$ 与 $c$ 有关，这个约束条件将不成立。这意味着满足我们「可利用 GEMM&#x2F;BMM 完成运算」约束条件的、并且在不同 $X$ 和 $W$ 的 channel 上不同的量化函数是不存在的。</p>
-<p>换句话说，这说明了 <strong>per-element 和 per-channel 量化不能用 GEMM&#x2F;BMM 加速，他们不具备实用价值</strong>。</p>
-<h3 id="Per-token-and-per-tensor"><a href="#Per-token-and-per-tensor" class="headerlink" title="Per-token and per-tensor"></a>Per-token and per-tensor</h3><p>由上述讨论可知，实用的量化至少需要保证：<br>$$\begin{aligned}<br>    p_ {n}(\cdot) &amp;&#x3D; p_ {nc} (\cdot), \quad \forall n, c, \<br>    r_ {d}(\cdot) &amp;&#x3D; r_ {dc} (\cdot), \quad \forall d, c,<br>\end{aligned}$$<br>即<strong>每个 channel 上的量化函数相同</strong>，那么基本约束条件化为：<br>$$q_ {nd}^{-1}(\hat{y}_ {nd}) &#x3D; \sum_ {c&#x3D;1}^{C_ i} p_ {n}^{-1}(\hat{x}_ {nc}) r_ {d}^{-1}(\hat{w}_ {dc}),$$<br>如此，我们得到了 <strong>per-token 量化</strong>。如果我们进一步设<br>$$\begin{aligned}<br>    p(\cdot) &amp;&#x3D; p_ {nc} (\cdot), \quad \forall n, c, \<br>    r(\cdot) &amp;&#x3D; r_ {dc} (\cdot), \quad \forall d, c,<br>\end{aligned}$$<br>即<strong>量化函数对整个 $X$ 和 $W$ 中的元素都相同</strong>，那么基本约束条件化为：<br>$$q_ {nd}^{-1}(\hat{y}_ {nd}) &#x3D; q^{-1}(\hat{y}_ {nd}) &#x3D; \sum_ {c&#x3D;1}^{C_i} p^{-1}(\hat{x}_ {nc}) r^{-1}(\hat{w}_ {dc}),$$<br>我们就得到了 <strong>per-tensor 量化</strong>。这两种量化存在理论上的可行性，但实际使用还需要考虑硬件的支持（见下一节）。</p>
-<p>方便起见，下文只讨论 per-token 量化，per-tensor 量化可以视为 per-token 量化的特例。实际中最常用的量化方式是<strong>对称均匀量化</strong>，它使用乘法实现 scale 缩放：<br>$$\begin{aligned}<br>    \hat{x}<em>{nc} &amp;&#x3D; p</em> {n}(x_ {nc}) &#x3D; p_ n x_ {nc}, \<br>    \hat{w}<em>{nd} &amp;&#x3D; r</em> {d}(w_ {dc}) &#x3D; r_ d w_ {dc}, \<br>    \hat{y}<em>{dc} &amp;&#x3D; q</em> {nd}(y_ {nd}) &#x3D; p_ nr_ d y_ {nd}.<br>\end{aligned}$$</p>
-<p>我们可以把 per-token 量化写成矩阵乘法的形式：<br>$$\begin{aligned}<br>    \hat{X} &amp;&#x3D; \text{diag}(p_1,\cdots,p_ N)\cdot X &#x3D; \begin{pmatrix}<br>        p_ 1 &amp; \cdots &amp; p_ 1 \<br>        \vdots &amp; \ddots &amp; \vdots \<br>        p_ N &amp; \cdots &amp; p_ N<br>    \end{pmatrix} \otimes X, \<br>    \hat{W} &amp;&#x3D; \text{diag}(r_1,\cdots,r_ D)\cdot W &#x3D; \begin{pmatrix}<br>        r_ 1 &amp; \cdots &amp; r_ D \<br>        \vdots &amp; \ddots &amp; \vdots \<br>        r_ 1 &amp; \cdots &amp; r_ D<br>    \end{pmatrix} \otimes W, \<br>    \hat{Y} &amp;&#x3D; \text{diag}(p_1,\cdots,p_ N)\cdot Y \cdot \text{diag}(r_1,\cdots,r_ D) &#x3D; \begin{pmatrix}<br>        p_ 1 r_ 1 &amp; \cdots &amp; p_ 1 r_ D \<br>        \vdots &amp; \ddots &amp; \vdots \<br>        p_ N r_ 1 &amp; \cdots &amp; p_ N r_ D<br>    \end{pmatrix} \otimes Y,<br>\end{aligned}$$<br>其中 $\otimes$ 代表 element-wise matrix multiplication。可以看到这些量化和反量化都<strong>可以用维度广播的 element-wise matrix multiplication 高效实现</strong>，下图使用了一个例子展示了其计算过程：</p>
-<p><img src="/2024-03-06-quantization-gemm/quant_matrix.png"></p>
-<h2 id="Hardware-requirements"><a href="#Hardware-requirements" class="headerlink" title="Hardware requirements"></a>Hardware requirements</h2><p>量化是否可以使用 GEMM&#x2F;BMM 还需要考虑硬件的支持。例如，在 NVIDIA GPU 上，Tensor Core 支持 FP16 和 INT8 的矩阵乘，但不支持 FP16&#x2F;INT8 混合精度矩阵乘。这意味着 W8A8 量化可以使用 Tensor Core 加速，但 W8A16、W16A8 缺少硬件加速的支持，在 NVIDIA GPU 上并不能取得加速效果。</p>
-<h2 id="Performance-analysis"><a href="#Performance-analysis" class="headerlink" title="Performance analysis"></a>Performance analysis</h2><p>以上讨论只说明了 per-token 量化可以使用 GEMM&#x2F;BMM 计算，下文将讨论它是否具备实际加速效果。</p>
-<p>为了体现量化和反量化本身的开销的影响，我们假设使用量化的情况下每层的输入和输出 activation 仍然都是 FP16 的（这是某些量化方法——如 <code>LLM.int8()</code>——所使用的）。不失一般性，我们可以假设硬件的 INT8 吞吐量是 FP16 的两倍，即一次 INT8 FMA 运算的归一化操作数是 $1$，而 FP16 是 $2$。再假设我们将量化&#x2F;反量化操作和GEMM&#x2F;BMM 做了算子融合（因而可以两种情况下 CUDA kernel launch 开销的不同）。针对上面的 per-token 量化，我们可以列出下表：</p>
-<table>
-<thead>
-<tr>
-<th align="center">计算方式</th>
-<th align="center">FP16</th>
-<th align="center">INT8 量化（FP16 输入输出）</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">GEMM&#x2F;BMM OPs</td>
-<td align="center">$2NC_ i C_ o$</td>
-<td align="center">$NC_ i C_ o$</td>
-</tr>
-<tr>
-<td align="center">GEMM&#x2F;BMM I&#x2F;O</td>
-<td align="center">$2(NC_ i+C_ i C_ o+N C_ o)$</td>
-<td align="center">$2NC_ i+C_ i C_ o+2N C_ o$</td>
-</tr>
-<tr>
-<td align="center">量化和反量化 OPS</td>
-<td align="center">$0$</td>
-<td align="center">$2NC_ i+4N C_ o$</td>
-</tr>
-<tr>
-<td align="center">量化和反量化 I&#x2F;O</td>
-<td align="center">$0$</td>
-<td align="center">$2(N+C_o)$</td>
-</tr>
-<tr>
-<td align="center">总 OPS</td>
-<td align="center">$2NC_ i C_ o$</td>
-<td align="center">$NC_ i C_ o+2NC_ i+4N C_ o$</td>
-</tr>
-<tr>
-<td align="center">总 I&#x2F;O</td>
-<td align="center">$2(NC_ i+C_ i C_ o+N C_ o)$</td>
-<td align="center">$2NC_ i+C_ i C_ o+2N C_ o+2(N+C_o)$</td>
-</tr>
-<tr>
-<td align="center">总算术强度（OPS:I&#x2F;O）</td>
-<td align="center">$\cfrac{1}{1&#x2F;N+1&#x2F;C_ i+1&#x2F;C_ o}$</td>
-<td align="center">$\cfrac{1+2&#x2F;C_ o+4&#x2F;C_ i}{2&#x2F;N+1&#x2F;C_ i+2&#x2F;C_ o+2&#x2F;(NC_ i)+2&#x2F;(C_ iC_ o)}$</td>
-</tr>
-</tbody></table>
-<p>可以看出，量化后的<strong>总算术强度变小了</strong>，因而计算更有可能是 memory-bound 的（SmoothQuant 改进了这一点，后文会介绍）。<strong>在内存带宽充足的情况下，对称均匀量化大致降低了一半的总计算量，将会带来可观的加速效果。</strong></p>
-<h2 id="一些-LLM-量化的例子"><a href="#一些-LLM-量化的例子" class="headerlink" title="一些 LLM 量化的例子"></a>一些 LLM 量化的例子</h2><h3 id="LLM-int8"><a href="#LLM-int8" class="headerlink" title="LLM.int8()"></a><code>LLM.int8()</code></h3><p><code>LLM.int8()</code> 实质上使用了选择性 per-token 量化。它使用 FP16 存储 weights 和 activations，然后对于不同的 token 采用不同的策略（如下图所示）：</p>
-<p><img src="/2024-03-06-quantization-gemm/llm_int8.png" alt="LLM.int8()"></p>
-<ul>
-<li>对于适合量化的 token，它对 weights 和 activations 使用了 per-token 的 INT8 量化，并使用 INT8 GEMM 计算得到结果后反量化成 FP16；</li>
-<li>对于包含离群值的 token，则直接使用 FP16 进行计算。</li>
-</ul>
-<p>这两部分的结果即可合成最终结果。</p>
-<h3 id="SmoothQuant"><a href="#SmoothQuant" class="headerlink" title="SmoothQuant"></a>SmoothQuant</h3><p>虽然 per-channel 量化并不实用，但对于 LLM activation 量化来说，最大的挑战来自于 activation 在一些 channel 上会出现数量级较大的值（如下图）。</p>
-<p><img src="/2024-03-06-quantization-gemm/smooth_quant_motivation.png"></p>
-<p>SmoothQuant 发现这些离群值出现的 channel 非常固定，但同时 weights 中很少会有离群值（因而容易量化），因此它提出在 activations 和 weights 之间平衡量化的难度，通过平衡 per-channel 的数量级。</p>
-<p><img src="/2024-03-06-quantization-gemm/smooth_quant.png" alt="SmoothQuant"></p>
-<p>这种「平衡」可以用数学表述：<br>$$\begin{aligned}<br>    Y<br>    &amp;&#x3D; XW^\top \<br>    &amp;&#x3D; X \cdot \text{diag}(s_ 1,\cdots,s_ C) \cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1} \cdot W^\top \<br>    &amp; &#x3D; \left( X \cdot \text{diag}(s_ 1,\cdots,s_ C) \right) \cdot \left( W\cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1} \right)^\top.<br>\end{aligned}$$<br>通过选取合适的 $\text{diag}(s_ 1,\cdots,s_ C)$，我们就能达成平衡离群值数量级的目的，随后我们就能对 $X \cdot \text{diag}(s_ 1,\cdots,s_ C)$ 和 $W\cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1}$ 进行量化。下图是这个过程的一个例子：</p>
-<p><img src="/2024-03-06-quantization-gemm/smooth_quant_2.png" alt="SmoothQuant example"></p>
-<p>SmoothQuant 是 per-channel 量化的一种绝佳替代，论文也展示了它在 LLM W8A8 量化中令人印象深刻的表现。</p>
-<h3 id="ZeroQuant"><a href="#ZeroQuant" class="headerlink" title="ZeroQuant"></a>ZeroQuant</h3><p>在上述对 practical quantization 的 performance analysis，我们发现如果使用 FP16 传递 activation，则量化后的总算数强度变小了，可能会导致 memory bound 从而影响性能。ZeroQuant 则把量化过程融合到前一个算子后，而反量化过程融合到 GEMM 之后，如下图所示。如此，算子之间的传递的 activation 仍然是 INT8 的，这样可以将总的访存量降到 $NC_ i+C_ i C_ o+N C_ o+2(N+C_o)$，算术强度提升到和未量化的接近的水平，充分发挥 INT8 高吞吐量的优势。</p>
-<p><img src="/2024-03-06-quantization-gemm/zero_quant.png" alt="ZeroQuant"></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文从矩阵乘法的角度梳理了量化，并说明了实用的量化需要满足的一些基本条件，也说明了 per-channel 量化不实用的原因。本文还讨论了 per-token 量化的一些例子，包括 <code>LLM.int8()</code>，SmoothQuant 和 ZeroQuant。这些例子都是实用的量化方法，并且在实际中取得了可观的加速效果。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
 
     
 
@@ -1411,6 +1262,86 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sshfs -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=30,ssh_command=&#x27;ssh -p &lt;dataserver_port&gt; -i &lt;key_file&gt;&#x27; &lt;user&gt;@&lt;dataserver&gt;:/path /path</span><br></pre></td></tr></table></figure>
 
 <h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>TODO</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023-09-26-nginx-quic-with-ssl-preread/" class="post-title-link" itemprop="url">Nginx 启用 QUIC 并和 SNI 分流共存</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-09-26 00:00:00" itemprop="dateCreated datePublished" datetime="2023-09-26T00:00:00+08:00">2023-09-26</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>Nginx 自从 1.25.0 版本以来对 QUIC 的支持<a target="_blank" rel="noopener" href="https://nginx.org/en/docs/quic.html">已被合并入 mainline</a>，对于想体验的用户而言可以直接使用官方发布的 <code>nginx</code> docker 镜像，非常方便。</p>
+<p>但是我的服务器上的 nginx 使用了 <a target="_blank" rel="noopener" href="https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html">SNI 分流</a>，源于 <a target="_blank" rel="noopener" href="https://github.com/ihciah/shadow-tls">Shadow TLS</a> 和 <a target="_blank" rel="noopener" href="https://github.com/XTLS/REALITY">Xray Reality</a> 等新一代基于 TLS 的代理协议的需求。这些代理协议并不能由 nginx 代为处理 TLS 层（和之前可以使用 gPRC&#x2F;WebSocket 等作为数据传输方式的协议不同），但为了实现最好的伪装效果，使用 <code>443/tcp</code> 端口是有必要的（伪装的白名单目标网站一般情况下也只会在 <code>443/tcp</code> 端口开放 HTTPS 服务）。因此 <code>443/tcp</code> 端口的复用是必要的。</p>
+<p>如果要让 SNI 分流和 QUIC 共存，在原来的 SNI 分流配置上只需要给每个 server 加上 <code>listen 443 quic</code> 即可。示例配置如下。</p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line"></span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="attribute">server_name</span> example.com;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 443/tcp 已经被 nginx stream 占用，不能再次监听</span></span><br><span class="line">        <span class="comment"># listen 443 ssl http2 reuseport so_keepalive=on;</span></span><br><span class="line">        <span class="comment"># listen [::]:443 ssl http2 reuseport so_keepalive=on;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 监听 443/udp 端口并启用 QUIC</span></span><br><span class="line">        <span class="comment"># ref: https://nginx.org/en/docs/http/ngx_http_v3_module.html</span></span><br><span class="line">        <span class="attribute">listen</span> <span class="number">443</span> quic reuseport;</span><br><span class="line">        <span class="attribute">listen</span> [::]:<span class="number">443</span> quic reuseport;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 监听 unix domain socket 以接受 stream 传送过来的连接，也可以使用本地端口</span></span><br><span class="line">        <span class="comment"># 接受 proxy_protocol，否则 log 中显示的链接源地址都是 unix:</span></span><br><span class="line">        <span class="attribute">listen</span> unix:/dev/shm/nginx-example.sock ssl http2 proxy_protocol;</span><br><span class="line">        <span class="attribute">set_real_ip_from</span> unix:;  <span class="comment"># 只对于来自 unix domain socket 的连接覆盖其源地址</span></span><br><span class="line">        <span class="attribute">real_ip_header</span> proxy_protocol;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">add_header</span> Alt-Svc <span class="string">&#x27;h3=&quot;:443&quot;; ma=86400&#x27;</span>;  <span class="comment"># used to advertise the availability of HTTP/3</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="attribute">server_name</span> foo.example.com;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 可以多个域名共享 443/udp</span></span><br><span class="line">        <span class="attribute">listen</span> <span class="number">443</span> quic;</span><br><span class="line">        <span class="attribute">listen</span> [::]:<span class="number">443</span> quic;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">listen</span> unix:/dev/shm/nginx-example-foo.sock ssl http2 proxy_protocol;</span><br><span class="line">        <span class="attribute">set_real_ip_from</span> unix:;</span><br><span class="line">        <span class="attribute">real_ip_header</span> proxy_protocol;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">add_header</span> Alt-Svc <span class="string">&#x27;h3=&quot;:443&quot;; ma=86400&#x27;</span>;  <span class="comment"># used to advertise the availability of HTTP/3</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">stream</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 根据 TLS SNI 分流</span></span><br><span class="line">    <span class="attribute">map</span> <span class="variable">$ssl_preread_server_name</span> <span class="variable">$name</span> &#123;</span><br><span class="line">        example.<span class="attribute">com</span>             unix:/dev/shm/nginx-example.sock;</span><br><span class="line">        foo.example.<span class="attribute">com</span>         unix:/dev/shm/nginx-example-foo.sock;</span><br><span class="line">        learn.microsoft.<span class="attribute">com</span>     <span class="number">127.0.0.1:8443</span>;  <span class="comment"># 用于 shadow-tls/xray-reality 等</span></span><br><span class="line">        <span class="attribute">default</span>                 unix:/dev/shm/nginx-default.sock;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="comment"># 监听 443/tcp 并根据 SNI 分流</span></span><br><span class="line">        <span class="attribute">listen</span> <span class="number">443</span> reuseport so_keepalive=<span class="literal">on</span>;</span><br><span class="line">        <span class="attribute">listen</span> [::]:<span class="number">443</span> reuseport so_keepalive=<span class="literal">on</span>;</span><br><span class="line">        <span class="attribute">proxy_pass</span> <span class="variable">$name</span>;</span><br><span class="line">        <span class="attribute">ssl_preread</span> <span class="literal">on</span>;</span><br><span class="line">        <span class="attribute">proxy_protocol</span> <span class="literal">on</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>目前 <code>curl</code>&#x2F;<code>wget</code> mainline 还没有支持 QUIC，可以使用 <code>ymuski/curl-http3</code> 这个 docker 镜像：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -it --<span class="built_in">rm</span> ymuski/curl-http3 curl https://static.monsoon-cs.moe/public/ --http3 -IL</span></span><br><span class="line"></span><br><span class="line">HTTP/3 200</span><br><span class="line">server: nginx/1.25.2</span><br><span class="line">date: Tue, 26 Sep 2023 14:52:29 GMT</span><br><span class="line">content-type: text/html; charset=utf-8</span><br><span class="line">strict-transport-security: max-age=63072000</span><br><span class="line">alt-svc: h3=&quot;:443&quot;; ma=86400</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html">https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://nginx.org/en/docs/http/ngx_http_v3_module.html">https://nginx.org/en/docs/http/ngx_http_v3_module.html</a></li>
+</ul>
 
       
     </div>
