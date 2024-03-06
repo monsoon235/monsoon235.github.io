@@ -1,5 +1,5 @@
 ---
-title: "How Quantization Works: From a Matrix Multiplication Perspective"
+title: "How Quantization \mathbf{W}orks: From a Matrix Multiplication Perspective"
 date: 2024-03-06
 lang: zh-CN
 tags:
@@ -25,21 +25,21 @@ mathjax: true
 ## Let's do some math
 
 设神经网络中的某一个算子可以写成矩阵乘法：
-$$Y=X W^\top,$$
-其中 $X \in \mathbb{R}^{N \times C}$，$Y \in \mathbb{R}^{N \times D}$，$W \in \mathbb{R}^{D \times C}$，同时记量化后的版本为 $\hat{X}$，$\hat{Y}$，$\hat{W}$。
+$$\mathbf{Y}=\mathbf{X} \mathbf{W}^\top,$$
+其中 $\mathbf{X} \in \mathbb{R}^{N \times C}$，$\mathbf{Y} \in \mathbb{R}^{N \times D}$，$\mathbf{W} \in \mathbb{R}^{D \times C}$，同时记量化后的版本为 $\hat{\mathbf{X}}$，$\hat{\mathbf{Y}}$，$\hat{\mathbf{W}}$。
 
 我们的目标是量化后仍然能用 GEMM/BMM 完成运算，即：
-$$\hat{Y}=\hat{X} \hat{W}^\top.$$
-设 $X$，$Y$，$W$ 的 per-element 量化函数分别为 $p_ {nc}(\cdot)$，$q_ {nd}(\cdot)$，$r_ {dc}(\cdot)$，即
+$$\hat{\mathbf{Y}}=\hat{\mathbf{X}} \hat{\mathbf{W}}^\top.$$
+设 $\mathbf{X}$，$\mathbf{Y}$，$\mathbf{W}$ 的 per-element 量化函数分别为 $p_ {nc}(\cdot)$，$q_ {nd}(\cdot)$，$r_ {dc}(\cdot)$，即
 $$\begin{aligned}
-    \hat{x}_ {nc} &= p_ {nc}(x_{nc}), \\
-    \hat{y}_ {nd} &= q_ {nd}(y_{nd}), \\
+    \hat{x}_ {nc} &= p_ {nc}(x_{nc}), \\\\
+    \hat{y}_ {nd} &= q_ {nd}(y_{nd}), \\\\
     \hat{w}_ {dc} &= r_ {dc}(w_{dc}).
 \end{aligned}$$
 对应的反量化函数记为 $p_ {nc}^{-1}(\cdot)$，$q_ {nd}^{-1}(\cdot)$，$r_ {dc}^{-1}(\cdot)$。那么有
 $$\begin{aligned}
 y_ {nd}
-&= \sum_ {c=1}^{C_ i} x_ {nc} w_ {dc}, \\
+&= \sum_ {c=1}^{C_ i} x_ {nc} w_ {dc}, \\\\
 q_ {nd}^{-1}(\hat{y}_ {nd}) &= \sum_ {c=1}^{C_ i} p_ {nc}^{-1}(\hat{x}_ {nc}) r_ {dc}^{-1}(\hat{w}_ {dc}).
 \end{aligned}$$
 上述公式即是**实用的量化**所需要满足的**基本约束条件**。
@@ -51,7 +51,7 @@ q_ {nd}^{-1}(\hat{y}_ {nd}) &= \sum_ {c=1}^{C_ i} p_ {nc}^{-1}(\hat{x}_ {nc}) r_
 ### Per-element and Per-channel
 
 上述公式中，左边的反量化函数 $q_ {nd}^{-1}(\cdot)$ 与 $c$ 无关。
-显然如果右侧的量化函数 $p_ {nc}^{-1}(\cdot)$ 和 $r_ {dc}^{-1}(\cdot)$ 与 $c$ 有关，这个约束条件将不成立。这意味着满足我们「可利用 GEMM/BMM 完成运算」约束条件的、并且在不同 $X$ 和 $W$ 的 channel 上不同的量化函数是不存在的。
+显然如果右侧的量化函数 $p_ {nc}^{-1}(\cdot)$ 和 $r_ {dc}^{-1}(\cdot)$ 与 $c$ 有关，这个约束条件将不成立。这意味着满足我们「可利用 GEMM/BMM 完成运算」约束条件的、并且在不同 $\mathbf{X}$ 和 $\mathbf{W}$ 的 channel 上不同的量化函数是不存在的。
 
 换句话说，这说明了 **per-element 和 per-channel 量化不能用 GEMM/BMM 加速，他们不具备实用价值**。
 
@@ -59,44 +59,44 @@ q_ {nd}^{-1}(\hat{y}_ {nd}) &= \sum_ {c=1}^{C_ i} p_ {nc}^{-1}(\hat{x}_ {nc}) r_
 
 由上述讨论可知，实用的量化至少需要保证：
 $$\begin{aligned}
-    p_ {n}(\cdot) &= p_ {nc} (\cdot), \quad \forall n, c, \\
+    p_ {n}(\cdot) &= p_ {nc} (\cdot), \quad \forall n, c, \\\\
     r_ {d}(\cdot) &= r_ {dc} (\cdot), \quad \forall d, c,
 \end{aligned}$$
 即**每个 channel 上的量化函数相同**，那么基本约束条件化为：
 $$q_ {nd}^{-1}(\hat{y}_ {nd}) = \sum_ {c=1}^{C_ i} p_ {n}^{-1}(\hat{x}_ {nc}) r_ {d}^{-1}(\hat{w}_ {dc}),$$
 如此，我们得到了 **per-token 量化**。如果我们进一步设
 $$\begin{aligned}
-    p(\cdot) &= p_ {nc} (\cdot), \quad \forall n, c, \\
+    p(\cdot) &= p_ {nc} (\cdot), \quad \forall n, c, \\\\
     r(\cdot) &= r_ {dc} (\cdot), \quad \forall d, c,
 \end{aligned}$$
-即**量化函数对整个 $X$ 和 $W$ 中的元素都相同**，那么基本约束条件化为：
+即**量化函数对整个 $\mathbf{X}$ 和 $\mathbf{W}$ 中的元素都相同**，那么基本约束条件化为：
 $$q_ {nd}^{-1}(\hat{y}_ {nd}) = q^{-1}(\hat{y}_ {nd}) = \sum_ {c=1}^{C_i} p^{-1}(\hat{x}_ {nc}) r^{-1}(\hat{w}_ {dc}),$$
 我们就得到了 **per-tensor 量化**。这两种量化存在理论上的可行性，但实际使用还需要考虑硬件的支持（见下一节）。
 
 方便起见，下文只讨论 per-token 量化，per-tensor 量化可以视为 per-token 量化的特例。实际中最常用的量化方式是**对称均匀量化**，它使用乘法实现 scale 缩放：
 $$\begin{aligned}
-    \hat{x}_{nc} &= p_ {n}(x_ {nc}) = p_ n x_ {nc}, \\
-    \hat{w}_{nd} &= r_ {d}(w_ {dc}) = r_ d w_ {dc}, \\
-    \hat{y}_{dc} &= q_ {nd}(y_ {nd}) = p_ nr_ d y_ {nd}.
+    \hat{x}_ {nc} &= p_ {n}(x_ {nc}) = p_ n x_ {nc}, \\\\
+    \hat{w}_ {nd} &= r_ {d}(w_ {dc}) = r_ d w_ {dc}, \\\\
+    \hat{y}_ {dc} &= q_ {nd}(y_ {nd}) = p_ n r_ d y_ {nd}.
 \end{aligned}$$
 
 我们可以把 per-token 量化写成矩阵乘法的形式：
 $$\begin{aligned}
-    \hat{X} &= \text{diag}(p_1,\cdots,p_ N)\cdot X = \begin{pmatrix}
-        p_ 1 & \cdots & p_ 1 \\
-        \vdots & \ddots & \vdots \\
+    \hat{\mathbf{X}} &= \text{diag}(p_1,\cdots,p_ N)\cdot \mathbf{X} = \begin{pmatrix}
+        p_ 1 & \cdots & p_ 1 \\\\
+        \vdots & \ddots & \vdots \\\\
         p_ N & \cdots & p_ N
-    \end{pmatrix} \otimes X, \\
-    \hat{W} &= \text{diag}(r_1,\cdots,r_ D)\cdot W = \begin{pmatrix}
-        r_ 1 & \cdots & r_ D \\
-        \vdots & \ddots & \vdots \\
+    \end{pmatrix} \otimes \mathbf{X}, \\\\
+    \hat{\mathbf{W}} &= \text{diag}(r_1,\cdots,r_ D)\cdot \mathbf{W} = \begin{pmatrix}
+        r_ 1 & \cdots & r_ D \\\\
+        \vdots & \ddots & \vdots \\\\
         r_ 1 & \cdots & r_ D
-    \end{pmatrix} \otimes W, \\
-    \hat{Y} &= \text{diag}(p_1,\cdots,p_ N)\cdot Y \cdot \text{diag}(r_1,\cdots,r_ D) = \begin{pmatrix}
-        p_ 1 r_ 1 & \cdots & p_ 1 r_ D \\
-        \vdots & \ddots & \vdots \\
+    \end{pmatrix} \otimes \mathbf{W}, \\\\
+    \hat{\mathbf{Y}} &= \text{diag}(p_1,\cdots,p_ N)\cdot \mathbf{Y} \cdot \text{diag}(r_1,\cdots,r_ D) = \begin{pmatrix}
+        p_ 1 r_ 1 & \cdots & p_ 1 r_ D \\\\
+        \vdots & \ddots & \vdots \\\\
         p_ N r_ 1 & \cdots & p_ N r_ D
-    \end{pmatrix} \otimes Y,
+    \end{pmatrix} \otimes \mathbf{Y},
 \end{aligned}$$
 其中 $\otimes$ 代表 element-wise matrix multiplication。可以看到这些量化和反量化都**可以用维度广播的 element-wise matrix multiplication 高效实现**，下图使用了一个例子展示了其计算过程：
 
@@ -104,7 +104,7 @@ $$\begin{aligned}
 
 ## Hardware requirements
 
-量化是否可以使用 GEMM/BMM 还需要考虑硬件的支持。例如，在 NVIDIA GPU 上，Tensor Core 支持 FP16 和 INT8 的矩阵乘，但不支持 FP16/INT8 混合精度矩阵乘。这意味着 W8A8 量化可以使用 Tensor Core 加速，但 W8A16、W16A8 缺少硬件加速的支持，在 NVIDIA GPU 上并不能取得加速效果。
+量化是否可以使用 GEMM/BMM 还需要考虑硬件的支持。例如，在 NVIDIA GPU 上，Tensor Core 支持 FP16 和 INT8 的矩阵乘，但不支持 FP16/INT8 混合精度矩阵乘。这意味着 \mathbf{W}8A8 量化可以使用 Tensor Core 加速，但 \mathbf{W}8A16、\mathbf{W}16A8 缺少硬件加速的支持，在 NVIDIA GPU 上并不能取得加速效果。
 
 ## Performance analysis
 
@@ -149,16 +149,16 @@ SmoothQuant 发现这些离群值出现的 channel 非常固定，但同时 weig
 
 这种「平衡」可以用数学表述：
 $$\begin{aligned}
-    Y 
-    &= XW^\top \\
-    &= X \cdot \text{diag}(s_ 1,\cdots,s_ C) \cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1} \cdot W^\top \\
-    & = \left( X \cdot \text{diag}(s_ 1,\cdots,s_ C) \right) \cdot \left( W\cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1} \right)^\top.
+    \mathbf{Y} 
+    &= \mathbf{X}\mathbf{W}^\top \\\\
+    &= \mathbf{X} \cdot \text{diag}(s_ 1,\cdots,s_ C) \cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1} \cdot \mathbf{W}^\top \\\\
+    & = \left( \mathbf{X} \cdot \text{diag}(s_ 1,\cdots,s_ C) \right) \cdot \left( \mathbf{W}\cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1} \right)^\top.
 \end{aligned}$$
-通过选取合适的 $\text{diag}(s_ 1,\cdots,s_ C)$，我们就能达成平衡离群值数量级的目的，随后我们就能对 $X \cdot \text{diag}(s_ 1,\cdots,s_ C)$ 和 $W\cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1}$ 进行量化。下图是这个过程的一个例子：
+通过选取合适的 $\text{diag}(s_ 1,\cdots,s_ C)$，我们就能达成平衡离群值数量级的目的，随后我们就能对 $\mathbf{X} \cdot \text{diag}(s_ 1,\cdots,s_ C)$ 和 $\mathbf{W}\cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1}$ 进行量化。下图是这个过程的一个例子：
 
 ![SmoothQuant example](smooth_quant_2.png)
 
-SmoothQuant 是 per-channel 量化的一种绝佳替代，论文也展示了它在 LLM W8A8 量化中令人印象深刻的表现。
+SmoothQuant 是 per-channel 量化的一种绝佳替代，论文也展示了它在 LLM \mathbf{W}8A8 量化中令人印象深刻的表现。
 
 ### ZeroQuant
 
