@@ -1,5 +1,5 @@
 ---
-title: "How Quantization \mathbf{W}orks: From a Matrix Multiplication Perspective"
+title: "How Quantization Works: From a Matrix Multiplication Perspective"
 date: 2024-03-06
 lang: zh-CN
 tags:
@@ -104,7 +104,7 @@ $$\begin{aligned}
 
 ## Hardware requirements
 
-量化是否可以使用 GEMM/BMM 还需要考虑硬件的支持。例如，在 NVIDIA GPU 上，Tensor Core 支持 FP16 和 INT8 的矩阵乘，但不支持 FP16/INT8 混合精度矩阵乘。这意味着 \mathbf{W}8A8 量化可以使用 Tensor Core 加速，但 \mathbf{W}8A16、\mathbf{W}16A8 缺少硬件加速的支持，在 NVIDIA GPU 上并不能取得加速效果。
+量化是否可以使用 GEMM/BMM 还需要考虑硬件的支持。例如，在 NVIDIA GPU 上，Tensor Core 支持 FP16 和 INT8 的矩阵乘，但不支持 FP16/INT8 混合精度矩阵乘。这意味着 W8A8 量化可以使用 Tensor Core 加速，但 W8A16、W16A8 缺少硬件加速的支持，在 NVIDIA GPU 上并不能取得加速效果。
 
 ## Performance analysis
 
@@ -158,7 +158,7 @@ $$\begin{aligned}
 
 ![SmoothQuant example](smooth_quant_2.png)
 
-SmoothQuant 是 per-channel 量化的一种绝佳替代，论文也展示了它在 LLM \mathbf{W}8A8 量化中令人印象深刻的表现。
+SmoothQuant 是 per-channel 量化的一种绝佳替代，论文也展示了它在 LLM W8A8 量化中令人印象深刻的表现。
 
 ### ZeroQuant
 
