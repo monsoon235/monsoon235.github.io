@@ -1,21 +1,20 @@
 ---
 title: About Me
 date: 2023-06-19
-updated: 2024-02-08
+updated: 2024-03-31
 lang: en
 sitemap: false
 ---
 
-I'm a 3rd year graduate student at the University of Science and Technology of China (USTC) since 2021. I received my bachelor degree from the same university, majoring in computer science.
+I'm now a 3rd-year graduate student at the University of Science and Technology of China (USTC) since 2021 and will receive my Master's Degree in Jun 2024. I received my Bachelor's Degree from the same university, majoring in computer science.
 
-My research interests include machine learning systems and 3D visions.
-
-**I'm looking for PhD admission opportunity of 2024 Fall, targeting machine learning system.**
+From Sep 2024, I will begin my PhD student career at University of Illinois Urbana-Champaign (UIUC). My research interest covers ML System.
 
 ## Education
 
+- **(Expected)** **PhD student** in Computer Science, University of Illinois Urbana-Champaign, 2024 - unknown
 - **MEng** in Control Science and Engineering, University of Science and Technology of China, 2021 - 2024 (expected)
-- **BEng** in Computer Science, University of Science and Technology of China, 2017 - 2021
+- **BEng** in Computer Science and Engineering, University of Science and Technology of China, 2017 - 2021
 
 ## Publications
 
@@ -25,12 +24,12 @@ Yu_2023_CVPR,Chang_2023_CVPR,zhu2023tiface,Jang_2023_ICCV
 
 ## Research Experience
 
-- **Graduate Student**, University of Science and Technology of China, 2021 - Now
+- **Graduate Student**, University of Science and Technology of China, Sep 2021 - Jun 2024
 - **Research Internship**, University of Hong Kong, Jul 2020 - Aug 2020
 
 ## Work Experience
 
-- **Teaching Assistance**, University of Science and Technology of China, Sept 2020 - Jan 2021
+- **Teaching Assistance**, University of Science and Technology of China, Sep 2020 - Jan 2021
 
 ## Interests
 
