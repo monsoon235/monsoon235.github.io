@@ -123,12 +123,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-count">15</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-count">42</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -156,6 +156,95 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-10-20-bitahub/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023-10-20-bitahub/" class="post-title-link" itemprop="url">利用 SSH 反向隧道登录 BitaHub 中的容器并长期占用 GPU</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-10-20 00:00:00" itemprop="dateCreated datePublished" datetime="2023-10-20T00:00:00+08:00">2023-10-20</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>每年的 CVPR 前 GPU 总是供不应求，需要从其他地方借卡。USTC 有一个供校内用户使用的 <a target="_blank" rel="noopener" href="https://bitahub.ustc.edu.cn/">BitaHub</a>，但它同样有 CVPR 前一卡难求的问题，同时基于任务提交的使用模式也非常不方便，提交占用多卡的任务经常需要漫长的排队，数据管理方式更是反人类。</p>
+<p>作为组里的服务器管理员，为了让自己在 CVPR 前活得轻松点，避免重蹈 2021 年 CVPR 前疲于应对资源调配的覆辙，有必要改善 BitaHub 的使用体验：</p>
+<ol>
+<li>如何长期占用显卡避免重复排队（虽然略不道德，但实属无奈之举）；</li>
+<li>如何方便地从我们的服务器读取数据，而不是被迫使用 BitaHub 反人类的数据管理模式；</li>
+<li>如何尽量使 BitaHub 的 GPU 使用体验接近组里的服务器，降低迁移成本，提高资源调度的灵活性。</li>
+</ol>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>BitaHub 中的任务是以 docker 容器的方式运行的，因而给了我们在容器里配置我们想要的环境的可能，只需要通过某种方式登录 ssh 到容器中。</p>
+<p>经过研究发现，只要启动命令不停止运行，BitaHub 中的容器就会长期运行，不释放 GPU 资源。<strong>同时 BitaHub 中的容器是可以联网的</strong>，而且 BitaHub 的网页上还贴心地给出了每个任务容器中 root 用户的 ssh 私钥。</p>
+<p>这些给了我们利用的机会，只需要在容器内运行一个 tunnel 程序以让外部得以访问容器中的 22 端口，就能登录并长期占用资源。同时由于容器联网，也可以直接挂载校内其他服务器的文件系统。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>最终选择的 tunnel 程序是 <code>ssh</code>，它可以创建反向隧道：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -i &lt;key_file&gt; -F none -o &quot;StrictHostKeyChecking no&quot; -o &quot;ServerAliveInterval 15&quot; -v -N -R &lt;port&gt;:localhost:22 jump@&lt;jumpserver&gt;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>jumpserver</code> 中配置用户 <code>jump</code> 并允许特定私钥登录，然后用某种方式把私钥传递进容器（可以直接打包进镜像，但我选择了更方便的方式——创建一个 BitaHub 数据集存放，每个任务添加这个数据集即可）。</p>
+<p>容器的启动命令就是上述命令（考虑到网络波动，可以套一层 <code>while true</code> 循环或者用 <code>autossh</code> 自动重连），启动后就在 <code>&lt;jumpserver&gt;</code> 上的 <code>&lt;port&gt;</code> 端口创建了一个反向隧道，<code>&lt;port&gt;</code> 被映射到了容器内的 <code>22</code> 端口。</p>
+<p>可以在 <code>&lt;jumpserver&gt;</code> 的 <code>sshd_config</code> 中配置 <code>GatewayPorts yes</code>，这样反向隧道就会监听 <code>0.0.0.0</code> 而不是 <code>127.0.0.1</code>。不这样做的话我就要在 <code>&lt;jumpserver&gt;</code> 上给每个人创建用户，或者每个端口用 <code>iptables</code> 转发，但这太过繁琐。绑定 <code>0.0.0.0</code> 则可以直接从现有的 VPN 网络中访问。</p>
+<p>挂载文件系统的方式有很多选择，考虑到安全性和便捷性，我选择了 SSHFS。NFS 直接暴露于公网过于危险，而 NFS 用户验证的配置又过于繁琐。同时 BitaHub 运行容器的内核既没加载 <code>wireguard</code> kmod 也没映射 <code>/dev/net/tun</code>，因此无法利用 VPN 保护数据安全。SSHFS 可以直接复用现存的用户认证方式，而 SSH 流量本身也更容易被潜在的机房防火墙放过。</p>
+<p>使用如下命令挂载 SSHFS：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sshfs -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=30,ssh_command=&#x27;ssh -p &lt;dataserver_port&gt; -i &lt;key_file&gt;&#x27; &lt;user&gt;@&lt;dataserver&gt;:/path /path</span><br></pre></td></tr></table></figure>
+
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>TODO</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 

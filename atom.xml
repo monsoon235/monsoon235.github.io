@@ -75,11 +75,45 @@
   </entry>
   
   <entry>
+    <title>[Paper Reading] ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs (arXiv&#39;24)</title>
+    <link href="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/"/>
+    <id>https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/</id>
+    <published>2024-02-06T16:00:00.000Z</published>
+    <updated>2024-02-06T16:00:00.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;This blog is a write-up of the paper “&lt;a href=&quot;https://arxiv.org/abs/2401.12377&quot;&gt;ACS: Concurrent Kernel Execution on</summary>
+        
+      
+    
+    
+    
+    
+    <category term="paper-reading" scheme="https://monsoon-cs.moe/tags/paper-reading/"/>
+    
+    <category term="arxiv" scheme="https://monsoon-cs.moe/tags/arxiv/"/>
+    
+    <category term="arxiv24" scheme="https://monsoon-cs.moe/tags/arxiv24/"/>
+    
+    <category term="ml-system" scheme="https://monsoon-cs.moe/tags/ml-system/"/>
+    
+    <category term="gpu" scheme="https://monsoon-cs.moe/tags/gpu/"/>
+    
+    <category term="resource-scheduling" scheme="https://monsoon-cs.moe/tags/resource-scheduling/"/>
+    
+  </entry>
+  
+  <entry>
     <title>[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT&#39;22)</title>
     <link href="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/"/>
     <id>https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/</id>
     <published>2024-02-06T16:00:00.000Z</published>
-    <updated>2024-02-06T16:00:00.000Z</updated>
+    <updated>2024-03-30T16:00:00.000Z</updated>
     
     
       
@@ -96,15 +130,15 @@
     
     <category term="paper-reading" scheme="https://monsoon-cs.moe/tags/paper-reading/"/>
     
-    <category term="pact" scheme="https://monsoon-cs.moe/tags/pact/"/>
-    
-    <category term="pact22" scheme="https://monsoon-cs.moe/tags/pact22/"/>
-    
     <category term="ml-system" scheme="https://monsoon-cs.moe/tags/ml-system/"/>
     
     <category term="gpu" scheme="https://monsoon-cs.moe/tags/gpu/"/>
     
     <category term="resource-scheduling" scheme="https://monsoon-cs.moe/tags/resource-scheduling/"/>
+    
+    <category term="pact" scheme="https://monsoon-cs.moe/tags/pact/"/>
+    
+    <category term="pact22" scheme="https://monsoon-cs.moe/tags/pact22/"/>
     
   </entry>
   

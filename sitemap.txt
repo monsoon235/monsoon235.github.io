@@ -1,6 +1,7 @@
+https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/
 https://monsoon-cs.moe/2024-03-06-quantization-gemm/
 https://monsoon-cs.moe/2024-02-16-nfs-tuning/
-https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/
+https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/
 https://monsoon-cs.moe/2024-01-29-wg-for-cluster/
 https://monsoon-cs.moe/2023-11-05-toefl-exp/
 https://monsoon-cs.moe/2023-11-24-storage-system-desgin/
@@ -43,11 +44,13 @@ https://monsoon-cs.moe/tags/machine-learning/
 https://monsoon-cs.moe/tags/wireguard/
 https://monsoon-cs.moe/tags/vpn/
 https://monsoon-cs.moe/tags/paper-reading/
-https://monsoon-cs.moe/tags/pact/
-https://monsoon-cs.moe/tags/pact22/
+https://monsoon-cs.moe/tags/arxiv/
+https://monsoon-cs.moe/tags/arxiv24/
 https://monsoon-cs.moe/tags/ml-system/
 https://monsoon-cs.moe/tags/gpu/
 https://monsoon-cs.moe/tags/resource-scheduling/
+https://monsoon-cs.moe/tags/pact/
+https://monsoon-cs.moe/tags/pact22/
 https://monsoon-cs.moe/tags/losf/
 https://monsoon-cs.moe/tags/llm/
 https://monsoon-cs.moe/tags/quantization/
