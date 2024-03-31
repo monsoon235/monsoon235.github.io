@@ -1,6 +1,7 @@
 ---
 title: "[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT'22)"
 date: 2024-02-07
+updated: 2024-03-31
 lang: en
 tags:
   - paper-reading
@@ -85,7 +86,7 @@ This paper changes the default behavior of CUDA runtime to make it more suitable
 > Concept Explanation:
 > - Job: a task submitted by user, such as a DNN training task. It may be iterative and contains multiple kernels.
 > - Kernel: CUDA kernel.
-> - Normalized Progress (NP): $t_{isolate} / t_{co-execute}$.
+> - Normalized Progress (NP): $t _ {isolate} / t _ {co-execute}$.
 
 **Two key observations**:
 
@@ -117,7 +118,7 @@ Based on these 2 observations, the author proposed GPUPool. Its overall system d
 
 3. **Job dispatcher**. It decides which job pairs should co-run to maximize system performance while satisfying QoS. The decisions are found by solving a **maximum cardinality matching problem** -- each node represent a job, when two jobs can co-run and will not violate the QoS requirement, connecting an edge between them. Then a graph theory algorithm is used to maximum cardinality matching, which means a largest subset of edges that do not share a common end node. Due to the potential unreliability of the performance predictor, GPUPool also add **a safety margin** $\delta$ to edge formulation.
 
-$$E = \{ ( {job} _ i, {job} _ j ) \mid {job} _ i,{job} _ j \in V\ \text{and}\ {NP} _ {job _ x} > {QoS} _ {job _ x} \times (1 + \delta ), x \in \{i, j\} \}$$
+$$E = \left\{ ( {job} _ i, {job} _ j ) \mid {job} _ i,{job} _ j \in V\ \text{and}\ {NP} _ {job _ x} > {QoS} _ {job _ x} \times (1 + \delta ), x \in \{i, j\} \right\}$$
 
 4. **Execution**. The batch of jobs are assigned to the modified GPU hardware.
 
@@ -207,7 +208,9 @@ I have some potential ideas to improve this work:
 
 3. Sometimes the goal of a data center is not just to improve resource utilization, but also to **save energy**. Improving resource utilization does not necessarily mean energy saving, because the chip's speed $S$, power consumption $P$, and frequency $f$ have the following approximate relationship:
 
-$$S \propto f$$
-$$P \propto f^\alpha, \text{while}\ \alpha \in [2, 3]$$
+$$\begin{align}
+   S & \propto f \\
+   P & \propto f^\alpha, \text{while}\ \alpha \in [2, 3]
+\end{align}$$
 
 We can extend the optimization target of GPUPool to power consumption. This can be achieved by add a power prediction model with similar methods. Then we can use a multi-objective optimization algorithm to find the best job combination, considering both performance and power consumption.
