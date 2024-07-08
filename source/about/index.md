@@ -6,15 +6,17 @@ lang: en
 sitemap: false
 ---
 
-I'm now a 3rd-year graduate student at the University of Science and Technology of China (USTC) since 2021 and will receive my Master's Degree in Jun 2024. I received my Bachelor's Degree from the same university, majoring in Computer Science.
+I'm an incoming PhD student of University of Illinois Urbana-Champaign (UIUC) from Aug 2024.
+Now my research interest is Machine Learning System.
+In the past I explored 3D vision (e.g., Feature Matching and NeRF).
 
-From Sep 2024, I will begin my PhD student career at University of Illinois Urbana-Champaign (UIUC).
+Before that, I obtained my Master's and Bachelor's Degree from the University of Science and Technology of China (USTC) in 2024 and 2021 respectively.
 
 ## Education
 
-- **(Expected)** **PhD student** in Computer Science, University of Illinois Urbana-Champaign, 2024 (expected) - unknown
-- **MEng** in Control Science and Engineering, University of Science and Technology of China, 2021 - 2024 (expected)
-- **BEng** in Computer Science and Engineering, University of Science and Technology of China, 2017 - 2021
+- **PhD student** in Computer Science, University of Illinois Urbana-Champaign (UIUC), 2024 - unknown
+- **MEng** in Control Science and Engineering, University of Science and Technology of China (USTC), 2021 - 2024
+- **BEng** in Computer Science and Engineering, University of Science and Technology of China (USTC), 2017 - 2021
 
 ## Publications
 
