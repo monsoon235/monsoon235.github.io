@@ -12,9 +12,7 @@ mathjax: true
 
 ## Preface
 
-There have been many excellent works on LLM serving, mainly focusing on improving the throughput.
-Meanwhile, in practical applications, latency is equally important for LLM serving.
-However, **currently few works focus on improvement of LLM serving latency, especially the latency optimization under SLA constraint**.
+There have been many excellent works on LLM serving, mainly focusing on improving the throughput. Meanwhile, in practical applications, latency is equally important for LLM serving. However, **currently few works focus on improvement of LLM serving latency, especially the latency optimization under SLA constraint**.
 
 This blog attempts to summarize the basic concepts and problems in this direction, and give some novel research directions based on some analysis of latency in LLM serving.
 
@@ -32,15 +30,11 @@ In practice, rather than the average or median latency, we usually consider the 
 
 ![](latency_in_llm_serving.png)
 
-As shown in the figure above, the current popular LLM serving systems (such as vLLM, DeepSpeed) adopt an **iteration-level scheduling strategy**.
-The processing of each request is divided into the **prefilling stage** (prompt inference) and the **generation stage** (auto-regressive token-by-token generation).
-For systems such as Sarathi-Serve, the prompt is chunked to improve throughput, thus adding a **chunked prefilling stage**.
+As shown in the figure above, the current popular LLM serving systems (such as vLLM, DeepSpeed) adopt an **iteration-level scheduling strategy**. The processing of each request is divided into the **prefilling stage** (prompt inference) and the **generation stage** (auto-regressive token-by-token generation). For systems such as Sarathi-Serve, the prompt is chunked to improve throughput, thus adding a **chunked prefilling stage**.
 
-The LLM serving system maintains **3 queues** to store requests in these 3 states.
-The scheduler runs in a loop, and in each iteration, it selects requests from these 3 queues with a certain strategy, and combines them into a batch for the inference engine.
+The LLM serving system maintains **3 queues** to store requests in these 3 states. The scheduler runs in a loop, and in each iteration, it selects requests from these 3 queues with a certain strategy, and combines them into a batch for the inference engine.
 
-In such systems, the latency of requests mainly comes from 2 aspects: **queue latency** and **inference latency**.
-Assuming the latencies for a request from being added into the prefilling queue, chunked prefilling queue, generation queue to being selected by scheduler are $t_ {qp}$, $t_ {qc}$, $t_ {qg}$ respectively, and inference latency of engine if $t_ {inf}$.
+In such systems, the latency of requests mainly comes from 2 aspects: **queue latency** and **inference latency**. Assuming the latencies for a request from being added into the prefilling queue, chunked prefilling queue, generation queue to being selected by scheduler are $t_ {qp}$, $t_ {qc}$, $t_ {qg}$ respectively, and inference latency of engine if $t_ {inf}$.
 We get:
 
 $$\begin{aligned}
@@ -55,26 +49,19 @@ Obviously, $t_ {inf}$ is not a fixed value. It's related with the ingredient of 
 
 $$t_ {inf} = f\left( B_ {p}, B_ {c}, B_ {g}, \mathbf{L}_ {p}, L_ {chunk} \right),$$
 
-where $B_p$, $B_c$, $B_g$ indicates the number of non-chunked prefilling request, chunked prefilling request, generation request respectively.
-Vector $\mathbf{L}_ {p}$ means the prompt length of each non-chunked prefilling request in the batch.
+where $B_p$, $B_c$, $B_g$ indicates the number of non-chunked prefilling request, chunked prefilling request, generation request respectively. Vector $\mathbf{L}_ {p}$ means the prompt length of each non-chunked prefilling request in the batch.
 $L_ {chunk}$ is the chunk size.
 
 ## How to Improve It?
 
-Based on the above analysis, we can find that reducing latency mainly involves reducing both **queue latency** and **inference latency**.
-In fact, some techniques, such as iteration-level scheduling and chunked prefilling, can be seen as improvements to queue latency.
+Based on the above analysis, we can find that reducing latency mainly involves reducing both **queue latency** and **inference latency**. In fact, some techniques, such as iteration-level scheduling and chunked prefilling, can be seen as improvements to queue latency.
 
-On the other hand, **improvement of inference latency have not received much attention**.
-One reason is that, **for inference engines, there is a trade-off between latency and throughput**.
-Generally speaking, higher batch size means higher throughput, but also higher inference latency.
-Techniques such as quantization and Paged Attention focus on more efficient memory usage to increase batch size, **but inference latency may also increase accordingly** (TODO: add an example), which means $t_ {tbt}$ and $t_ {ttft}$ may be increased, and SLA requirements are broken.
+On the other hand, **improvement of inference latency have not received much attention**. One reason is that, **for inference engines, there is a trade-off between latency and throughput**.
+Generally speaking, higher batch size means higher throughput, but also higher inference latency. Techniques such as quantization and Paged Attention focus on more efficient memory usage to increase batch size, **but inference latency may also increase accordingly** (TODO: add an example), which means $t_ {tbt}$ and $t_ {ttft}$ may be increased, and SLA requirements are broken.
 
-Therefore, **there is an opportunity to improve inference latency in current LLM serving systems**.
-The target may be an **SLA-aware scheduler**, which can maximize throughput without breaking SLA requirements.
-It should be able to **dynamically decide the batch size and batch composition** instead of just deploying a static prefilling-prioritize or generation-prioritize strategy.
+Therefore, **there is an opportunity to improve inference latency in current LLM serving systems**. The target may be an **SLA-aware scheduler**, which can maximize throughput without breaking SLA requirements. It should be able to **dynamically decide the batch size and batch composition** instead of just deploying a static prefilling-prioritize or generation-prioritize strategy.
 
-I believe the key to this design is to predict $t_ {inf}$ to provide latency optimization guidance for the scheduler.
-Prediction based on profiling results may be a simple approach, **but a performance model based on GPU computation capability and memory bandwidth might be more general**.
+I believe the key to this design is to predict $t_ {inf}$ to provide latency optimization guidance for the scheduler. Prediction based on profiling results may be a simple approach, **but a performance model based on GPU computation capability and memory bandwidth might be more general**.
 
 Once we can predict $t_ {inf}$, $t_ {qp}$, $t_ {qc}$, and $t_ {qg}$ can also be predicted using mathematical tools such as Queueing Theory (e.g., Poisson distribution), allowing us to optimize serving for the following scenarios:
 
