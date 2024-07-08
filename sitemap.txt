@@ -35,13 +35,13 @@ https://monsoon-cs.moe/tags/warp/
 https://monsoon-cs.moe/tags/network/
 https://monsoon-cs.moe/tags/sing-box/
 https://monsoon-cs.moe/tags/clash/
+https://monsoon-cs.moe/tags/pytorch/
+https://monsoon-cs.moe/tags/ascend/
+https://monsoon-cs.moe/tags/machine-learning/
 https://monsoon-cs.moe/tags/zfs/
 https://monsoon-cs.moe/tags/nfs/
 https://monsoon-cs.moe/tags/rdma/
 https://monsoon-cs.moe/tags/storage/
-https://monsoon-cs.moe/tags/pytorch/
-https://monsoon-cs.moe/tags/ascend/
-https://monsoon-cs.moe/tags/machine-learning/
 https://monsoon-cs.moe/tags/wireguard/
 https://monsoon-cs.moe/tags/vpn/
 https://monsoon-cs.moe/tags/paper-reading/
@@ -54,8 +54,8 @@ https://monsoon-cs.moe/tags/pact/
 https://monsoon-cs.moe/tags/pact22/
 https://monsoon-cs.moe/tags/losf/
 https://monsoon-cs.moe/tags/llm/
+https://monsoon-cs.moe/tags/vllm/
+https://monsoon-cs.moe/tags/deepspeed/
 https://monsoon-cs.moe/tags/quantization/
 https://monsoon-cs.moe/tags/gemm/
 https://monsoon-cs.moe/tags/cuda-kernel/
-https://monsoon-cs.moe/tags/vllm/
-https://monsoon-cs.moe/tags/deepspeed/
