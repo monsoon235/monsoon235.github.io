@@ -6,7 +6,7 @@
   <link href="https://monsoon-cs.moe/atom.xml" rel="self"/>
   
   <link href="https://monsoon-cs.moe/"/>
-  <updated>2024-03-06T16:00:00.000Z</updated>
+  <updated>2024-07-06T16:00:00.000Z</updated>
   <id>https://monsoon-cs.moe/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Latency in LLM Serving</title>
+    <link href="https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/"/>
+    <id>https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/</id>
+    <published>2024-07-06T16:00:00.000Z</published>
+    <updated>2024-07-06T16:00:00.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;Preface&quot;&gt;&lt;a href=&quot;#Preface&quot; class=&quot;headerlink&quot; title=&quot;Preface&quot;&gt;&lt;/a&gt;Preface&lt;/h2&gt;&lt;p&gt;There have been many excellent works on LLM</summary>
+        
+      
+    
+    
+    
+    
+    <category term="ml-system" scheme="https://monsoon-cs.moe/tags/ml-system/"/>
+    
+    <category term="llm" scheme="https://monsoon-cs.moe/tags/llm/"/>
+    
+    <category term="vllm" scheme="https://monsoon-cs.moe/tags/vllm/"/>
+    
+    <category term="deepspeed" scheme="https://monsoon-cs.moe/tags/deepspeed/"/>
+    
+  </entry>
   
   <entry>
     <title>How Quantization Works: From a Matrix Multiplication Perspective</title>

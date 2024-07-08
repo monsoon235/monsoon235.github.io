@@ -21,32 +21,33 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="This is an unfinished blog.  PrefaceDue to Internet censorship in China (known as GFW, Great Firewall, 防火长城), many websites (e.g. Google, Twitter) are blocked, and some websites (e.g. GitHub) suffer">
+    <meta name="description" content="PrefaceThere have been many excellent works on LLM serving, mainly focusing on improving the throughput.Meanwhile, in practical applications, latency is equally important for LLM serving.However, curr">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Building Proxy Service for Team">
-<meta property="og:url" content="https://monsoon-cs.moe/2023-11-09-proxy-for-team/">
+<meta property="og:title" content="Latency in LLM Serving">
+<meta property="og:url" content="https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/">
 <meta property="og:site_name" content="Monsoon&#39;s Blog">
-<meta property="og:description" content="This is an unfinished blog.  PrefaceDue to Internet censorship in China (known as GFW, Great Firewall, 防火长城), many websites (e.g. Google, Twitter) are blocked, and some websites (e.g. GitHub) suffer">
+<meta property="og:description" content="PrefaceThere have been many excellent works on LLM serving, mainly focusing on improving the throughput.Meanwhile, in practical applications, latency is equally important for LLM serving.However, curr">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2023-11-08T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-11-08T16:00:00.000Z">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/latency_in_llm_serving.png">
+<meta property="article:published_time" content="2024-07-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-06T16:00:00.000Z">
 <meta property="article:author" content="Monsoon">
-<meta property="article:tag" content="proxy">
-<meta property="article:tag" content="warp">
-<meta property="article:tag" content="network">
-<meta property="article:tag" content="sing-box">
-<meta property="article:tag" content="clash">
+<meta property="article:tag" content="ml-system">
+<meta property="article:tag" content="llm">
+<meta property="article:tag" content="vllm">
+<meta property="article:tag" content="deepspeed">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/latency_in_llm_serving.png">
 
 
-<link rel="canonical" href="https://monsoon-cs.moe/2023-11-09-proxy-for-team/">
+<link rel="canonical" href="https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://monsoon-cs.moe/2023-11-09-proxy-for-team/","path":"2023-11-09-proxy-for-team/","title":"Building Proxy Service for Team"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/","path":"2024-07-07-latency-in-llm-serving/","title":"Latency in LLM Serving"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Building Proxy Service for Team | Monsoon's Blog</title>
+<title>Latency in LLM Serving | Monsoon's Blog</title>
   
 
 
@@ -120,7 +121,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Preface"><span class="nav-number">1.</span> <span class="nav-text">Preface</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Target"><span class="nav-number">2.</span> <span class="nav-text">Target</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Available-Resources"><span class="nav-number">3.</span> <span class="nav-text">Available Resources</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CERNET"><span class="nav-number">3.1.</span> <span class="nav-text">CERNET</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cloudflare-WARP"><span class="nav-number">3.2.</span> <span class="nav-text">Cloudflare WARP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VPS"><span class="nav-number">3.3.</span> <span class="nav-text">VPS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Server-in-USTC"><span class="nav-number">3.4.</span> <span class="nav-text">Server in USTC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Anti-Censorship-Tools"><span class="nav-number">3.5.</span> <span class="nav-text">Anti-Censorship Tools</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adopted-Solution"><span class="nav-number">4.</span> <span class="nav-text">Adopted Solution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Deployment"><span class="nav-number">5.</span> <span class="nav-text">Deployment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Problems"><span class="nav-number">6.</span> <span class="nav-text">Problems</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Client-Initialization"><span class="nav-number">6.1.</span> <span class="nav-text">Client Initialization</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Compatibility"><span class="nav-number">6.2.</span> <span class="nav-text">Compatibility</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conclusion"><span class="nav-number">7.</span> <span class="nav-text">Conclusion</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Preface"><span class="nav-number">1.</span> <span class="nav-text">Preface</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Latency-Metrics"><span class="nav-number">2.</span> <span class="nav-text">Latency Metrics</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Where-The-Latency-Comes-From"><span class="nav-number">3.</span> <span class="nav-text">Where The Latency Comes From?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-Improve-It"><span class="nav-number">4.</span> <span class="nav-text">How to Improve It?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Some-Meaningful-Experiment-Result"><span class="nav-number">5.</span> <span class="nav-text">Some Meaningful Experiment Result</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -176,7 +177,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-11-09-proxy-for-team/">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -189,12 +190,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Building Proxy Service for Team | Monsoon's Blog">
+      <meta itemprop="name" content="Latency in LLM Serving | Monsoon's Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Building Proxy Service for Team
+          Latency in LLM Serving
         </h1>
 
         <div class="post-meta-container">
@@ -205,7 +206,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2023-11-09 00:00:00" itemprop="dateCreated datePublished" datetime="2023-11-09T00:00:00+08:00">2023-11-09</time>
+      <time title="Created: 2024-07-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-07T00:00:00+08:00">2024-07-07</time>
     </span>
 
   
@@ -217,23 +218,37 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><blockquote>
-<p>This is an unfinished blog.</p>
-</blockquote>
-<h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>Due to <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Internet_censorship_in_China">Internet censorship in China</a> (known as <em>GFW</em>, <em>Great Firewall</em>, <em>防火长城</em>), many websites (e.g. Google, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity issues. In China, the means to circumvent internet censorship is referred to as <em>翻墙</em> (means <em>climbing over the wall</em>).</p>
-<p>In China, to freely access the Internet, a proxy is essential. Despite various commercial options available, they may not be suitable for everyone. Therefore, I have constructed a user-friendly and easy-to-maintain proxy system for my research group, as a part of my responsibilities as a system administrator.</p>
-<h2 id="Target"><a href="#Target" class="headerlink" title="Target"></a>Target</h2><ol>
-<li><strong>Easy to use</strong>. Team members only need some simple configurations.The proxy client should be able to automatically update configuration.</li>
-<li><strong>Stability</strong>.</li>
-<li><strong>Sufficient traffic</strong>, to download large datasets.</li>
-<li><strong>Low Latency</strong>, to provide good experience for web.</li>
-<li><strong>Low Cost</strong>.</li>
-<li><strong>Easy to maintain</strong>. Frequent maintenance is unacceptable, and only simple changes of the configuration are required for new function.</li>
-<li><strong>Concealment</strong>. The cat-and-mouse game between GFW and anti-censorship tools has been escalating. Ten years ago (2013), only an OpenVPN client was all your need to <a target="_blank" rel="noopener" href="https://www.cnnic.com.cn/IDR/hlwfzdsj/201306/t20130628_40563.htm">“Across the Great Wall and reach every corner in the world”</a>. Now, you must use much more sophisticated solutions to prevent your “unusual” traffic from being detected by GFW. According to <a target="_blank" rel="noopener" href="https://gfw.report/">GFW Report</a>, popular <a target="_blank" rel="noopener" href="https://shadowsocks.org/">Shadowsocks</a> (a proxy protocol which simply encrypt all traffic using pre-shared key) was <a target="_blank" rel="noopener" href="https://gfw.report/blog/gfw_shadowsocks/">detected and blocked</a>, and the TLS-based proxy also <a target="_blank" rel="noopener" href="https://github.com/net4people/bbs/issues/129">encountered large-scale blocking in Oct 2022</a>. The tools and protocols used must be concealed enough to allow the service to run for a long time.</li>
+    <div class="post-body" itemprop="articleBody"><h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>There have been many excellent works on LLM serving, mainly focusing on improving the throughput.<br>Meanwhile, in practical applications, latency is equally important for LLM serving.<br>However, <strong>currently few works focus on improvement of LLM serving latency, especially the latency optimization under SLA constraint</strong>.</p>
+<p>This blog attempts to summarize the basic concepts and problems in this direction, and give some novel research directions based on some analysis of latency in LLM serving.</p>
+<h2 id="Latency-Metrics"><a href="#Latency-Metrics" class="headerlink" title="Latency Metrics"></a>Latency Metrics</h2><p>In LLM serving, we mainly focus on three latency metrics:</p>
+<ul>
+<li><strong>TBT</strong> ($t_ {tbt}$): Time Between Tokens.</li>
+<li><strong>TTFT</strong> ($t_ {ttft}$): Time to First Token.</li>
+<li><strong>TE2E</strong> ($t_ {e2e}$): Time of End-to-end.</li>
+</ul>
+<p>In practice, rather than the average or median latency, we usually consider the <strong>latency SLA</strong>, which means that 50%, 90%, and 99% of data should fall below certain thresholds.</p>
+<h2 id="Where-The-Latency-Comes-From"><a href="#Where-The-Latency-Comes-From" class="headerlink" title="Where The Latency Comes From?"></a>Where The Latency Comes From?</h2><p><img src="/2024-07-07-latency-in-llm-serving/latency_in_llm_serving.png"></p>
+<p>As shown in the figure above, the current popular LLM serving systems (such as vLLM, DeepSpeed) adopt an <strong>iteration-level scheduling strategy</strong>.<br>The processing of each request is divided into the <strong>prefilling stage</strong> (prompt inference) and the <strong>generation stage</strong> (auto-regressive token-by-token generation).<br>For systems such as Sarathi-Serve, the prompt is chunked to improve throughput, thus adding a <strong>chunked prefilling stage</strong>.</p>
+<p>The LLM serving system maintains <strong>3 queues</strong> to store requests in these 3 states.<br>The scheduler runs in a loop, and in each iteration, it selects requests from these 3 queues with a certain strategy, and combines them into a batch for the inference engine.</p>
+<p>In such systems, the latency of requests mainly comes from 2 aspects: <strong>queue latency</strong> and <strong>inference latency</strong>.<br>Assuming the latencies for a request from being added into the prefilling queue, chunked prefilling queue, generation queue to being selected by scheduler are $t_ {qp}$, $t_ {qc}$, $t_ {qg}$ respectively, and inference latency of engine if $t_ {inf}$.<br>We get:</p>
+<p>$$\begin{aligned}<br>  t_ {ttft} &amp;&#x3D; t_ {qp} + (N_ {chunk} - 1) \cdot t_ {qc} + N_ {chunk} \cdot t_ {inf}, \<br>  t_ {tbt} &amp;&#x3D; t_ {qg} + t_ {inf}, \<br>  t_ {e2e} &amp;&#x3D; t_ {ttft} + N_{token} \cdot t_ {tbt},<br>\end{aligned}$$</p>
+<p>where $N_ {chunk}$ is the chunk number of a prefilling request, $N_ {chunk}&#x3D;1$ means no chunking. $N_ {token}$ is the total token number generated by a request.</p>
+<p>Obviously, $t_ {inf}$ is not a fixed value. It’s related with the ingredient of the batch. We can denote it as:</p>
+<p>$$t_ {inf} &#x3D; f\left( B_ {p}, B_ {c}, B_ {g}, \mathbf{L}_ {p}, L_ {chunk} \right),$$</p>
+<p>where $B_p$, $B_c$, $B_g$ indicates the number of non-chunked prefilling request, chunked prefilling request, generation request respectively.<br>Vector $\mathbf{L}_ {p}$ means the prompt length of each non-chunked prefilling request in the batch.<br>$L_ {chunk}$ is the chunk size.</p>
+<h2 id="How-to-Improve-It"><a href="#How-to-Improve-It" class="headerlink" title="How to Improve It?"></a>How to Improve It?</h2><p>Based on the above analysis, we can find that reducing latency mainly involves reducing both <strong>queue latency</strong> and <strong>inference latency</strong>.<br>In fact, some techniques, such as iteration-level scheduling and chunked prefilling, can be seen as improvements to queue latency.</p>
+<p>On the other hand, <strong>improvement of inference latency have not received much attention</strong>.<br>One reason is that, <strong>for inference engines, there is a trade-off between latency and throughput</strong>.<br>Generally speaking, higher batch size means higher throughput, but also higher inference latency.<br>Techniques such as quantization and Paged Attention focus on more efficient memory usage to increase batch size, <strong>but inference latency may also increase accordingly</strong> (TODO: add an example), which means $t_ {tbt}$ and $t_ {ttft}$ may be increased, and SLA requirements are broken.</p>
+<p>Therefore, <strong>there is an opportunity to improve inference latency in current LLM serving systems</strong>.<br>The target may be an <strong>SLA-aware scheduler</strong>, which can maximize throughput without breaking SLA requirements.<br>It should be able to <strong>dynamically decide the batch size and batch composition</strong> instead of just deploying a static prefilling-prioritize or generation-prioritize strategy.</p>
+<p>I believe the key to this design is to predict $t_ {inf}$ to provide latency optimization guidance for the scheduler.<br>Prediction based on profiling results may be a simple approach, <strong>but a performance model based on GPU computation capability and memory bandwidth might be more general</strong>.</p>
+<p>Once we can predict $t_ {inf}$, $t_ {qp}$, $t_ {qc}$, and $t_ {qg}$ can also be predicted using mathematical tools such as Queueing Theory (e.g., Poisson distribution), allowing us to optimize serving for the following scenarios:</p>
+<ol>
+<li>When the request arrival rate is less than the maximum throughput: we can appropriately reduce batch size to improve $t_ {tbt}$.</li>
+<li>When the request arrival rate is greater than the maximum throughput: we can adjust the batch composition dynamically based on queue length, or drop some requests to avoid starvation.</li>
+<li>When the request arrival rate suddenly increases: we can adjust the batch composition to avoid breaking the SLA of $t_ {ttft}$.</li>
 </ol>
-<h2 id="Available-Resources"><a href="#Available-Resources" class="headerlink" title="Available Resources"></a>Available Resources</h2><h3 id="CERNET"><a href="#CERNET" class="headerlink" title="CERNET"></a>CERNET</h3><h3 id="Cloudflare-WARP"><a href="#Cloudflare-WARP" class="headerlink" title="Cloudflare WARP"></a>Cloudflare WARP</h3><h3 id="VPS"><a href="#VPS" class="headerlink" title="VPS"></a>VPS</h3><h3 id="Server-in-USTC"><a href="#Server-in-USTC" class="headerlink" title="Server in USTC"></a>Server in USTC</h3><h3 id="Anti-Censorship-Tools"><a href="#Anti-Censorship-Tools" class="headerlink" title="Anti-Censorship Tools"></a>Anti-Censorship Tools</h3><h2 id="Adopted-Solution"><a href="#Adopted-Solution" class="headerlink" title="Adopted Solution"></a>Adopted Solution</h2><!-- draw a picture -->
+<p>In summary, this SLA-aware scheduler should provide better results than a static scheduler by considering <strong>arrival rate</strong>, <strong>queue length</strong>, and <strong>predicted $t_ {inf}$</strong>.</p>
+<h2 id="Some-Meaningful-Experiment-Result"><a href="#Some-Meaningful-Experiment-Result" class="headerlink" title="Some Meaningful Experiment Result"></a>Some Meaningful Experiment Result</h2><p>TODO</p>
 
-<h2 id="Deployment"><a href="#Deployment" class="headerlink" title="Deployment"></a>Deployment</h2><h2 id="Problems"><a href="#Problems" class="headerlink" title="Problems"></a>Problems</h2><h3 id="Client-Initialization"><a href="#Client-Initialization" class="headerlink" title="Client Initialization"></a>Client Initialization</h3><h3 id="Compatibility"><a href="#Compatibility" class="headerlink" title="Compatibility"></a>Compatibility</h3><h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2>
     </div>
 
     
@@ -250,7 +265,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>Post link: </strong>
-      <a href="https://monsoon-cs.moe/2023-11-09-proxy-for-team/" title="Building Proxy Service for Team">https://monsoon-cs.moe/2023-11-09-proxy-for-team/</a>
+      <a href="https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/" title="Latency in LLM Serving">https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/</a>
   </li>
   <li class="post-copyright-license">
       <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
@@ -259,25 +274,21 @@
 </div>
 
           <div class="post-tags">
-              <a href="/tags/proxy/" rel="tag"># proxy</a>
-              <a href="/tags/warp/" rel="tag"># warp</a>
-              <a href="/tags/network/" rel="tag"># network</a>
-              <a href="/tags/sing-box/" rel="tag"># sing-box</a>
-              <a href="/tags/clash/" rel="tag"># clash</a>
+              <a href="/tags/ml-system/" rel="tag"># ml-system</a>
+              <a href="/tags/llm/" rel="tag"># llm</a>
+              <a href="/tags/vllm/" rel="tag"># vllm</a>
+              <a href="/tags/deepspeed/" rel="tag"># deepspeed</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2023-11-05-toefl-exp/" rel="prev" title="我的 TOEFL 经验">
-                  <i class="fa fa-angle-left"></i> 我的 TOEFL 经验
+                <a href="/2024-03-06-quantization-gemm/" rel="prev" title="How Quantization Works: From a Matrix Multiplication Perspective">
+                  <i class="fa fa-angle-left"></i> How Quantization Works: From a Matrix Multiplication Perspective
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2023-11-14-ascend-910b-custom-op/" rel="next" title="Ascend 910B 自定义 PyTorch 算子">
-                  Ascend 910B 自定义 PyTorch 算子 <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>
@@ -350,7 +361,7 @@
 
   
 
-  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
 <script src="/js/third-party/math/mathjax.js"></script>
 
 

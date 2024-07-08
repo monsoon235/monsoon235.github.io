@@ -1,3 +1,4 @@
+https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/
 https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/
 https://monsoon-cs.moe/2024-03-06-quantization-gemm/
 https://monsoon-cs.moe/2024-02-16-nfs-tuning/
@@ -56,3 +57,5 @@ https://monsoon-cs.moe/tags/llm/
 https://monsoon-cs.moe/tags/quantization/
 https://monsoon-cs.moe/tags/gemm/
 https://monsoon-cs.moe/tags/cuda-kernel/
+https://monsoon-cs.moe/tags/vllm/
+https://monsoon-cs.moe/tags/deepspeed/
