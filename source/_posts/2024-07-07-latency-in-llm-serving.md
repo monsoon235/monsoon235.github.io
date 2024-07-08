@@ -44,8 +44,8 @@ Assuming the latencies for a request from being added into the prefilling queue,
 We get:
 
 $$\begin{aligned}
-  t_ {ttft} &= t_ {qp} + (N_ {chunk} - 1) \cdot t_ {qc} + N_ {chunk} \cdot t_ {inf}, \\
-  t_ {tbt} &= t_ {qg} + t_ {inf}, \\
+  t_ {ttft} &= t_ {qp} + (N_ {chunk} - 1) \cdot t_ {qc} + N_ {chunk} \cdot t_ {inf}, \\\\
+  t_ {tbt} &= t_ {qg} + t_ {inf}, \\\\
   t_ {e2e} &= t_ {ttft} + N_{token} \cdot t_ {tbt},
 \end{aligned}$$
 
