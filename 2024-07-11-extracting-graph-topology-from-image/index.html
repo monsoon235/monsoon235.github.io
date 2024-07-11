@@ -21,23 +21,34 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta property="og:type" content="website">
-<meta property="og:title" content="Monsoon&#39;s Blog">
-<meta property="og:url" content="https://monsoon-cs.moe/tags/gpu/">
+    <meta name="description" content="The ProblemNow we have an image representing a graph, as shown in the figure below:  Suppose we already know the category of each pixel: background, node, or edge. How can we extract the graph topolog">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Extracting Graph Topology from Image">
+<meta property="og:url" content="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/">
 <meta property="og:site_name" content="Monsoon&#39;s Blog">
+<meta property="og:description" content="The ProblemNow we have an image representing a graph, as shown in the figure below:  Suppose we already know the category of each pixel: background, node, or edge. How can we extract the graph topolog">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/image.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/nn.png">
+<meta property="article:published_time" content="2024-07-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-10T16:00:00.000Z">
 <meta property="article:author" content="Monsoon">
+<meta property="article:tag" content="network">
+<meta property="article:tag" content="machine-learning">
+<meta property="article:tag" content="computer-vision">
+<meta property="article:tag" content="graph">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/image.png">
 
 
-<link rel="canonical" href="https://monsoon-cs.moe/tags/gpu/">
+<link rel="canonical" href="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":false,"lang":"en","comments":"","permalink":"","path":"tags/gpu/index.html","title":""}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/","path":"2024-07-11-extracting-graph-topology-from-image/","title":"Extracting Graph Topology from Image"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Tag: gpu | Monsoon's Blog</title>
+<title>Extracting Graph Topology from Image | Monsoon's Blog</title>
   
 
 
@@ -98,7 +109,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -111,6 +122,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#The-Problem"><span class="nav-number">1.</span> <span class="nav-text">The Problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Challenges-in-Classical-Algorithm"><span class="nav-number">2.</span> <span class="nav-text">Challenges in Classical Algorithm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#What-about-Neural-Network"><span class="nav-number">3.</span> <span class="nav-text">What about Neural Network?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Other-Notes"><span class="nav-number">4.</span> <span class="nav-text">Other Notes</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -155,70 +167,121 @@
 
     </div>
 
-    <div class="main-inner tag posts-collapse">
+    <div class="main-inner post posts-expand">
 
 
   
+
+
+<div class="post-block">
   
   
-  <div class="post-block">
-    <div class="post-content">
-      <div class="collection-title">
-        <h1 class="collection-header">gpu
-          <small>Tag</small>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Extracting Graph Topology from Image | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Extracting Graph Topology from Image
         </h1>
-      </div>
 
-      
-    <div class="collection-year">
-      <span class="collection-header">2024</span>
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-07-11 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-11T00:00:00+08:00">2024-07-11</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="The-Problem"><a href="#The-Problem" class="headerlink" title="The Problem"></a>The Problem</h2><p>Now we have an image representing a graph, as shown in the figure below:</p>
+<p><img src="/2024-07-11-extracting-graph-topology-from-image/image.png"></p>
+<p>Suppose we already know the category of each pixel: background, node, or edge. How can we <strong>extract the graph topology</strong> from it and represent the graph by an adjacency matrix?</p>
+<h2 id="Challenges-in-Classical-Algorithm"><a href="#Challenges-in-Classical-Algorithm" class="headerlink" title="Challenges in Classical Algorithm"></a>Challenges in Classical Algorithm</h2><p>TODO</p>
+<h2 id="What-about-Neural-Network"><a href="#What-about-Neural-Network" class="headerlink" title="What about Neural Network?"></a>What about Neural Network?</h2><p>We can use a simple algorithm to extract the position of each node. Suppose the position of a node is $\mathbf{P}(x,y)$, and there are $N$ nodes in total.</p>
+<p>Then, the task is to fill in the $N\times N$ adjacency matrix with $0$ or $1$. As we can see, this can be converted into <strong>a binary classification problem</strong>.</p>
+<p>we can train a neural network $\mathbf{f}$, which takes 3 input: the image $I$, the position of a node pair $\left( \mathbf{P}_ 1, \mathbf{P}_ 2<br>\right)$. It outputs $O\in{0,1}$, indicating whether there is a direct connection between the node pair, i.e.,</p>
+<p>$$O&#x3D;\mathbf{f}(\mathbf{I}, \mathbf{P}_ 1, \mathbf{P}_ 2).$$</p>
+<p>The dataset can be synthesized by a simple program, and we can use any classification network (e.g., <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1905.11946">EfficientNet</a>) as our network architecture.</p>
+<p>The problem is how to feed $\left( \mathbf{P}_ 1, \mathbf{P}_ 2<br>\right)$​ into the network. We can add an additional “mask channel” to the image, where the pixels belonging to the two input nodes are marked as 1, and the others as 0. Finally, we input this 4-channel “image” into the network.</p>
+<p><img src="/2024-07-11-extracting-graph-topology-from-image/nn.png"></p>
+<h2 id="Other-Notes"><a href="#Other-Notes" class="headerlink" title="Other Notes"></a>Other Notes</h2><p>TODO</p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2024-02-07T00:00:00+08:00"
-              content="2024-02-07">
-          02-07
-        </time>
-      </div>
+    
+    
+    
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2024-02-07-paper-reading-arxiv24-acs/" itemprop="url">
-            <span itemprop="name">[Paper Reading] ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs (arXiv'24)</span>
-          </a>
-      </div>
+    <footer class="post-footer">
+          
 
-      
-    </header>
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Monsoon
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/" title="Extracting Graph Topology from Image">https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/network/" rel="tag"># network</a>
+              <a href="/tags/machine-learning/" rel="tag"># machine-learning</a>
+              <a href="/tags/computer-vision/" rel="tag"># computer-vision</a>
+              <a href="/tags/graph/" rel="tag"># graph</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024-07-07-latency-in-llm-serving/" rel="prev" title="Latency in LLM Serving">
+                  <i class="fa fa-angle-left"></i> Latency in LLM Serving
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
   </article>
+</div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2024-02-07T00:00:00+08:00"
-              content="2024-02-07">
-          02-07
-        </time>
-      </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2024-02-07-paper-reading-pact22-gpupool/" itemprop="url">
-            <span itemprop="name">[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT'22)</span>
-          </a>
-      </div>
 
-      
-    </header>
-  </article>
 
-    </div>
-  </div>
-  
-  
-  
+
 
 </div>
   </main>
@@ -281,7 +344,7 @@
 
   
 
-  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
 <script src="/js/third-party/math/mathjax.js"></script>
 
 
