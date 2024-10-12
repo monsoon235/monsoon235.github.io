@@ -6,7 +6,7 @@
   <link href="https://monsoon-cs.moe/atom.xml" rel="self"/>
   
   <link href="https://monsoon-cs.moe/"/>
-  <updated>2024-07-10T16:00:00.000Z</updated>
+  <updated>2024-10-11T16:00:00.000Z</updated>
   <id>https://monsoon-cs.moe/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>关于 IPv6 地址分配的一切</title>
+    <link href="https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/"/>
+    <id>https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/</id>
+    <published>2024-10-11T16:00:00.000Z</published>
+    <updated>2024-10-11T16:00:00.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;序言&quot;&gt;&lt;a href=&quot;#序言&quot; class=&quot;headerlink&quot; title=&quot;序言&quot;&gt;&lt;/a&gt;序言&lt;/h2&gt;&lt;p&gt;IPv4 只有一种动态地址分配方式，即 DHCP，但 IPv6 就有 SLAAC 和 DHCPv6 两种分配方式，同时 DHCPv6</summary>
+        
+      
+    
+    
+    
+    
+    <category term="network" scheme="https://monsoon-cs.moe/tags/network/"/>
+    
+    <category term="router" scheme="https://monsoon-cs.moe/tags/router/"/>
+    
+    <category term="ipv6" scheme="https://monsoon-cs.moe/tags/ipv6/"/>
+    
+    <category term="slaac" scheme="https://monsoon-cs.moe/tags/slaac/"/>
+    
+    <category term="dhcp" scheme="https://monsoon-cs.moe/tags/dhcp/"/>
+    
+    <category term="dhcpv6" scheme="https://monsoon-cs.moe/tags/dhcpv6/"/>
+    
+    <category term="dhcpv6-pd" scheme="https://monsoon-cs.moe/tags/dhcpv6-pd/"/>
+    
+  </entry>
   
   <entry>
     <title>Extracting Graph Topology from Image</title>

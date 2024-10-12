@@ -15,11 +15,11 @@
 
 
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
     <meta property="og:type" content="website">
 <meta property="og:title" content="Monsoon&#39;s Blog">
@@ -123,12 +123,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-count">52</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -156,6 +156,146 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024-10-12-all-about-ipv6-addr-alloc/" class="post-title-link" itemprop="url">关于 IPv6 地址分配的一切</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-10-12 00:00:00" itemprop="dateCreated datePublished" datetime="2024-10-12T00:00:00+08:00">2024-10-12</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>IPv4 只有一种动态地址分配方式，即 DHCP，但 IPv6 就有 SLAAC 和 DHCPv6 两种分配方式，同时 DHCPv6 还存在 PD (Prefix Delegation) 的扩展。这三种分配方式之间又存在交互，使得 IPv6 分配过程中出现的问题远比 IPv4 多。大多数可以搜到的教程只从表面解决了问题，对于其后的技术细节模棱两可，而没有从根本上厘清 IPv6 与 IPv4 的差异，</p>
+<p>此文旨在从相关基础概念出发，授人以渔地讲清楚 IPv6 三种地址分配方式的工作原理，帮助彻底解决 IPv6 分配中的疑难杂症。</p>
+<h2 id="IPv6-基础概念"><a href="#IPv6-基础概念" class="headerlink" title="IPv6 基础概念"></a>IPv6 基础概念</h2><h3 id="LLA-Link-Local-Address，链路本地地址-和-EUI-64"><a href="#LLA-Link-Local-Address，链路本地地址-和-EUI-64" class="headerlink" title="LLA (Link-Local Address，链路本地地址) 和 EUI-64"></a>LLA (Link-Local Address，链路本地地址) 和 EUI-64</h3><p>LLA 其实在 IPv4 中就已存在，当 DHCP 没有正常工作时，一些操作系统就会为网络接口分配一个 <code>169.254.0.0/16</code> 的地址，用于临时的点对点通信。但 LLA 在 IPv4 中并不重要，只扮演一个可有可无的备用角色，只有当 DHCP 故障时才会出现，因而绝大部分人（包括笔者）直到 IPv6 普及时才了解到 LLA 的存在。</p>
+<p>IPv6 LLA (<code>fe80::/8</code>) 继承了 IPv4 LLA 点对点通信的基本功能，但更进一步承担了 NDP (Neighbor Discovery Protocol，邻居发现协议) 以及 SLAAC (Stateless Address Autoconfiguration，无状态地址自动配置) 的重要功能。理解它才能理解 SLAAC 的工作原理。</p>
+<p>举例来说，当两个网口通过网线直接相连后，就会分别自动生成 IPv6 LLA，如 <code>fe80::dfc2:d2aa:c86f:171e/64</code> 和 <code>fe80::da8f:9d5b:57e3:c6a6/64</code>，两者都可以 <code>ping</code> 通对方的 LLA。在 Linux 上通过 <code>ip -6 route</code> 命令，可以查到自动配置的 LLA 路由项：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fe80::/64 dev eth0 proto kernel metric 1024 pref medium</span><br></pre></td></tr></table></figure>
+
+<p>IPv6 LLA 使用特定的算法从 MAC 地址中生成，即 EUI-64，例如网口的 MAC 地址为 <code>70:07:12:34:56:78</code> 时，生成的 EUI-64 为 <code>7207:12ff:fe34:5678</code>，LLA 则为 <code>fe80:7207:12ff:fe34:5678/64</code>（EUI-64 加上 <code>fe80</code> 的前缀）。具体的生成方式下图所示：</p>
+<p><img src="/2024-10-12-all-about-ipv6-addr-alloc/generating-link-local-address-example.png" alt="IPv6 LLA 生成过程，图源 https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac"></p>
+<p>一般而言，路由器不会转发 LLA 地址的流量，它<strong>仅用于链路点对点通信</strong>。</p>
+<h3 id="GUA-Global-Unicast-Address，全局单播地址"><a href="#GUA-Global-Unicast-Address，全局单播地址" class="headerlink" title="GUA (Global Unicast Address，全局单播地址)"></a>GUA (Global Unicast Address，全局单播地址)</h3><p>IPv6 GUA (<code>2000::/3</code>) 可以对应到 IPv4 “公网 IP”的概念。理论上它是全球唯一的，并且可以用于公网通信。一个配置良好的网络架构应当能使每个设备都获取到 IPv6 GUA，以最大程度上发挥 IPv6 的 P2P 通信优势。</p>
+<h3 id="私有地址"><a href="#私有地址" class="headerlink" title="私有地址"></a>私有地址</h3><p><code>fc00::/7</code> 被定义为 IPv6 的私有地址，类似于 IPv4 中 的 <code>10.0.0.0/8</code>、<code>172.16.0.0/12</code> 和 <code>192.168.0.0/16</code>，用于局域网通信。与 LLA 不同的是，它可以被路由器转发。</p>
+<p>由于 IPv6 被设计为全球每个设备都能分到 GUA，私有地址在 IPv6 中的作用被大大削弱。当无法做到为每个设备分配 GUA 时（如一些校园网环境），在内网分配 IPv6 私有地址可以作为替代方案，让内网设备可以访问 IPv6。</p>
+<h3 id="组播-Multicast"><a href="#组播-Multicast" class="headerlink" title="组播 (Multicast)"></a>组播 (Multicast)</h3><p>IPv6 组播地址（<code>ff00::/8</code>）与 IPv4 组播地址（<code>224.0.0.0/4</code>）类似，用于网段内的一对多通信。<strong>SLAAC 和 DHCPv6 都依赖组播工作</strong>。常用的组播地址有：</p>
+<ul>
+<li><code>ff02::1</code>：本地链路所有节点；</li>
+<li><code>ff02::2</code>：本地链路所有路由器。</li>
+</ul>
+<h3 id="NDP-Neighbor-Discovery-Protocol，邻居发现协议"><a href="#NDP-Neighbor-Discovery-Protocol，邻居发现协议" class="headerlink" title="NDP (Neighbor Discovery Protocol，邻居发现协议)"></a>NDP (Neighbor Discovery Protocol，邻居发现协议)</h3><p>NDP 工作于 ICMPv6 之上，类似于 IPv4 ARP，用于发现数据链路层中其他节点和相应的 IPv6 地址，并确定可用路由和维护关于可用路径和其他活动节点的信息可达性。<strong>SLAAC 基于 NDP 工作</strong>，涉及的报文类型有：</p>
+<ol>
+<li>RS（Router Solicitation）和 RA（Router Advertisement）：用于配置 IPv6 地址及路由；</li>
+<li>NS（Neighbor Solicitation）和 NA（Neighbor Advertisement）：用于查找链路上其他设备的 MAC 地址。</li>
+</ol>
+<h2 id="SLAAC-Stateless-Address-Autoconfiguration-无状态地址自动配置"><a href="#SLAAC-Stateless-Address-Autoconfiguration-无状态地址自动配置" class="headerlink" title="SLAAC (Stateless Address Autoconfiguration, 无状态地址自动配置)"></a>SLAAC (Stateless Address Autoconfiguration, 无状态地址自动配置)</h2><p>SLAAC 是 <a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc4862">RFC 4862</a> 中定义的 IPv6 地址分配方式，也是<strong>推荐的分配方式</strong>。事实上 Android 只支持 SLAAC IPv6 分配。</p>
+<p>SLAAC 最大的特点就是无状态（stateless），即不需要一个中心化的服务器来负责分配。下面笔者用一个例子说面 SLAAC 的过程。</p>
+<p>假设<strong>路由器</strong>上的 <code>lan0</code> 网口和<strong>主机</strong>上的 <code>eth0</code> 网口相连，<code>lan0</code> 的 LLA 是 <code>fe80::1/64</code>，<code>eth0</code> 的 MAC 地址为 <code>70:07:12:34:56:78</code>。同时，路由器持有 <code>2001:db8::/64</code> 的 GUA 前缀，即这个子网下所有 GUA 都会被上级路由器路由到此路由器的 <code>wan</code> 网口。SLAAC 的流程如下：</p>
+<ol>
+<li><p><code>eth0</code> 根据 MAC 地址生成 EUI-64 <code>7207:12ff:fe34:5678</code> 和 LLA <code>fe80:7207:12ff:fe34:5678/64</code>；</p>
+</li>
+<li><p>主机执行 DAD（Duplicated Address Detection）确保 LLA 在本地链路中唯一。其和地址分配无关，因而在此略过，有兴趣的读者可以自行查阅相关资料；</p>
+</li>
+<li><p>主机通过 <code>eth0</code> LLA 发送 RS 消息。RS 使用组播地址 <code>ff02::2</code> 发送给本地链路所有的路由器。</p>
+</li>
+<li><p>路由器回复 RA 消息给 <code>eth0</code> LLA。RA 中包含前缀 <code>2001:db8::/64</code>、有效期和 MTU 等信息。</p>
+</li>
+<li><p>主机收到 RA，将前缀和 EUI-64 组合成 <code>2001:db8::7207:12ff:fe34:5678/64</code> 分配给 <code>eth0</code>，并添加路由表：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2001:db8::/64 dev eth0 proto ra metric 1024 expires 2591993sec pref medium</span><br><span class="line">default via fe80::1 dev eth0 proto static metric 1024 onlink pref medium</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>主机进行 DAD 检测，并使用 NA 消息向链路上的邻居通告新地址的使用。</p>
+</li>
+</ol>
+<p><img src="/2024-10-12-all-about-ipv6-addr-alloc/ipv6-stateless-address-autoconfiguration.gif" alt="SLAAC 流程，图源 https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac"></p>
+<p>SLAAC 看起来很美好，但有个<strong>重要缺陷</strong>：不支持 DNS 信息的下发，主机必须通过其他方式（通常是 DHCPv6）获取 DNS。RA 中有两个标志位用以解决此问题：</p>
+<ul>
+<li><code>M</code> (Managed Address Configuration)：可以通过 DHCPv6 获取地址信息；</li>
+<li><code>O</code> (Other Configuration)：可以通过 DHCPv6 获取其他信息（如 DNS）。</li>
+</ul>
+<p>而更新的 <a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc8106">RFC 6106</a> 则通过在 RA 中添加 RDNSS（Recursive DNS Server）和 DNSSL（DNS Search List），支持了 DNS 信息的下发。各操作系统对于 RDNSS 的支持度见 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Comparison_of_IPv6_support_in_operating_systems">Comparison of IPv6 support in operating systems</a>。在实际使用中，绝大部分情况下只需要配置 IPv4 DNS（通过 DHCPv4 获得），因而 RDNSS 扩展的意义并不大。</p>
+<p>以上基于 EUI-64 的 SLAAC 地址配置存在的问题是，<strong>它生成的地址是固定并且可预测的</strong>，这会带来安全性和隐私问题。<a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc4941">RFC 4941</a> 定义的 IPv6 SLAAC 隐私扩展解决了这一问题。它在 SLAAC 时同时生成随机的、定期更换的地址，以解决隐私问题。同时 EUI-64 生成的地址也被保留，用于外部传入连接。在启用隐私扩展的情况下，Linux 中生成的 IPv6 地址例如（从上到下分别是隐私地址、EUI-64 GUA、LLA）：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc cake state UP group default qlen 1000</span><br><span class="line">    link/ether 70:07:12:34:56:78 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet6 2001:db8::dead:beef:aaaa:bbbb/64 scope global temporary dynamic</span><br><span class="line">       valid_lft 2591998sec preferred_lft 604798sec</span><br><span class="line">    inet6 2001:db8::7207:12ff:fe34:5678/64 scope global dynamic mngtmpaddr noprefixroute</span><br><span class="line">       valid_lft 2591998sec preferred_lft 604798sec</span><br><span class="line">    inet6 fe80:7207:12ff:fe34:5678/64 scope link</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
+
+<h2 id="DHCPv6"><a href="#DHCPv6" class="headerlink" title="DHCPv6"></a>DHCPv6</h2><p>DHCPv6 和 DHCPv4 的运行方式整体相同，主机发送 <code>ff02::1:2</code> UDP 端口 547 的组播消息，DHCPv6 server 回复地址和 DNS 等信息。</p>
+<p>有所不同的是，DHCPv6 可以在有状态或者无状态的模式下运行，两者的区别在于是否获取地址。当搭配 SLAAC 使用时，主机只需要从 DHCPv6 获取 DNS 等信息，因而可以使用无状态 DHCPv6。</p>
+<h2 id="DHCPv6-PD-Prefix-Delegation-前缀委托"><a href="#DHCPv6-PD-Prefix-Delegation-前缀委托" class="headerlink" title="DHCPv6 PD (Prefix Delegation, 前缀委托)"></a>DHCPv6 PD (Prefix Delegation, 前缀委托)</h2><p>PD 是 <a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc3633">RFC 3633</a> 定义的 DHCPv6 扩展。它用于在网络中分发 IPv6 前缀。</p>
+<p>在启用 PD 扩展的情况下，DHCP server 向主机发送一个 IPv6 子网前缀（如 <code>2001:db8::/56</code>）的使用权，并添加路由表以确保将此子网下的地址全部路由到请求前缀的主机。主机可以再对此子网进行划分和分配。</p>
+<p>一个典型的 DHCPv6 PD 使用场景是家庭 ISP 网络接入。家庭网关路由器向 ISP DHCP server 请求 IPv6 前缀，然后再通过 SLAAC 在家庭内网中分发此前缀子网中的地址。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文简要介绍了 IPv6 地址分配中涉及的一些概念，并阐述了 SLAAC、DHCPv6、DHCPv6 PD 的工作原理。在简化地址管理这一方面，IPv6 可以说做得并不成功，多种标准并存，且存在不同的组合形式，让客户端会有不小的概率无法正确获取 IPv6。</p>
+<p>在实际情况中，我们最常预见的 IPv6 分配情况有三种：</p>
+<ul>
+<li>纯 SLAAC：一般校园网（教育网）属于此类。在实际使用中，笔者发现存在错误配置的内网主机胡乱发送 RA 的情况，导致整个内网所有主机的 IPv6 都错误配置。与此同时，在这种模式下，自行接入的路由器将无法再向下级设备分发 SLAAC GUA，因为 SLAAC 基于的本地链路组播数据包无法被路由器转发（可以通过 IPv6 桥接或者 NAT6 解决，此处不展开说明）。</li>
+<li>纯 DHCPv6：一些企业内网会使用此模式，因为 DHCPv6 可以集中管理。这种模式最大的问题是 <a target="_blank" rel="noopener" href="https://www.nullzero.co.uk/android-does-not-support-dhcpv6-and-google-wont-fix-that/">Android 不支持 DHCPv6</a>。但在其他操作系统下，此模式运行较为稳定。</li>
+<li>SLAAC + DHCPv6 PD：这是家庭 ISP 网络接入最常见的模式，大部分家用路由器都对此做了适配，可以做到开箱即用。</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac">IPv6 Stateless Address Auto-configuration (SLAAC)</a></li>
+<li><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc4862">RFC 4862: IPv6 Stateless Address Autoconfiguration</a></li>
+<li><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc8106">RFC 6106: IPv6 Router Advertisement Options for DNS Configuration</a></li>
+<li><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc4941">RFC 4914: Privacy Extensions for Stateless Address Autoconfiguration in IPv6</a></li>
+<li><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc3633">RFC 3633: IPv6 Prefix Options for Dynamic Host Configuration Protocol (DHCP) version 6</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.nullzero.co.uk/android-does-not-support-dhcpv6-and-google-wont-fix-that/">Android does not support DHCPv6 and Google ‘Won’t Fix’ that</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Comparison_of_IPv6_support_in_operating_systems">Comparison of IPv6 support in operating systems</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1344,90 +1484,6 @@
 <h2 id="注册原理"><a href="#注册原理" class="headerlink" title="注册原理"></a>注册原理</h2><p>TODO</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>TODO</p>
 
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-11-09-proxy-for-team/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Monsoon">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023-11-09-proxy-for-team/" class="post-title-link" itemprop="url">Building Proxy Service for Team</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2023-11-09 00:00:00" itemprop="dateCreated datePublished" datetime="2023-11-09T00:00:00+08:00">2023-11-09</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>This is an unfinished blog.</p>
-</blockquote>
-<h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>Due to <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Internet_censorship_in_China">Internet censorship in China</a> (known as <em>GFW</em>, <em>Great Firewall</em>, <em>防火长城</em>), many websites (e.g. Google, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity issues. In China, the means to circumvent internet censorship is referred to as <em>翻墙</em> (means <em>climbing over the wall</em>).</p>
-<p>In China, to freely access the Internet, a proxy is essential. Despite various commercial options available, they may not be suitable for everyone. Therefore, I have constructed a user-friendly and easy-to-maintain proxy system for my research group, as a part of my responsibilities as a system administrator.</p>
-<h2 id="Target"><a href="#Target" class="headerlink" title="Target"></a>Target</h2><ol>
-<li><strong>Easy to use</strong>. Team members only need some simple configurations.The proxy client should be able to automatically update configuration.</li>
-<li><strong>Stability</strong>.</li>
-<li><strong>Sufficient traffic</strong>, to download large datasets.</li>
-<li><strong>Low Latency</strong>, to provide good experience for web.</li>
-<li><strong>Low Cost</strong>.</li>
-<li><strong>Easy to maintain</strong>. Frequent maintenance is unacceptable, and only simple changes of the configuration are required for new function.</li>
-<li><strong>Concealment</strong>. The cat-and-mouse game between GFW and anti-censorship tools has been escalating. Ten years ago (2013), only an OpenVPN client was all your need to <a target="_blank" rel="noopener" href="https://www.cnnic.com.cn/IDR/hlwfzdsj/201306/t20130628_40563.htm">“Across the Great Wall and reach every corner in the world”</a>. Now, you must use much more sophisticated solutions to prevent your “unusual” traffic from being detected by GFW. According to <a target="_blank" rel="noopener" href="https://gfw.report/">GFW Report</a>, popular <a target="_blank" rel="noopener" href="https://shadowsocks.org/">Shadowsocks</a> (a proxy protocol which simply encrypt all traffic using pre-shared key) was <a target="_blank" rel="noopener" href="https://gfw.report/blog/gfw_shadowsocks/">detected and blocked</a>, and the TLS-based proxy also <a target="_blank" rel="noopener" href="https://github.com/net4people/bbs/issues/129">encountered large-scale blocking in Oct 2022</a>. The tools and protocols used must be concealed enough to allow the service to run for a long time.</li>
-</ol>
-<h2 id="Available-Resources"><a href="#Available-Resources" class="headerlink" title="Available Resources"></a>Available Resources</h2><h3 id="CERNET"><a href="#CERNET" class="headerlink" title="CERNET"></a>CERNET</h3><h3 id="Cloudflare-WARP"><a href="#Cloudflare-WARP" class="headerlink" title="Cloudflare WARP"></a>Cloudflare WARP</h3><h3 id="VPS"><a href="#VPS" class="headerlink" title="VPS"></a>VPS</h3><h3 id="Server-in-USTC"><a href="#Server-in-USTC" class="headerlink" title="Server in USTC"></a>Server in USTC</h3><h3 id="Anti-Censorship-Tools"><a href="#Anti-Censorship-Tools" class="headerlink" title="Anti-Censorship Tools"></a>Anti-Censorship Tools</h3><h2 id="Adopted-Solution"><a href="#Adopted-Solution" class="headerlink" title="Adopted Solution"></a>Adopted Solution</h2><!-- draw a picture -->
-
-<h2 id="Deployment"><a href="#Deployment" class="headerlink" title="Deployment"></a>Deployment</h2><h2 id="Problems"><a href="#Problems" class="headerlink" title="Problems"></a>Problems</h2><h3 id="Client-Initialization"><a href="#Client-Initialization" class="headerlink" title="Client Initialization"></a>Client Initialization</h3><h3 id="Compatibility"><a href="#Compatibility" class="headerlink" title="Compatibility"></a>Compatibility</h3><h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2>
       
     </div>
 
