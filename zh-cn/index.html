@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta property="og:type" content="website">
+<meta property="og:title" content="Monsoon&#39;s Blog">
+<meta property="og:url" content="https://monsoon-cs.moe/zh-cn/index.html">
+<meta property="og:site_name" content="Monsoon&#39;s Blog">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="Monsoon">
+<meta property="article:tag" content="blog">
+<meta property="article:tag" content="computer science">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://monsoon-cs.moe/zh-cn/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"en","comments":"","permalink":"","path":"zh-cn/index.html","title":""}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Monsoon's Blog</title>
+  
+
+
+
+  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;3c9e3103682b4f6fbc36342486e67640&quot;}'></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Monsoon's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Monsoon's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>Sitemap</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Monsoon</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/monsoon235" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;monsoon235" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://t.me/monsoon235" title="Telegram → https:&#x2F;&#x2F;t.me&#x2F;monsoon235" rel="noopener me" target="_blank"><i class="fab fa-telegram fa-fw"></i>Telegram</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/big/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024-10-12-all-about-ipv6-addr-alloc/" class="post-title-link" itemprop="url">关于 IPv6 地址分配的一切</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-10-12 00:00:00" itemprop="dateCreated datePublished" datetime="2024-10-12T00:00:00-05:00">2024-10-12</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>IPv4 只有一种动态地址分配方式，即 DHCP，但 IPv6 就有 SLAAC 和 DHCPv6 两种分配方式，同时 DHCPv6 还存在 PD (Prefix Delegation) 的扩展。这三种分配方式之间又存在交互，使得 IPv6 分配过程中出现的问题远比 IPv4 多。大多数可以搜到的教程只从表面解决了问题，对于其后的技术细节模棱两可，而没有从根本上厘清 IPv6 与 IPv4 的差异，</p>
+<p>此文旨在从相关基础概念出发，授人以渔地讲清楚 IPv6 三种地址分配方式的工作原理，帮助彻底解决 IPv6 分配中的疑难杂症。</p>
+<h2 id="IPv6-基础概念"><a href="#IPv6-基础概念" class="headerlink" title="IPv6 基础概念"></a>IPv6 基础概念</h2><h3 id="LLA-Link-Local-Address，链路本地地址-和-EUI-64"><a href="#LLA-Link-Local-Address，链路本地地址-和-EUI-64" class="headerlink" title="LLA (Link-Local Address，链路本地地址) 和 EUI-64"></a>LLA (Link-Local Address，链路本地地址) 和 EUI-64</h3><p>LLA 其实在 IPv4 中就已存在，当 DHCP 没有正常工作时，一些操作系统就会为网络接口分配一个 <code>169.254.0.0/16</code> 的地址，用于临时的点对点通信。但 LLA 在 IPv4 中并不重要，只扮演一个可有可无的备用角色，只有当 DHCP 故障时才会出现，因而绝大部分人（包括笔者）直到 IPv6 普及时才了解到 LLA 的存在。</p>
+<p>IPv6 LLA (<code>fe80::/8</code>) 继承了 IPv4 LLA 点对点通信的基本功能，但更进一步承担了 NDP (Neighbor Discovery Protocol，邻居发现协议) 以及 SLAAC (Stateless Address Autoconfiguration，无状态地址自动配置) 的重要功能。理解它才能理解 SLAAC 的工作原理。</p>
+<p>举例来说，当两个网口通过网线直接相连后，就会分别自动生成 IPv6 LLA，如 <code>fe80::dfc2:d2aa:c86f:171e/64</code> 和 <code>fe80::da8f:9d5b:57e3:c6a6/64</code>，两者都可以 <code>ping</code> 通对方的 LLA。在 Linux 上通过 <code>ip -6 route</code> 命令，可以查到自动配置的 LLA 路由项：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fe80::/64 dev eth0 proto kernel metric 1024 pref medium</span><br></pre></td></tr></table></figure>
+
+<p>IPv6 LLA 使用特定的算法从 MAC 地址中生成，即 EUI-64，例如网口的 MAC 地址为 <code>70:07:12:34:56:78</code> 时，生成的 EUI-64 为 <code>7207:12ff:fe34:5678</code>，LLA 则为 <code>fe80:7207:12ff:fe34:5678/64</code>（EUI-64 加上 <code>fe80</code> 的前缀）。具体的生成方式下图所示：</p>
+<p><img src="/generating-link-local-address-example.png" alt="IPv6 LLA 生成过程，图源 https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac"></p>
+<p>一般而言，路由器不会转发 LLA 地址的流量，它<strong>仅用于链路点对点通信</strong>。</p>
+<h3 id="GUA-Global-Unicast-Address，全局单播地址"><a href="#GUA-Global-Unicast-Address，全局单播地址" class="headerlink" title="GUA (Global Unicast Address，全局单播地址)"></a>GUA (Global Unicast Address，全局单播地址)</h3><p>IPv6 GUA (<code>2000::/3</code>) 可以对应到 IPv4 “公网 IP”的概念。理论上它是全球唯一的，并且可以用于公网通信。一个配置良好的网络架构应当能使每个设备都获取到 IPv6 GUA，以最大程度上发挥 IPv6 的 P2P 通信优势。</p>
+<h3 id="私有地址"><a href="#私有地址" class="headerlink" title="私有地址"></a>私有地址</h3><p><code>fc00::/7</code> 被定义为 IPv6 的私有地址，类似于 IPv4 中 的 <code>10.0.0.0/8</code>、<code>172.16.0.0/12</code> 和 <code>192.168.0.0/16</code>，用于局域网通信。与 LLA 不同的是，它可以被路由器转发。</p>
+<p>由于 IPv6 被设计为全球每个设备都能分到 GUA，私有地址在 IPv6 中的作用被大大削弱。当无法做到为每个设备分配 GUA 时（如一些校园网环境），在内网分配 IPv6 私有地址可以作为替代方案，让内网设备可以访问 IPv6。</p>
+<h3 id="组播-Multicast"><a href="#组播-Multicast" class="headerlink" title="组播 (Multicast)"></a>组播 (Multicast)</h3><p>IPv6 组播地址（<code>ff00::/8</code>）与 IPv4 组播地址（<code>224.0.0.0/4</code>）类似，用于网段内的一对多通信。<strong>SLAAC 和 DHCPv6 都依赖组播工作</strong>。常用的组播地址有：</p>
+<ul>
+<li><code>ff02::1</code>：本地链路所有节点；</li>
+<li><code>ff02::2</code>：本地链路所有路由器。</li>
+</ul>
+<h3 id="NDP-Neighbor-Discovery-Protocol，邻居发现协议"><a href="#NDP-Neighbor-Discovery-Protocol，邻居发现协议" class="headerlink" title="NDP (Neighbor Discovery Protocol，邻居发现协议)"></a>NDP (Neighbor Discovery Protocol，邻居发现协议)</h3><p>NDP 工作于 ICMPv6 之上，类似于 IPv4 ARP，用于发现数据链路层中其他节点和相应的 IPv6 地址，并确定可用路由和维护关于可用路径和其他活动节点的信息可达性。<strong>SLAAC 基于 NDP 工作</strong>，涉及的报文类型有：</p>
+<ol>
+<li>RS（Router Solicitation）和 RA（Router Advertisement）：用于配置 IPv6 地址及路由；</li>
+<li>NS（Neighbor Solicitation）和 NA（Neighbor Advertisement）：用于查找链路上其他设备的 MAC 地址。</li>
+</ol>
+<h2 id="SLAAC-Stateless-Address-Autoconfiguration-无状态地址自动配置"><a href="#SLAAC-Stateless-Address-Autoconfiguration-无状态地址自动配置" class="headerlink" title="SLAAC (Stateless Address Autoconfiguration, 无状态地址自动配置)"></a>SLAAC (Stateless Address Autoconfiguration, 无状态地址自动配置)</h2><p>SLAAC 是 <a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc4862">RFC 4862</a> 中定义的 IPv6 地址分配方式，也是<strong>推荐的分配方式</strong>。事实上 Android 只支持 SLAAC IPv6 分配。</p>
+<p>SLAAC 最大的特点就是无状态（stateless），即不需要一个中心化的服务器来负责分配。下面笔者用一个例子说面 SLAAC 的过程。</p>
+<p>假设<strong>路由器</strong>上的 <code>lan0</code> 网口和<strong>主机</strong>上的 <code>eth0</code> 网口相连，<code>lan0</code> 的 LLA 是 <code>fe80::1/64</code>，<code>eth0</code> 的 MAC 地址为 <code>70:07:12:34:56:78</code>。同时，路由器持有 <code>2001:db8::/64</code> 的 GUA 前缀，即这个子网下所有 GUA 都会被上级路由器路由到此路由器的 <code>wan</code> 网口。SLAAC 的流程如下：</p>
+<ol>
+<li><p><code>eth0</code> 根据 MAC 地址生成 EUI-64 <code>7207:12ff:fe34:5678</code> 和 LLA <code>fe80:7207:12ff:fe34:5678/64</code>；</p>
+</li>
+<li><p>主机执行 DAD（Duplicated Address Detection）确保 LLA 在本地链路中唯一。其和地址分配无关，因而在此略过，有兴趣的读者可以自行查阅相关资料；</p>
+</li>
+<li><p>主机通过 <code>eth0</code> LLA 发送 RS 消息。RS 使用组播地址 <code>ff02::2</code> 发送给本地链路所有的路由器。</p>
+</li>
+<li><p>路由器回复 RA 消息给 <code>eth0</code> LLA。RA 中包含前缀 <code>2001:db8::/64</code>、有效期和 MTU 等信息。</p>
+</li>
+<li><p>主机收到 RA，将前缀和 EUI-64 组合成 <code>2001:db8::7207:12ff:fe34:5678/64</code> 分配给 <code>eth0</code>，并添加路由表：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2001:db8::/64 dev eth0 proto ra metric 1024 expires 2591993sec pref medium</span><br><span class="line">default via fe80::1 dev eth0 proto static metric 1024 onlink pref medium</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>主机进行 DAD 检测，并使用 NA 消息向链路上的邻居通告新地址的使用。</p>
+</li>
+</ol>
+<p><img src="/ipv6-stateless-address-autoconfiguration.gif" alt="SLAAC 流程，图源 https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac"></p>
+<p>SLAAC 看起来很美好，但有个<strong>重要缺陷</strong>：不支持 DNS 信息的下发，主机必须通过其他方式（通常是 DHCPv6）获取 DNS。RA 中有两个标志位用以解决此问题：</p>
+<ul>
+<li><code>M</code> (Managed Address Configuration)：可以通过 DHCPv6 获取地址信息；</li>
+<li><code>O</code> (Other Configuration)：可以通过 DHCPv6 获取其他信息（如 DNS）。</li>
+</ul>
+<p>而更新的 <a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc8106">RFC 6106</a> 则通过在 RA 中添加 RDNSS（Recursive DNS Server）和 DNSSL（DNS Search List），支持了 DNS 信息的下发。各操作系统对于 RDNSS 的支持度见 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Comparison_of_IPv6_support_in_operating_systems">Comparison of IPv6 support in operating systems</a>。在实际使用中，绝大部分情况下只需要配置 IPv4 DNS（通过 DHCPv4 获得），因而 RDNSS 扩展的意义并不大。</p>
+<p>以上基于 EUI-64 的 SLAAC 地址配置存在的问题是，<strong>它生成的地址是固定并且可预测的</strong>，这会带来安全性和隐私问题。<a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc4941">RFC 4941</a> 定义的 IPv6 SLAAC 隐私扩展解决了这一问题。它在 SLAAC 时同时生成随机的、定期更换的地址，以解决隐私问题。同时 EUI-64 生成的地址也被保留，用于外部传入连接。在启用隐私扩展的情况下，Linux 中生成的 IPv6 地址例如（从上到下分别是隐私地址、EUI-64 GUA、LLA）：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc cake state UP group default qlen 1000</span><br><span class="line">    link/ether 70:07:12:34:56:78 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet6 2001:db8::dead:beef:aaaa:bbbb/64 scope global temporary dynamic</span><br><span class="line">       valid_lft 2591998sec preferred_lft 604798sec</span><br><span class="line">    inet6 2001:db8::7207:12ff:fe34:5678/64 scope global dynamic mngtmpaddr noprefixroute</span><br><span class="line">       valid_lft 2591998sec preferred_lft 604798sec</span><br><span class="line">    inet6 fe80:7207:12ff:fe34:5678/64 scope link</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
+
+<h2 id="DHCPv6"><a href="#DHCPv6" class="headerlink" title="DHCPv6"></a>DHCPv6</h2><p>DHCPv6 和 DHCPv4 的运行方式整体相同，主机发送 <code>ff02::1:2</code> UDP 端口 547 的组播消息，DHCPv6 server 回复地址和 DNS 等信息。</p>
+<p>有所不同的是，DHCPv6 可以在有状态或者无状态的模式下运行，两者的区别在于是否获取地址。当搭配 SLAAC 使用时，主机只需要从 DHCPv6 获取 DNS 等信息，因而可以使用无状态 DHCPv6。</p>
+<h2 id="DHCPv6-PD-Prefix-Delegation-前缀委托"><a href="#DHCPv6-PD-Prefix-Delegation-前缀委托" class="headerlink" title="DHCPv6 PD (Prefix Delegation, 前缀委托)"></a>DHCPv6 PD (Prefix Delegation, 前缀委托)</h2><p>PD 是 <a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc3633">RFC 3633</a> 定义的 DHCPv6 扩展。它用于在网络中分发 IPv6 前缀。</p>
+<p>在启用 PD 扩展的情况下，DHCP server 向主机发送一个 IPv6 子网前缀（如 <code>2001:db8::/56</code>）的使用权，并添加路由表以确保将此子网下的地址全部路由到请求前缀的主机。主机可以再对此子网进行划分和分配。</p>
+<p>一个典型的 DHCPv6 PD 使用场景是家庭 ISP 网络接入。家庭网关路由器向 ISP DHCP server 请求 IPv6 前缀，然后再通过 SLAAC 在家庭内网中分发此前缀子网中的地址。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文简要介绍了 IPv6 地址分配中涉及的一些概念，并阐述了 SLAAC、DHCPv6、DHCPv6 PD 的工作原理。在简化地址管理这一方面，IPv6 可以说做得并不成功，多种标准并存，且存在不同的组合形式，让客户端会有不小的概率无法正确获取 IPv6。</p>
+<p>在实际情况中，我们最常预见的 IPv6 分配情况有三种：</p>
+<ul>
+<li>纯 SLAAC：一般校园网（教育网）属于此类。在实际使用中，笔者发现存在错误配置的内网主机胡乱发送 RA 的情况，导致整个内网所有主机的 IPv6 都错误配置。与此同时，在这种模式下，自行接入的路由器将无法再向下级设备分发 SLAAC GUA，因为 SLAAC 基于的本地链路组播数据包无法被路由器转发（可以通过 IPv6 桥接或者 NAT6 解决，此处不展开说明）。</li>
+<li>纯 DHCPv6：一些企业内网会使用此模式，因为 DHCPv6 可以集中管理。这种模式最大的问题是 <a target="_blank" rel="noopener" href="https://www.nullzero.co.uk/android-does-not-support-dhcpv6-and-google-wont-fix-that/">Android 不支持 DHCPv6</a>。但在其他操作系统下，此模式运行较为稳定。</li>
+<li>SLAAC + DHCPv6 PD：这是家庭 ISP 网络接入最常见的模式，大部分家用路由器都对此做了适配，可以做到开箱即用。</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac">IPv6 Stateless Address Auto-configuration (SLAAC)</a></li>
+<li><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc4862">RFC 4862: IPv6 Stateless Address Autoconfiguration</a></li>
+<li><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc8106">RFC 6106: IPv6 Router Advertisement Options for DNS Configuration</a></li>
+<li><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc4941">RFC 4914: Privacy Extensions for Stateless Address Autoconfiguration in IPv6</a></li>
+<li><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc3633">RFC 3633: IPv6 Prefix Options for Dynamic Host Configuration Protocol (DHCP) version 6</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.nullzero.co.uk/android-does-not-support-dhcpv6-and-google-wont-fix-that/">Android does not support DHCPv6 and Google ‘Won’t Fix’ that</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Comparison_of_IPv6_support_in_operating_systems">Comparison of IPv6 support in operating systems</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024-07-11-extracting-graph-topology-from-image/" class="post-title-link" itemprop="url">Extracting Graph Topology from Image</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-07-11 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-11T00:00:00-05:00">2024-07-11</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="The-Problem"><a href="#The-Problem" class="headerlink" title="The Problem"></a>The Problem</h2><p>Now we have an image representing a graph, as shown in the figure below:</p>
+<p><img src="/image.png"></p>
+<p>Suppose we already know the category of each pixel: background, node, or edge. How can we <strong>extract the graph topology</strong> from it and represent the graph by an adjacency matrix?</p>
+<h2 id="Challenges-in-Classical-Algorithm"><a href="#Challenges-in-Classical-Algorithm" class="headerlink" title="Challenges in Classical Algorithm"></a>Challenges in Classical Algorithm</h2><p>TODO</p>
+<h2 id="What-about-Neural-Network"><a href="#What-about-Neural-Network" class="headerlink" title="What about Neural Network?"></a>What about Neural Network?</h2><p>We can use a simple algorithm to extract the position of each node. Suppose the position of a node is $\mathbf{P}(x,y)$, and there are $N$ nodes in total.</p>
+<p>Then, the task is to fill in the $N\times N$ adjacency matrix with $0$ or $1$. As we can see, this can be converted into <strong>a binary classification problem</strong>.</p>
+<p>we can train a neural network $\mathbf{f}$, which takes 3 input: the image $I$, the position of a node pair $\left( \mathbf{P}_ 1, \mathbf{P}_ 2<br>\right)$. It outputs $O\in{0,1}$, indicating whether there is a direct connection between the node pair, i.e.,</p>
+<p>$$O&#x3D;\mathbf{f}(\mathbf{I}, \mathbf{P}_ 1, \mathbf{P}_ 2).$$</p>
+<p>The dataset can be synthesized by a simple program, and we can use any classification network (e.g., <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1905.11946">EfficientNet</a>) as our network architecture.</p>
+<p>The problem is how to feed $\left( \mathbf{P}_ 1, \mathbf{P}_ 2<br>\right)$​ into the network. We can add an additional “mask channel” to the image, where the pixels belonging to the two input nodes are marked as 1, and the others as 0. Finally, we input this 4-channel “image” into the network.</p>
+<p><img src="/nn.png"></p>
+<h2 id="Other-Notes"><a href="#Other-Notes" class="headerlink" title="Other Notes"></a>Other Notes</h2><p>TODO</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024-07-07-latency-in-llm-serving/" class="post-title-link" itemprop="url">Latency in LLM Serving</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-07-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-07T00:00:00-05:00">2024-07-07</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>There have been many excellent works on LLM serving, mainly focusing on improving the throughput. Meanwhile, in practical applications, latency is equally important for LLM serving. However, <strong>currently few works focus on improvement of LLM serving latency, especially the latency optimization under SLA constraint</strong>.</p>
+<p>This blog attempts to summarize the basic concepts and problems in this direction, and give some novel research directions based on some analysis of latency in LLM serving.</p>
+<h2 id="Latency-Metrics"><a href="#Latency-Metrics" class="headerlink" title="Latency Metrics"></a>Latency Metrics</h2><p>In LLM serving, we mainly focus on three latency metrics:</p>
+<ul>
+<li><strong>TBT</strong> ($t_ {tbt}$): Time Between Tokens.</li>
+<li><strong>TTFT</strong> ($t_ {ttft}$): Time to First Token.</li>
+<li><strong>TE2E</strong> ($t_ {e2e}$): Time of End-to-end.</li>
+</ul>
+<p>In practice, rather than the average or median latency, we usually consider the <strong>latency SLA</strong>, which means that 50%, 90%, and 99% of data should fall below certain thresholds.</p>
+<h2 id="Where-The-Latency-Comes-From"><a href="#Where-The-Latency-Comes-From" class="headerlink" title="Where The Latency Comes From?"></a>Where The Latency Comes From?</h2><p><img src="/latency_in_llm_serving.png"></p>
+<p>As shown in the figure above, the current popular LLM serving systems (such as vLLM, DeepSpeed) adopt an <strong>iteration-level scheduling strategy</strong>. The processing of each request is divided into the <strong>prefilling stage</strong> (prompt inference) and the <strong>generation stage</strong> (auto-regressive token-by-token generation). For systems such as Sarathi-Serve, the prompt is chunked to improve throughput, thus adding a <strong>chunked prefilling stage</strong>.</p>
+<p>The LLM serving system maintains <strong>3 queues</strong> to store requests in these 3 states. The scheduler runs in a loop, and in each iteration, it selects requests from these 3 queues with a certain strategy, and combines them into a batch for the inference engine.</p>
+<p>In such systems, the latency of requests mainly comes from 2 aspects: <strong>queue latency</strong> and <strong>inference latency</strong>. Assuming the latencies for a request from being added into the prefilling queue, chunked prefilling queue, generation queue to being selected by scheduler are $t_ {qp}$, $t_ {qc}$, $t_ {qg}$ respectively, and inference latency of engine if $t_ {inf}$.<br>We get:</p>
+<p>$$\begin{aligned}<br>  t_ {ttft} &amp;&#x3D; t_ {qp} + (N_ {chunk} - 1) \cdot t_ {qc} + N_ {chunk} \cdot t_ {inf}, \\<br>  t_ {tbt} &amp;&#x3D; t_ {qg} + t_ {inf}, \\<br>  t_ {e2e} &amp;&#x3D; t_ {ttft} + N_{token} \cdot t_ {tbt},<br>\end{aligned}$$</p>
+<p>where $N_ {chunk}$ is the chunk number of a prefilling request, $N_ {chunk}&#x3D;1$ means no chunking. $N_ {token}$ is the total token number generated by a request.</p>
+<p>Obviously, $t_ {inf}$ is not a fixed value. It’s related with the ingredient of the batch. We can denote it as:</p>
+<p>$$t_ {inf} &#x3D; f\left( B_ {p}, B_ {c}, B_ {g}, \mathbf{L}_ {p}, L_ {chunk} \right),$$</p>
+<p>where $B_p$, $B_c$, $B_g$ indicates the number of non-chunked prefilling request, chunked prefilling request, generation request respectively. Vector $\mathbf{L}_ {p}$ means the prompt length of each non-chunked prefilling request in the batch.<br>$L_ {chunk}$ is the chunk size.</p>
+<h2 id="How-to-Improve-It"><a href="#How-to-Improve-It" class="headerlink" title="How to Improve It?"></a>How to Improve It?</h2><p>Based on the above analysis, we can find that reducing latency mainly involves reducing both <strong>queue latency</strong> and <strong>inference latency</strong>. In fact, some techniques, such as iteration-level scheduling and chunked prefilling, can be seen as improvements to queue latency.</p>
+<p>On the other hand, <strong>improvement of inference latency have not received much attention</strong>. One reason is that, <strong>for inference engines, there is a trade-off between latency and throughput</strong>.<br>Generally speaking, higher batch size means higher throughput, but also higher inference latency. Techniques such as quantization and Paged Attention focus on more efficient memory usage to increase batch size, <strong>but inference latency may also increase accordingly</strong> (TODO: add an example), which means $t_ {tbt}$ and $t_ {ttft}$ may be increased, and SLA requirements are broken.</p>
+<p>Therefore, <strong>there is an opportunity to improve inference latency in current LLM serving systems</strong>. The target may be an <strong>SLA-aware scheduler</strong>, which can maximize throughput without breaking SLA requirements. It should be able to <strong>dynamically decide the batch size and batch composition</strong> instead of just deploying a static prefilling-prioritize or generation-prioritize strategy.</p>
+<p>I believe the key to this design is to predict $t_ {inf}$ to provide latency optimization guidance for the scheduler. Prediction based on profiling results may be a simple approach, <strong>but a performance model based on GPU computation capability and memory bandwidth might be more general</strong>.</p>
+<p>Once we can predict $t_ {inf}$, $t_ {qp}$, $t_ {qc}$, and $t_ {qg}$ can also be predicted using mathematical tools such as Queueing Theory (e.g., Poisson distribution), allowing us to optimize serving for the following scenarios:</p>
+<ol>
+<li>When the request arrival rate is less than the maximum throughput: we can appropriately reduce batch size to improve $t_ {tbt}$.</li>
+<li>When the request arrival rate is greater than the maximum throughput: we can adjust the batch composition dynamically based on queue length, or drop some requests to avoid starvation.</li>
+<li>When the request arrival rate suddenly increases: we can adjust the batch composition to avoid breaking the SLA of $t_ {ttft}$.</li>
+</ol>
+<p>In summary, this SLA-aware scheduler should provide better results than a static scheduler by considering <strong>arrival rate</strong>, <strong>queue length</strong>, and <strong>predicted $t_ {inf}$</strong>.</p>
+<h2 id="Some-Meaningful-Experiment-Result"><a href="#Some-Meaningful-Experiment-Result" class="headerlink" title="Some Meaningful Experiment Result"></a>Some Meaningful Experiment Result</h2><p>TODO</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-03-06-quantization-gemm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024-03-06-quantization-gemm/" class="post-title-link" itemprop="url">How Quantization Works: From a Matrix Multiplication Perspective</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-03-06 00:00:00" itemprop="dateCreated datePublished" datetime="2024-03-06T00:00:00-06:00">2024-03-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-03-07 00:00:00" itemprop="dateModified" datetime="2024-03-07T00:00:00-06:00">2024-03-07</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Quantization is a commonly used acceleration technique in NN inference. The primary computational workloads in NNs come from Convolution, Linear Layers, and Attention, which are implemented by GEMM in the lower level. This blog aims to <strong>discuss the principles of quantization from the matrix multiplication perspective and to explain why some quantization methods are impractical</strong>. It also aims to review several LLM quantization methods from this perspective.</p>
+<p>I define <strong>practical quantization</strong> as follows:</p>
+<ol>
+<li>Operation <strong>can still be performed using GEMM after quantization</strong>. This requires both mathematical feasibility and hardware support. It is a fundamental requirement for achieving acceleration.</li>
+<li>Quantization must lead to <strong>actual acceleration</strong>. Acceleration can arise from higher INT8 hardware throughput, or from the memory bandwidth saved by smaller memory footprint. Importantly, the benefits of acceleration must outweigh the quantization overhead.</li>
+</ol>
+<h2 id="Let’s-do-some-math"><a href="#Let’s-do-some-math" class="headerlink" title="Let’s do some math"></a>Let’s do some math</h2><p>Suppose an operator can be expressed in the form of matrix multiplication:<br>$$\mathbf{Y}&#x3D;\mathbf{X} \mathbf{W}^\top,$$<br>where $\mathbf{X} \in \mathbb{R}^{N \times C}$, $\mathbf{Y} \in \mathbb{R}^{N \times D}$, $\mathbf{W} \in \mathbb{R}^{D \times C}$, while their quantized versions are denoted as $\hat{\mathbf{X}}$, $\hat{\mathbf{Y}}$, $\hat{\mathbf{W}}$. Our goal is to ensure that operations can still be performed using GEMM after quantization, i.e.:<br>$$\hat{\mathbf{Y}}&#x3D;\hat{\mathbf{X}} \hat{\mathbf{W}}^\top.$$</p>
+<p>Let the <strong>per-element</strong> quantization functions for $\mathbf{X}$, $\mathbf{Y}$, and $\mathbf{W}$ be denoted as $p_{nc}(\cdot)$, $q_{nd}(\cdot)$, $r_{dc}(\cdot)$ respectively:<br>$$\begin{aligned}<br>    \hat{x}_ {nc} &amp;&#x3D; p_ {nc}(x_{nc}), \\<br>    \hat{y}_ {nd} &amp;&#x3D; q_ {nd}(y_{nd}), \\<br>    \hat{w}_ {dc} &amp;&#x3D; r_ {dc}(w_{dc}).<br>\end{aligned}$$<br>The corresponding dequantization functions are denoted as $p_ {nc}^{-1}(\cdot)$, $q_ {nd}^{-1}(\cdot)$, $r_ {dc}^{-1}(\cdot)$, i.e.:<br>$$\begin{aligned}<br>y_ {nd}<br>&amp;&#x3D; \sum_ {c&#x3D;1}^{C} x_ {nc} w_ {dc}, \\<br>q_ {nd}^{-1}(\hat{y}_ {nd}) &amp;&#x3D; \sum_ {c&#x3D;1}^{C} p_ {nc}^{-1}(\hat{x}_ {nc}) \cdot r_ {dc}^{-1}(\hat{w}_ {dc}).<br>\end{aligned}$$<br>The above formulas set the <strong>basic constraints</strong> that <strong>practical quantization</strong> should satisfy mathematically.</p>
+<h2 id="Some-basic-quantization-methods"><a href="#Some-basic-quantization-methods" class="headerlink" title="Some basic quantization methods"></a>Some basic quantization methods</h2><p>With this basic constraints, we can now discuss several fundamental quantization methods, including per-element, per-channel, per-token, and per-tensor quantization.</p>
+<h3 id="Per-element-and-Per-channel"><a href="#Per-element-and-Per-channel" class="headerlink" title="Per-element and Per-channel"></a>Per-element and Per-channel</h3><p>In the basic constraints mentioned above, the dequantization function $q_ {nd}^{-1}(\cdot)$ on the left-hand side does not depend on $c$. Clearly, if the right-hand side quantization functions $p_ {nc}^{-1}(\cdot)$ and $r_ {dc}^{-1}(\cdot)$ depend on $c$, <strong>this constraint will be violated</strong>. This implies that these two conditions cannot be satisfied at the same time:</p>
+<ol>
+<li>Computation can be done by GEMM.</li>
+<li>Different quantization functions can be applied in different channels of $\mathbf{X}$ and $\mathbf{W}$.</li>
+</ol>
+<p>In other words, this indicates that <strong>per-element and per-channel quantization cannot be accelerated using GEMM. They are impractical</strong>.</p>
+<h3 id="Per-token-and-per-tensor"><a href="#Per-token-and-per-tensor" class="headerlink" title="Per-token and per-tensor"></a>Per-token and per-tensor</h3><p>From the above discussion, we know that practical quantization needs to satisfy at least:<br>$$\begin{aligned}<br>    p_ {n}(\cdot) &amp;&#x3D; p_ {nc} (\cdot), \quad \forall n, c, \\<br>    r_ {d}(\cdot) &amp;&#x3D; r_ {dc} (\cdot), \quad \forall d, c.<br>\end{aligned}$$<br>That is, the quantization function is same for all channels. Therefore, the basic constraint can be formulated as:<br>$$q_ {nd}^{-1}(\hat{y}_ {nd}) &#x3D; \sum_ {c&#x3D;1}^{C_ i} p_ {n}^{-1}(\hat{x}_ {nc}) \cdot r_ {d}^{-1}(\hat{w}_ {dc}),$$<br>Thus, we get <strong>per-channel quantization</strong>. If we further assume:<br>$$\begin{aligned}<br>    p(\cdot) &amp;&#x3D; p_ {nc} (\cdot), \quad \forall n, c, \\<br>    r(\cdot) &amp;&#x3D; r_ {dc} (\cdot), \quad \forall d, c.<br>\end{aligned}$$<br>That is, the quantization function is same for all elements in both $\mathbf{X}$ and $\mathbf{W}$. Therefore, the basic constraint can be formulated as:<br>$$q_ {nd}^{-1}(\hat{y}_ {nd}) &#x3D; q^{-1}(\hat{y}_ {nd}) &#x3D; \sum_ {c&#x3D;1}^{C_i} p^{-1}(\hat{x}_ {nc}) \cdot r^{-1}(\hat{w}_ {dc}).$$<br>We thus obtain <strong>per-tensor quantization</strong>. While both of these quantization methods have theoretical feasibility, the practical values of them are still limited by hardware support (as discussed in the next section).</p>
+<p>For convenience, the following discussion focuses only on per-token quantization. Per-tensor quantization can be seen as a special case of per-token quantization. The most commonly used quantization method in practice is <strong>symmetric uniform quantization</strong>, which scales the value range using multiplication, i.e.:<br>$$\begin{aligned}<br>    \hat{x}_ {nc} &amp;&#x3D; p_ {n}(x_ {nc}) &#x3D; p_ n x_ {nc}, \\<br>    \hat{w}_ {nd} &amp;&#x3D; r_ {d}(w_ {dc}) &#x3D; r_ d w_ {dc}, \\<br>    \hat{y}_ {dc} &amp;&#x3D; q_ {nd}(y_ {nd}) &#x3D; p_ n r_ d y_ {nd}.<br>\end{aligned}$$</p>
+<p>We can formulate per-token symmetric uniform quantization by matrix multiplication:<br>$$\begin{aligned}<br>    \hat{\mathbf{X}} &amp;&#x3D; \text{diag}(p_1,\cdots,p_ N)\cdot \mathbf{X} &#x3D; \begin{pmatrix}<br>        p_ 1 &amp; \cdots &amp; p_ 1 \\<br>        \vdots &amp; \ddots &amp; \vdots \\<br>        p_ N &amp; \cdots &amp; p_ N<br>    \end{pmatrix} \otimes \mathbf{X}, \\<br>    \hat{\mathbf{W}} &amp;&#x3D; \text{diag}(r_1,\cdots,r_ D)\cdot \mathbf{W} &#x3D; \begin{pmatrix}<br>        r_ 1 &amp; \cdots &amp; r_ D \\<br>        \vdots &amp; \ddots &amp; \vdots \\<br>        r_ 1 &amp; \cdots &amp; r_ D<br>    \end{pmatrix} \otimes \mathbf{W}, \\<br>    \hat{\mathbf{Y}} &amp;&#x3D; \text{diag}(p_1,\cdots,p_ N)\cdot \mathbf{Y} \cdot \text{diag}(r_1,\cdots,r_ D) &#x3D; \begin{pmatrix}<br>        p_ 1 r_ 1 &amp; \cdots &amp; p_ 1 r_ D \\<br>        \vdots &amp; \ddots &amp; \vdots \\<br>        p_ N r_ 1 &amp; \cdots &amp; p_ N r_ D<br>    \end{pmatrix} \otimes \mathbf{Y},<br>\end{aligned}$$<br>where $\otimes$ represents element-wise matrix multiplication. It can be observed that both quantization and dequantization <strong>can be efficiently implemented using element-wise matrix multiplication with dimension broadcasting</strong>. The following figure illustrates the computation process by an example:</p>
+<p><img src="/quant_matrix.png"></p>
+<h2 id="Hardware-requirements"><a href="#Hardware-requirements" class="headerlink" title="Hardware requirements"></a>Hardware requirements</h2><p>Hardware support still need to be considered when we try to utilize GEMM for quantization. For example, on NVIDIA GPUs, Tensor Core supports matrix multiplication for FP16 and INT8, but it doesn’t support mixed precision matrix multiplication for FP16&#x2F;INT8. This means that W8A8 quantization can benefit from Tensor Core, but W8A16 and W16A8 quantization lack hardware support and may not achieve real acceleration on NVIDIA GPUs. Many W8A16 and W16A8 quantization methods actually perform dequantization before GEMM and then use FP16 for computation. The actual acceleration effects of these methods require further discussion (see below).</p>
+<h2 id="Performance-analysis"><a href="#Performance-analysis" class="headerlink" title="Performance analysis"></a>Performance analysis</h2><p>The above discussion only shows that per-token quantization can leverage GEMM. The following words will show whether it can provide actual acceleration.</p>
+<p>We compare the following three setups:</p>
+<ol>
+<li>Unquantized, using FP16 for both storage and computation.</li>
+<li>W8A8 quantization, with I&#x2F;O activations stored in FP16. This is the approach used by some works like <code>LLM.int8()</code>. To avoid additional CUDA kernel launch overhead, we assume that quantization and dequantization are fused with GEMM.</li>
+<li>W8A16 quantization, internally converting weights to FP16 for computation. Kernel fusion is also applied here.</li>
+</ol>
+<p>Without loss of generality, we can assume that the hardware INT8 throughput is $2\times$ than that of FP16. We can set normalized operations of one INT8 operation is $1$, while $2$ for FP16. We can list the following table:</p>
+<table>
+<thead>
+<tr>
+<th align="center">Method</th>
+<th align="center">FP16</th>
+<th align="center">W8A8 (FP16 activations I&#x2F;O)</th>
+<th align="center">W8A16</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">GEMM OPs</td>
+<td align="center">$2NCD$</td>
+<td align="center">$NCD$</td>
+<td align="center">$2NCD$</td>
+</tr>
+<tr>
+<td align="center">GEMM mem I&#x2F;O</td>
+<td align="center">$2(NC+CD+ND)$</td>
+<td align="center">$2NC+CD+2N D$</td>
+<td align="center">$2NC+CD+2ND$</td>
+</tr>
+<tr>
+<td align="center">quant&#x2F;dequant OPs</td>
+<td align="center">$0$</td>
+<td align="center">$2NC+4ND$</td>
+<td align="center">$2CD$</td>
+</tr>
+<tr>
+<td align="center">quant&#x2F;dequant Mem I&#x2F;O</td>
+<td align="center">$0$</td>
+<td align="center">$2(N+C_o)$</td>
+<td align="center">$2D$</td>
+</tr>
+<tr>
+<td align="center">total OPs</td>
+<td align="center">$2NC D$</td>
+<td align="center">$NC D+2NC+4N D$</td>
+<td align="center">$2NCD+2CD$</td>
+</tr>
+<tr>
+<td align="center">total mem I&#x2F;O</td>
+<td align="center">$2(NC+C D+N D)$</td>
+<td align="center">$2NC+C D+2N D+2(N+C_o)$</td>
+<td align="center">$2NC+CD+2ND+2D$</td>
+</tr>
+<tr>
+<td align="center">total arithmetic intensity (OPs:I&#x2F;O)</td>
+<td align="center">$\cfrac{1}{1&#x2F;N+1&#x2F;C+1&#x2F;D}$</td>
+<td align="center">$\cfrac{1+2&#x2F;D+4&#x2F;C}{2&#x2F;N+1&#x2F;C+2&#x2F;D+2&#x2F;(NC)+2&#x2F;(CD)}$</td>
+<td align="center">$\cfrac{1+2&#x2F;N}{1&#x2F;(2N)+1&#x2F;C+1&#x2F;D+1&#x2F;(NC)}$</td>
+</tr>
+<tr>
+<td align="center">total arithmetic intensity (second-order approximation)</td>
+<td align="center">$\cfrac{1}{1&#x2F;N+1&#x2F;C+1&#x2F;D}$</td>
+<td align="center">$\cfrac{1}{2&#x2F;N+1&#x2F;C+2&#x2F;D}$</td>
+<td align="center">$\cfrac{1}{1&#x2F;(2N)+1&#x2F;C+1&#x2F;D}$</td>
+</tr>
+</tbody></table>
+<p>Analyzing the table above, we can draw the following conclusions:</p>
+<ol>
+<li>W8A8 quantization (with FP16 activations I&#x2F;O) reduces the operations by almost half compared to FP16, but it decreases the total arithmetic intensity. Therefore, in memory-bound scenarios, W8A8 quantization may not achieve a $2\times$ throughput improvement (ZeroQuant addresses this issue, as discussed below). But <strong>it can still lead to a significant throughput improvement when memory bandwidth is sufficient</strong>.</li>
+<li>W8A16 quantization maintains a similar operations compared to FP16, but it slightly increases the total arithmetic intensity (more increase when $N$ is large). Therefore, <strong>it also has practical value in memory-bound scenarios</strong>, especially since activations in LLMs are typically harder to be quantized than weights.</li>
+</ol>
+<h2 id="Some-LLM-Quantization-works"><a href="#Some-LLM-Quantization-works" class="headerlink" title="Some LLM Quantization works"></a>Some LLM Quantization works</h2><h3 id="LLM-int8"><a href="#LLM-int8" class="headerlink" title="LLM.int8()"></a><code>LLM.int8()</code></h3><p><code>LLM.int8()</code> actually employs selective per-token quantization. It stores weights and activations in FP16 and then applies different strategies for different tokens, as illustrated below:</p>
+<p><img src="/llm_int8.png" alt="LLM.int8()"></p>
+<ul>
+<li>For tokens suitable for quantization, it applies per-token INT8 quantization to weights and activations, computes results using INT8 GEMM, and then dequantizes them to FP16.</li>
+<li>For tokens with outliers, it directly computed the FP16 GEMM.</li>
+</ul>
+<p>The results from these two parts can be combined to form the final result.</p>
+<h3 id="SmoothQuant"><a href="#SmoothQuant" class="headerlink" title="SmoothQuant"></a>SmoothQuant</h3><p>While per-channel quantization may not be practical, for LLM activation quantization, the main challenge arises from activations, where values with larger magnitudes may appear on some channels, as shown below:</p>
+<p><img src="/smooth_quant_motivation.png"></p>
+<p>SmoothQuant observed that these outliers occur consistently in specific channels, while outliers are rare in weights (thus easier to quantize). Therefore, it proposes to “balance” the quantization difficulty between activations and weights by introducing a per-channel scaling factor:</p>
+<p><img src="/smooth_quant.png" alt="SmoothQuant"></p>
+<p>This “balance” can be formulated as:<br>$$\begin{aligned}<br>    \mathbf{Y}<br>    &amp;&#x3D; \mathbf{X}\mathbf{W}^\top \\<br>    &amp;&#x3D; \mathbf{X} \cdot \text{diag}(s_ 1,\cdots,s_ C) \cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1} \cdot \mathbf{W}^\top \\<br>    &amp; &#x3D; \left( \mathbf{X} \cdot \text{diag}(s_ 1,\cdots,s_ C) \right) \cdot \left( \mathbf{W}\cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1} \right)^\top.<br>\end{aligned}$$<br>By selecting appropriate scaling factors $\text{diag}(s_ 1,\cdots,s_ C)$, we can achieve the goal of balancing outlier values in activations, and then we can quantize $\mathbf{X} \cdot \text{diag}(s_ 1,\cdots,s_ C)$ and $\mathbf{W}\cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1}$. The following figure give an example:</p>
+<p><img src="/smooth_quant_2.png" alt="SmoothQuant example"></p>
+<p><strong>SmoothQuant is an excellent alternative to per-channel quantization</strong>, as demonstrated in the paper by its impressive performance in quantizing LLM to W8A8.</p>
+<h3 id="ZeroQuant"><a href="#ZeroQuant" class="headerlink" title="ZeroQuant"></a>ZeroQuant</h3><p>In the above performance analysis of W8A8, we found that using FP16 for activations I&#x2F;O reduces the overall arithmetic intensity after quantization, which may harm the throughput improvement in memory-bound scenarios. ZeroQuant addresses this issue by fusing the quantization into the previous operator and fusing the dequantization after GEMM, as shown in the figure below.</p>
+<p><img src="/zero_quant.png" alt="ZeroQuant"></p>
+<p>Thus, the activations I&#x2F;O between operators are still INT8, which reduces the total memory I&#x2F;O to $NC+CD+ND+2(N+D)$, boosting arithmetic intensity to original FP16 level , and fully leveraging the high throughput of INT8.</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>This blog provides a matrix multiplication perspective for quantization, indicating some fundamental requirements for practical quantization and explaining why per-channel quantization in impractical. It also discusses several examples of LLM per-token quantization, including <code>LLM.int8()</code>, SmoothQuant, and ZeroQuant.<br>They are all practical and demonstrate significant acceleration in real-world scenarios.</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-02-16-nfs-tuning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024-02-16-nfs-tuning/" class="post-title-link" itemprop="url">NFS Performance Tuning</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-02-16 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-16T00:00:00-06:00">2024-02-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-02-17 00:00:00" itemprop="dateModified" datetime="2024-02-17T00:00:00-06:00">2024-02-17</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文是我在实践中总结出的生产场景下 10 Gbps 网络下的 NFS 性能调优指南，特别是针对<strong>大量小文件</strong>（Lots of Small Files, LOSF）读写的优化。</p>
+<h2 id="调优"><a href="#调优" class="headerlink" title="调优"></a>调优</h2><h3 id="硬件"><a href="#硬件" class="headerlink" title="硬件"></a>硬件</h3><p>网络硬件方面，<strong>带宽</strong>和<strong>延迟</strong>两者都很重要。</p>
+<p>要保证 NFS 的性能，高带宽网络是必要的，10 Gbps 对于生产场景来说是基础要求，更高速的 InfiniBand 或者 RoCE 网络则可按照需求和预算进行选择。</p>
+<p>对于<strong>大量小文件</strong>（Lots of Small Files, LOSF）场景来说，<strong>延迟比带宽更重要</strong>。很多性能调优教程都忽略了这一点，只关注了连续读写的性能，即使测试了 4K 随机读写，也使用了<strong>错误的测试方法</strong>（下文给出了正确的测试方法）。</p>
+<p>延迟的重要性体现在，如果程序对于小文件的访问是<strong>内秉串行化</strong>的，<strong>延迟会决定串行化 IOPS 的上限</strong>。0.1 ms 的延迟决定了串行化的 IOPS 上限是 10k，而 1 ms 的延迟对应的上限则是 1k。</p>
+<p>内秉串行化访问的场景非常多。例如，把家目录放置于 NFS 上，oh-my-zsh 的加载、python 包的加载都是内秉串行化的。1ms 的网络延迟会让这些程序慢到不可接受（例如 <code>import torch</code> 的执行需要 30s 以上）。</p>
+<p>使用合格的企业级交换机、恰当配置的网络拓扑，可以尽量降低延迟。同时，光模块、光转电口模块的质量也有可能极大影响延迟（我原来使用的中科光电光转电口模块会引入 0.1ms 的额外延迟，导致 IOPS 下降了 2&#x2F;3）。</p>
+<p>需要注意的是，RDMA 尽管理论上能降低延迟，但实际测试中发现 10 Gbps 以太网和 100 Gbps InfiniBand 的串行化 IOPS 差距并不大，预算有限时只使用以太网也足够。</p>
+<p>TODO: 巨型帧</p>
+<h3 id="Linux-Kernel"><a href="#Linux-Kernel" class="headerlink" title="Linux Kernel"></a>Linux Kernel</h3><p>内核网络参数需要进行调整，以适应高速网络：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Ref: https://gist.github.com/mizanRahman/40ba603759bfb5153189ccdc9dbbd1e4</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Disable TCP slow start on idle connections</span></span><br><span class="line"><span class="attr">net.ipv4.tcp_slow_start_after_idle</span> = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Increase Linux autotuning TCP buffer limits</span></span><br><span class="line"><span class="comment"># Set max to 16MB for 1GE and 32M (33554432) or 54M (56623104) for 10GE</span></span><br><span class="line"><span class="comment"># Don&#x27;t set tcp_mem itself! Let the kernel scale it based on RAM.</span></span><br><span class="line"><span class="attr">net.core.rmem_max</span> = <span class="number">56623104</span></span><br><span class="line"><span class="attr">net.core.wmem_max</span> = <span class="number">56623104</span></span><br><span class="line"><span class="attr">net.core.rmem_default</span> = <span class="number">56623104</span></span><br><span class="line"><span class="attr">net.core.wmem_default</span> = <span class="number">56623104</span></span><br><span class="line"><span class="attr">net.core.optmem_max</span> = <span class="number">40960</span></span><br><span class="line"><span class="attr">net.ipv4.tcp_rmem</span> = <span class="number">4096</span> <span class="number">87380</span> <span class="number">56623104</span></span><br><span class="line"><span class="attr">net.ipv4.tcp_wmem</span> = <span class="number">4096</span> <span class="number">65536</span> <span class="number">56623104</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># TCP Congestion Control</span></span><br><span class="line"><span class="attr">net.ipv4.tcp_congestion_control</span> = bbr</span><br><span class="line"><span class="attr">net.core.default_qdisc</span> = cake</span><br></pre></td></tr></table></figure>
+
+<p>在服务端和客户端都需要应用这套设置，可以写入 <code>/etc/sysctl.conf</code> 中以持久化。</p>
+<h3 id="Server-Side"><a href="#Server-Side" class="headerlink" title="Server Side"></a>Server Side</h3><p>NFS server 的线程数可以尽量调大点，服务器负载比较高时可以提升性能，我直接设成了服务器的线程数。修改 <code>/etc/nfs.conf</code>：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[nfsd]</span></span><br><span class="line"><span class="attr">threads</span>=<span class="number">128</span></span><br></pre></td></tr></table></figure>
+
+<p>以下几个 NFS server 参数需要调整：</p>
+<ul>
+<li><code>async</code>：将同步 IO 操作视为异步。同步读写为主的负载可以大幅提升性能，但服务器崩溃时可能造成数据丢失，对数据完整性有极高要求的情况下不推荐使用；</li>
+<li><code>no_subtree_check</code>：对性能没有大影响，但在某些情况下可以提升可靠性（同时有轻微的安全风险）。参见 [1]。</li>
+</ul>
+<h3 id="Client-Side"><a href="#Client-Side" class="headerlink" title="Client Side"></a>Client Side</h3><p>没有特殊的理由时应该默认使用最新的 NFSv4.2，NFSv3 使用 UDP 作为底层传输方式时，在高速网络下会因为 UDP 包序列号问题导致数据损坏，参见 [2]。</p>
+<p>以下几个 NFS client 参数需要调整：</p>
+<ul>
+<li><code>proto=rdma</code>：网络支持 RDMA 时设置；</li>
+<li><code>nocto</code>：关闭 close-to-open 缓存一致性语义。NFS 默认行为是关闭文件时会把所有更改写回到服务器。如果对于多客户端之间的文件一致性要求比较高，不推荐使用此选项；</li>
+<li><code>ac</code>：启用属性缓存（attribute caching），客户端会缓存文件属性。同样。对于数据一致性要求较高的集群，不推荐使用此选项；</li>
+<li><code>fsc</code>：使用 FS-Cache 缓存数据到本地。需要同时<a target="_blank" rel="noopener" href="https://github.com/jnsnow/cachefilesd">配置 cachefilesd</a>。奇怪的是我在测试中并没有发现数据被缓存到本地，这可能需要进一步的探究；</li>
+<li><code>nconnect=16</code>：设置 NFS client 和 server 间建立 16 条 TCP 连接。NFS client 默认只建立一条 TCP 连接，所有 RPC 复用这条连接。在某些情况下这会限制连续读写的带宽。增大 <code>nconnect</code>（最大值 16）可以解决这个问题。</li>
+</ul>
+<p>特别的，<code>noatime</code> &#x2F; <code>relatime</code> 的设置对于 NFS 并无影响 [3]，NFS client 始终会缓存 atime 的更改。</p>
+<p>有些教程中会推荐修改 <code>rsize</code> 和 <code>wsize</code>，这两个值在 NFSv4.2 默认协商出的即是最大值 <code>1048576</code>，因而无需手动更改，只需检查一下是否协商正确即可。</p>
+<p>根据 [4]，<code>sunrpc.tcp_max_slot_table_entries</code> 可能会影响性能，可以适当调大（默认 <code>2</code>）。在我的测试中，我发现当遇到千万数量级的持续小文件访问负载时，NFS 有时候会卡住。当我把这个参数调大时，此问题得以解决。设置 <code>/etc/modprobe.d/sunrpc.conf</code>：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options sunrpc <span class="attr">tcp_slot_table_entries</span>=<span class="number">16384</span></span><br></pre></td></tr></table></figure>
+
+<p>有时我会遇到 <code>nfsd</code> 占用大量 CPU 且性能急剧下降的问题，同时记录到大量 <code>delegreturn</code> RPC calls。根据 [5]，可以通过禁用 <code>fs.leases-enable</code> 解决，设置 <code>/etc/sysctl.conf</code>：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">fs.leases-enable</span> = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>当 <code>nfsd</code> 因为种种原因重启后，默认会有 90s 的 grace period 用于锁恢复，这段时间内 <code>nfsd</code> 会拒绝所有 <code>open</code> 请求，在内核日志中显示：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[1073511.138061] NFSD: starting 90-second grace period (net f0000000)</span><br></pre></td></tr></table></figure>
+
+<p>实践中发现这段时间可以适当调小，以减少 <code>nfsd</code> 重启带来的影响。设置 <code>/etc/default/nfs-kernel-server</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Options for rpc.svcgssd.</span></span><br><span class="line">RPCSVCGSSDOPTS=<span class="string">&quot;--lease-time 10 --grace-time 10&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>TODO</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>TODO</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a target="_blank" rel="noopener" href="https://man.archlinux.org/man/exports.5.en#no_subtree_check">https://man.archlinux.org/man/exports.5.en#no_subtree_check</a></p>
+<p>[2] <a target="_blank" rel="noopener" href="https://man.archlinux.org/man/nfs.5.en#Using_NFS_over_UDP_on_high-speed_links">https://man.archlinux.org/man/nfs.5.en#Using_NFS_over_UDP_on_high-speed_links</a></p>
+<p>[3] <a target="_blank" rel="noopener" href="https://man.archlinux.org/man/nfs.5.en#File_timestamp_maintenance">https://man.archlinux.org/man/nfs.5.en#File_timestamp_maintenance</a></p>
+<p>[4] <a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/azure-netapp-files/performance-linux-concurrency-session-slots">https://learn.microsoft.com/en-us/azure/azure-netapp-files/performance-linux-concurrency-session-slots</a></p>
+<p>[5] <a target="_blank" rel="noopener" href="https://docs.gitlab.com/ee/administration/nfs.html#disable-nfs-server-delegation">https://docs.gitlab.com/ee/administration/nfs.html#disable-nfs-server-delegation</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024-02-07-paper-reading-arxiv24-acs/" class="post-title-link" itemprop="url">[Paper Reading] ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs (arXiv'24)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-02-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00-06:00">2024-02-07</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>This blog is a write-up of the paper “<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.12377">ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs</a>“ from arXiv’24.</p>
+</blockquote>
+<h2 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h2><p>Some workloads (e.g., Simulation Engines for Deep RL, Dynamic DNNs) cannot fully utilize the massive parallelism of GPUs (see Figure 1). The main reason is that these workloads contain lots of <strong>small kernels</strong> which cannot fully utilize the GPU, and these kernels are not executed concurrently, although <strong>most of them are independent and in theory can be executed concurrently</strong>.</p>
+<p><img src="/achieved_occ.png" alt="Figure 1. Achieved Occupancy of simulation engines (up) and dynamic DNN (down)"></p>
+<p>But there are some challenges to execute these kernels concurrently:</p>
+<ol>
+<li><strong>Input-dependent kernel dependencies</strong>. For some workload, the the dependencies between kernels are only <strong>determined at runtime</strong> for each input. Constructing full computational graph and resolving dependencies before execution will introduce <strong>high latency</strong> (see Figure 2,average of 47% of overall execution time as the paper says).</li>
+</ol>
+<p><img src="/dag_time.png" alt="Figure 2. DAG construction time as % of execution time"></p>
+<ol start="2">
+<li><strong>Irregular kernel dependencies</strong>. Some workloads have irregular computational graphs. We can partitioned the computational graph of the workload into independent streams of kernels. But this would require <strong>fine-grained scheduling</strong> and <strong>synchronization</strong>, with <strong>large overhead</strong> (see Figure 3).</li>
+</ol>
+<p><img src="/sync_overhead.png" alt="Figure 3. Kernel launch and synchronization overheads"></p>
+<p>Existed solutions:</p>
+<ol>
+<li><p>CUDA Graph and AMD ATMI. They allow users specify dependencies between different kernels as DAG, and can eliminate the synchronization and kernel launch overhead. But the DAG needs to be constructed in <strong>full before execution</strong>, which imakes them not suitable for dynamic kernel dependencies (such as Dynamic DNNs).</p>
+</li>
+<li><p>Using events provided by the CUDA stream management API, which allows synchronization between kernels across streams through the <code>cudaStreamWaitEvent</code> API, without blocking the host. But approach still requires deriving dependencies between all kernels beforehand.</p>
+</li>
+<li><p>Persistent threads (PT) can eliminate the scheduling and launch overheads, but are only effective when all kernels are homogeneous.</p>
+<blockquote>
+<p>PT is just like coroutine in some programming languages.</p>
+</blockquote>
+</li>
+<li><p>CUDA dynamic parallelism (CDP) or AMD’s device enqueue (DE) enables parent kernels to launch child kernels, but , only allowing data dependencies between one parent and its children (so cannot be use to synchronize between multiple tasks).</p>
+</li>
+</ol>
+<h2 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h2><p>The <strong>goal</strong> of this paper is to design a framework that enables efficient concurrent execution of GPU kernels with:</p>
+<ol>
+<li><p>lightweight detection of inter-kernel dependencies at runtime,</p>
+</li>
+<li><p>low overhead kernel scheduling and synchronization.</p>
+</li>
+</ol>
+<p><strong>The key idea is to perform the dependence checking and scheduling within a small window of kernels at runtime similar to out-of-order instruction scheduling.</strong></p>
+<p>The authors proposed Automatic Concurrent Scheduling (ACS) as solution. The overall design of ACS-SW is shown in Figure 4. It contains three main functionalities:</p>
+<p><img src="/acs_overview.png" alt="Figure 4. ACS-SW Overview"></p>
+<ol>
+<li><p><strong>Determining inter-kernel dependencies</strong>. By checking for <strong>overlaps between read segments and write segments</strong>, we determine dependencies between kernels. For a wide range of commonly used kernels (e.g., matrix multiplication, convolution), we can infer the read and write segments from the input easily. But for some kernels, it’s impossible to determine the range of memory accessed statically because of the potential indirect memory accesses, so the authors just assume the <strong>entire GPU memory may be accessed</strong>.</p>
+<p><img src="/seg.png" alt="Memory regions written to/accessed by the kernel"></p>
+<p>The authors use a kernel wrapper to finish the dependency detection. <code>get_addresses()</code> is called to get <code>__read_segments__</code> and <code>__write_segments__</code>.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ACE_wrapper</span> &#123;</span> </span><br><span class="line">  <span class="comment">//list of read,write segments defined as</span></span><br><span class="line">  <span class="comment">//[&#123;start_adr1,size1&#125;,&#123;start_adr2,size2&#125;..]</span></span><br><span class="line">  <span class="built_in">list</span> __read_segments__;</span><br><span class="line">  <span class="built_in">list</span> __write_segments__;</span><br><span class="line">  <span class="comment">// function which gets called at kernel</span></span><br><span class="line">  <span class="comment">// launch to populate read,write segments</span></span><br><span class="line">  <span class="type">void</span> <span class="title function_">get_addresses</span><span class="params">(</span></span><br><span class="line"><span class="params">    dim3 blocks, dim3 threads, ...</span></span><br><span class="line"><span class="params">  )</span>;</span><br><span class="line">  <span class="comment">// function declaration of the kernel</span></span><br><span class="line">  <span class="type">static</span> __global__ <span class="type">void</span> <span class="title function_">kernel</span><span class="params">(...)</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Tracking kernel state at runtime. The kernels in the window can be three states:</p>
+<ol>
+<li><strong>Ready</strong>: kernels it is dependent on complete execution.</li>
+<li><strong>Pending</strong>: upstream kernels are still pending or executing.</li>
+<li><strong>Executing</strong>.</li>
+</ol>
+</li>
+</ol>
+<p><img src="/window.png" alt="Kernels in the scheduling window with their state and corresponding upstream kernels"></p>
+<ol start="3">
+<li>Eliminating CPU synchronization overheads. See ACS-HW for more details.</li>
+</ol>
+<p>ACS has two variants:</p>
+<ol>
+<li><p>ACS-SW: software-only implementation which emulates the out-of-order kernel scheduling mechanism.</p>
+</li>
+<li><p>ACS-HW: hardware-facilitated implementation which is more efficient as it also alleviates synchronization overheads.</p>
+</li>
+</ol>
+<h3 id="ACS-SW"><a href="#ACS-SW" class="headerlink" title="ACS-SW"></a>ACS-SW</h3><h4 id="Window-Module"><a href="#Window-Module" class="headerlink" title="Window Module"></a>Window Module</h4><p>This module is to determining inter-kernel dependencies. It is implemented as a separate thread that manages the input FIFO queue and the scheduling window. The kernel state tracking is implemented in the hardware.</p>
+<h4 id="Scheduler-Module"><a href="#Scheduler-Module" class="headerlink" title="Scheduler Module"></a>Scheduler Module</h4><p>This module schedules and launches ready kernels for execution. It has fixed number of CUDA streams. Each stream contains only one kernel at any given time. Threads with empty streams poll the scheduling window for a ready kernel.</p>
+<p><img src="/acs_hw_scheduler.png" alt="ACS-SW: The scheduler module"></p>
+<h3 id="ACS-HW"><a href="#ACS-HW" class="headerlink" title="ACS-HW"></a>ACS-HW</h3><p>ACS-SW incurs kernel synchronization and launch overheads because scheduler module launches a kernel in the CPU. ACS-HW solves these problems by a software-hardware co-design.</p>
+<p><img src="/acs_hw.png" alt="ACS-HW Overview"></p>
+<p>Software-side: maintains an input FIFO queue like ACS-SW, and a list of kernels in the GPU’s scheduling window, <strong>but it can be stale</strong>.</p>
+<p>Hardware-side: the scheduling window and its management are implemented in hardware on the GPU side.</p>
+<p>A key novelty in hardware design is <strong>two stage dependency detections</strong>. First, ACS use software to perform initial detection using stale kernel information (without frequent synchronize overhead), then utilizes hardware to correct outdated dependency information. This two-stage approach significantly reduces the hardware complexity.</p>
+<p><img src="/hw_scheduler.png" alt="ACS-HW Scheduler"></p>
+<h2 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h2><ol>
+<li>Baseline: cuDNN implementation (for DNNs) and a jax implementation (for deep RL simulation), both using CUDA streams.</li>
+<li>ACS-SW: on real hardware.</li>
+<li>ACS-SW-Sim: ACS-SW on the GPU simulator.</li>
+<li>ACS-HW: on the GPU simulator.</li>
+<li>CUDAGraph.</li>
+</ol>
+<p><img src="/eval_deep_rl.png" alt="Deep RL physics simulations: Normalized Speedup"></p>
+<p><img src="/eval_deep_rl_sim.png" alt="Deep RL physics simulations: Normalized Speedup on GPU simulator"></p>
+<p><img src="/eval_deep_rl_occ.png" alt="Deep RL physics simulations: Achieved occupancy"></p>
+<p><img src="/eval_dcnn.png" alt="Dynamic DNNs: Normalized speedup"></p>
+<p><img src="/eval_dcnn_occ.png" alt="Dynamic DNNs: Achieved occupancy"></p>
+<p><img src="/eval_scnn.png" alt="Static DNNs: Normalized speedup"></p>
+<p><img src="/eval_scnn_occ.png" alt="Static DNNs: Achieved occupancy"></p>
+<h2 id="Comments"><a href="#Comments" class="headerlink" title="Comments"></a>Comments</h2><h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>This paper focuses on the problem of low GPU utilization caused by the serial execution of numerous small CUDA kernels. I believe this paper effectively addresses this problem, particularly with the following innovative points that are impressive me:</p>
+<ol>
+<li><p><strong>Out-of-order dependency detection and scheduling</strong>. Out-of-order (OoO) is a common technique in micro-architecture and software (e.g., hard disk I&#x2F;O queue) designs. It’s an impressive and innovative idea to introduce OoO into this area to find the dynamic dependencies efficiently.</p>
+</li>
+<li><p>A good <strong>trade-off</strong>. When I first read the Introduction section of the paper, I thought the read-write dependencies detection may be a difficulty task. To my knowledge, there aren’t reliable static binary memory access analysis techniques (otherwise, segmentation fault wouldn’t be a common problem). However, the authors made a good <strong>simplification</strong> and <strong>trade-off</strong> regarding this problem. For most common kernels, memory access areas can be inferred from input parameters. For the rest kernels, it can be assumed that they access the entire memory. Since few common operators occupy most of the execution time, this trade-off leads to significant performance improvements with a relatively low scheduling overhead. This innovation is my <strong>favorite</strong> aspect of this paper.</p>
+</li>
+<li><p><strong>Two-stage dependency detection</strong> in ACS-HW. While a complete hardware dependency detection approach is theoretically feasible, it could incur significant <strong>chip area costs</strong> (as we know, the re-order buffer in microprocessor carries large area). The authors proposed a two-stage software-hardware co-design dependency detection, significantly simplifying the difficulty of hardware design. It is a brilliant idea.</p>
+</li>
+</ol>
+<h3 id="Weaknesses"><a href="#Weaknesses" class="headerlink" title="Weaknesses"></a>Weaknesses</h3><p>This paper has some potential weaknesses:</p>
+<ol>
+<li><p>To each type of kernel, we must custom <code>get_addresses</code> function int the kernel wrapper. This weakness may limit the adoption of ACS.</p>
+</li>
+<li><p>Deciding whether kernels should be executed concurrently requires considering <strong>more factors</strong> than just data dependencies. If there are resource conflict (e.g., memory bandwidth, shared memory size) between two <strong>large kernels</strong>, performance may degrade if they co-execute.</p>
+</li>
+</ol>
+<h3 id="Improvements"><a href="#Improvements" class="headerlink" title="Improvements"></a>Improvements</h3><p>I propose some potential improvements to this paper:</p>
+<ol>
+<li><p>In response to the first weakness mentioned above, I propose a <strong>profiling-rollback</strong> strategy to achieve safe automatic dependency detection. This strategy leverages the commonly used <strong>paging</strong> technique in OS virtual memory management: we can set a memory page as <strong>read-only</strong> or <strong>write-only</strong>. When a program is running, if a <strong>page fault</strong> is triggered, we can know that a read&#x2F;write occurs. While I’m unsure if Nvidia GPUs provide APIs for user to control page tables, let’s assume such APIs exist. Given that many workloads are iterative (e.g., neural network training), we can profile the workload just one iteration, utilizing the aforementioned paging trick to <strong>record the memory access segments</strong> of each kernel. Obviously this may introduce some inaccuracies, we need a <strong>rollback strategy</strong> to ensure correct program execution. During runtime, we set known <code>__write_segments__</code> as read-write, while other areas are set as read-only. Upon encountering a page fault, we detect an error and revert to the default strategy (assuming all memory areas will be read and wrote). With this strategy, we can eliminate the need of manual <code>get_addresses</code> function, and maximize the potential parallelism.</p>
+</li>
+<li><p>Regarding the second weakness, I suggest adopting the method of <strong>GPUPool</strong> to determine which kernels are suitable for concurrent execution. A naive solution involves tracking the number of SMs each kernel occupies. When the SMs of a GPU are fully occupied, even if there are kernels in the <code>ready</code> state and available CUDA streams, no new kernels are scheduled.</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024-02-07-paper-reading-pact22-gpupool/" class="post-title-link" itemprop="url">[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT'22)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-02-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00-06:00">2024-02-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-03-31 00:00:00" itemprop="dateModified" datetime="2024-03-31T00:00:00-05:00">2024-03-31</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>This blog is a write-up of the paper “<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/3559009.3569650">GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud</a>“ from PACT’22.</p>
+</blockquote>
+<h2 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h2><p>This paper focuses on the <strong>GPU sharing in cloud scenarios</strong>.</p>
+<p>Currently, existing GPU sharing techniques can be categorized into 2 types:</p>
+<ul>
+<li><p><strong>Time-sharing</strong> means executing each concurrent VM on a full device in a round-robin fashion. <strong>Pros</strong>: Simple and mature. <strong>Cons</strong>: VMs could still under-utilize the hardware within each time slice.</p>
+</li>
+<li><p><strong>Shape-sharing</strong>: split a device into partitions and allows multiple workloads to execute on different partitions simultaneously.</p>
+</li>
+</ul>
+<p>Space-sharing can be categorized into 2 types：</p>
+<ul>
+<li><p><strong>Coarse-grained</strong> assigns disjoint sets of streaming multiprocessors (SMs) and memory channels to concurrent workloads. For example, Nvidia MIG. <strong>Pros</strong>: offers great performance isolation among tenants of the same GPU. <strong>Cons</strong>: (i) resource under-utilization within each SM consisting of heterogeneous functional units (e.g., FP32, INT, FP64, Tensor Cores) meant for different workload types. (ii) inefficient memory bandwidth usage caused by the bursty nature of GPU memory traffic.</p>
+</li>
+<li><p><strong>Fine-grained</strong> allows different workloads to co-run on the same SMs and request memory bandwidth flexibly, such as CUDA Stream and MPS. <strong>Pros</strong>: Better hardware utilization.</p>
+</li>
+</ul>
+<p>The key problem of GPU sharing in data center is <strong>performance unpredictability</strong>. It contains 2 <strong>key challenges</strong>:</p>
+<ol>
+<li><p><strong>Mitigating interference</strong>. The amount of performance improvement from fine-grained sharing varies drastically depending on how compatible the concurrent workloads are in terms of resource usage. Also, the interference cannot be statically estimated. So, <strong>it is non-trivial to determine compatibility</strong> among a large number of incoming jobs in the cluster.</p>
+</li>
+<li><p><strong>Providing QoS guarantees</strong>.</p>
+</li>
+</ol>
+<p>Existing solutions:</p>
+<ul>
+<li><p><strong>Software-based</strong>: kernel slicing or a persistent thread model. <strong>Cons</strong>: high scheduling overhead.</p>
+</li>
+<li><p><strong>Hardware-based</strong>: integrate sophisticated resource management logic into hardware to allocate resources for concurrent kernels. <strong>Cons</strong>: expensive and also inflexible.</p>
+</li>
+</ul>
+<p>Common problems of existing solutions:</p>
+<ol>
+<li><p>They do not concern with interference mitigation at the cluster level.</p>
+</li>
+<li><p>They do not handle scenarios where incoming jobs must be distributed among multiple GPUs to satisfy QoS constraints.</p>
+</li>
+</ol>
+<p><img src="/tb_sm.png"></p>
+<center>Figure 1. Simulated system throughput of co-running `parb_spmv` and `rod_hotspot` at various TBs/SM settings</center>
+
+<p><strong>Problems of hardware TB scheduler</strong> which hinder the fine-grained sharing:</p>
+<ol>
+<li><p>It always attempts to <strong>launch as many thread blocks per SM</strong> (TBs&#x2F;SM) for each kernel as allowed by the execution context storage constraints (e.g., registers, shared memory, thread slots). <strong>It leaves insufficient resources for concurrent kernels</strong>. As showed in Figure 1, if we can individually set the TBs&#x2F;SM for each kernel, we may achieve a higher throughput.</p>
+</li>
+<li><p>It only dispatches concurrent kernels onto SMs after the earlier arriving one completes launching all the thread blocks specified by the kernel grid size. This will force an <strong>almost serially execution</strong> of kernels in some scenarios.</p>
+</li>
+</ol>
+<p>GPU applications in the cloud fall into two main categories: latency-sensitive, and <strong>throughput-oriented</strong>. Throughput-oriented workloads are good candidates for hardware space-sharing. They have the following characteristics:</p>
+<ol>
+<li><p>Most workloads involve a large variety of kernels with <strong>different hardware resource utilization</strong> characteristics (e.g., CNN: compute-intensive, batch-norm: memory-intensive).</p>
+</li>
+<li><p>Active SMs are <strong>underutilized</strong> in some resources (FP, tensor core, memory bandwidth).</p>
+</li>
+<li><p>They typically repeatedly execute the same sequence of kernels (e.g., ML).</p>
+</li>
+<li><p>Relaxed QoS Requirements.</p>
+</li>
+</ol>
+<h2 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h2><p>This paper proposed a <strong>hardware-software co-designed</strong> strategy to solve these challenges.</p>
+<h3 id="Hardware"><a href="#Hardware" class="headerlink" title="Hardware"></a>Hardware</h3><p>This paper changes the default behavior of CUDA runtime to make it more suitable for fine-grained sharing:</p>
+<ol>
+<li><p>Allows CUDA runtime to program the <strong>TBs&#x2F;SM setting</strong> as one of the kernel launch parameters. The value of TBs&#x2F;SM is selected by the performance predictor.</p>
+</li>
+<li><p>Make the TB scheduler <strong>launch TBs from any concurrent kernels</strong> whenever they are running under their TBs&#x2F;SM quota.</p>
+</li>
+</ol>
+<h3 id="Software"><a href="#Software" class="headerlink" title="Software"></a>Software</h3><blockquote>
+<p>Concept Explanation:</p>
+<ul>
+<li>Job: a task submitted by user, such as a DNN training task. It may be iterative and contains multiple kernels.</li>
+<li>Kernel: CUDA kernel.</li>
+<li>Normalized Progress (NP): $t _ {isolate} &#x2F; t _ {co-execute}$.</li>
+</ul>
+</blockquote>
+<p><strong>Two key observations</strong>:</p>
+<ol>
+<li><p>Co-execution performance of GPU kernels is highly correlated with resource utilization of individual kernels measured when running in isolation.</p>
+</li>
+<li><p>Once we have predicted which job pairs can co-execute without violating QoS requirements, the scheduling task can be reduced to the classic maximum cardinality matching problem in graph theory.</p>
+</li>
+</ol>
+<p><img src="/system-design.png"></p>
+<center>Figure 2. Overall System Design of GPUPool</center>
+
+<p>Based on these 2 observations, the author proposed GPUPool. Its overall system design is shown in Figure 2. It consists of 4 steps:</p>
+<ol>
+<li><p><strong>Kernel Profiler</strong>. GPUPool <strong>groups all incoming GPU job into a batch</strong> for every scheduling window (e.g., 30 seconds). User should provide application executable and execution time budget. Then GPUPool automatically <strong>profiles</strong> the application for one iteration of the job in isolation on hardware, to collect the <strong>performance counter metrics</strong> of each kernel of data.</p>
+</li>
+<li><p><strong>Co-execution Performance Predictor</strong>. This step decides the <strong>compatibility</strong> of all possible job pairs within the batch using the profiling result. It contains 2 stages:</p>
+<ol>
+<li><p><strong>Kernel-wise Predictors</strong>. It predicts how well each kernel from one job will co-run with the ones in the other job. This stage uses a <em>Gradient Boosting Tree</em> (GBT) model to <strong>predict the performance of each kernel when co-running with another kernel</strong> (based on the 1st key observation). The model takes the profiling data of kernels as input and outputs the <strong>NP</strong>. This prediction will be done for <strong>each feasible TBs&#x2F;SM</strong> settings.</p>
+</li>
+<li><p><strong>Job-wise Predictor</strong>. It gets an <em>interference matrix</em> (shown in Figure 3) based on the <strong>predicted NP</strong> (under optimal TBs&#x2F;SM setting) from former stage, which indicates how will two kernels slow down when they are co-running. Then, GPUPool using this matrix to calculate the <strong>co-running time of two jobs</strong>. Here, the authors found that a whole calculation may require tens of thousands iterations, but the result will <strong>coverage to a steady-state</strong> after several iterations. So the authors used an <strong>approximation algorithm</strong> (shown in Figure 4) – stops timeline calculation once the accumulated slowdown values of each job is within a small delta over the past epoch.</p>
+</li>
+</ol>
+</li>
+</ol>
+<p><img src="/interference_matrix.png"></p>
+<center>Figure 3. Interference Matrix</center>
+
+<p><img src="/stage2.2.png"></p>
+<center>Figure 4. Concurrent Application Timeline</center>
+
+<ol start="3">
+<li><strong>Job dispatcher</strong>. It decides which job pairs should co-run to maximize system performance while satisfying QoS. The decisions are found by solving a <strong>maximum cardinality matching problem</strong> – each node represent a job, when two jobs can co-run and will not violate the QoS requirement, connecting an edge between them. Then a graph theory algorithm is used to maximum cardinality matching, which means a largest subset of edges that do not share a common end node. Due to the potential unreliability of the performance predictor, GPUPool also add <strong>a safety margin</strong> $\delta$ to edge formulation.</li>
+</ol>
+<p>$$E &#x3D; \left{ ( {job} _ i, {job} _ j ) \mid {job} _ i,{job} _ j \in V\ \text{and}\ {NP} _ {job _ x} &gt; {QoS} _ {job _ x} \times (1 + \delta ), x \in {i, j} \right}$$</p>
+<ol start="4">
+<li><strong>Execution</strong>. The batch of jobs are assigned to the modified GPU hardware.</li>
+</ol>
+<h2 id="Evaluations"><a href="#Evaluations" class="headerlink" title="Evaluations"></a>Evaluations</h2><p>The paper compare GPUPool against three baseline systems:</p>
+<ol>
+<li><p>No-Sharing.</p>
+</li>
+<li><p>Coarse: packing the jobs onto <strong>as few GPUs as possible</strong> using a greedy scheduling algorithm.</p>
+</li>
+<li><p>Heuristic: pairing up jobs with the <strong>highest and lowest bandwidth utilization</strong> (profiled offline) from a batch of incoming jobs.</p>
+</li>
+</ol>
+<p>The metrics is system throughput $STP&#x3D;\sum_{i&#x3D;1}^n \cfrac{t_{isolated}^i}{t_{shared}^i}$. $t_{isolated}^i$ and $t_{shared}^i$ are turnaround time of the i-th concurrent job when executing in an isolated and shared environment respectively. The paper also uses we use ${QoS}_{reached}$ to evaluate QoS fulfilment rate.</p>
+<p><img src="/gpu_sharing_compare.png"></p>
+<center>Comparison of GPU Sharing Systems</center>
+
+<p><img src="/sorted_stp.png"></p>
+<center>Sorted STP on GPUs</center>
+
+<p><img src="/throughput.png"></p>
+<center>Throughput Normalized to QoS Target</center>
+
+<p><img src="/ml_pred.png"></p>
+<center>Prediction Accuracy of Different ML Techniques</center>
+
+<h2 id="Comments"><a href="#Comments" class="headerlink" title="Comments"></a>Comments</h2><h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>This paper targets the fine-grained GPU sharing problem in the cloud. I believe this work provides a valuable solution to this problem.</p>
+<p>From my perspective, fine-grained GPU sharing presents three key challenges:</p>
+<ol>
+<li><p><strong>Limitations imposed by hardware and CUDA</strong>, which make it difficult for programmers to flexibly control kernel execution.</p>
+</li>
+<li><p><strong>Reliable and low-cost performance prediction</strong> for concurrent kernel execution. Establishing an analytical performance prediction model is highly challenging. One naive approach is using real hardware to profile, but due to the $\mathcal{O}(n^2)$ ($n$ representing the number of jobs) time complexity, this method is not scalable to larger clusters.</p>
+</li>
+<li><p><strong>Efficient algorithms to find appropriate job combinations</strong>. If we allow an arbitrary number of jobs to execute concurrently, this becomes an NP-hard problem.</p>
+</li>
+</ol>
+<p>This paper cleverly addresses or bypasses these challenges through the following strategies:</p>
+<ol>
+<li><p><strong>Hardware-software co-design</strong>, which involves modifying hardware to provide more flexible API for upper-layer application. While this prevents the authors from testing their method on actual hardware and forces them perform experiments on simulator (GPGPU-Sim), I believe such simulations can provide valuable insights for adjustments on real hardware.</p>
+</li>
+<li><p>Predicting kernel concurrent execution performance <strong>by a ML model</strong>. This is <strong>a standout aspect</strong> of the paper (which is also my <strong>favorite novelty</strong>). The authors introducing ML with a good motivation to effectively addresses a challenging performance modeling problem, bypassing a complicated analytical modeling. Also, this ML model has good <strong>interpretability</strong>, top-10 import metrics (show in Figure) align well with human’s intuition. Furthermore, in my research experiences about Deep Learning Compiler (e.g., TVM), I also found many paper introduce such ML models for performance prediction. I believe the thought that <strong>leveraging ML techniques to bypass some complicated modeling problems</strong> is highly valuable in system research, which is the most important thing I learned from this paper.</p>
+</li>
+<li><p>Instead of solving the whole NP-hard job combination problem, the authors limit the number of concurrently executed jobs to 2, considering this simpler case. It is <strong>a fantastic tradeoff</strong>. The simplified problem can be solved by a maximum cardinality matching algorithm, which may not find the optimal combination, but exchanging reasonable scheduling overhead for a substantial performance improvement.</p>
+</li>
+</ol>
+<h3 id="Weaknesses"><a href="#Weaknesses" class="headerlink" title="Weaknesses"></a>Weaknesses</h3><p>This paper also has some potential weaknesses:</p>
+<ol>
+<li><p>It seems to ignore the situation which <strong>two concurrent jobs have different execution times</strong>. For instance, when a longer job and a shorter job are executed together, after the shorter job finishes, GPUPool seems unable to schedule a new job to the GPU. Instead, the remaining GPU time is monopolized by the longer job. This could result in a lower resource utilization.</p>
+</li>
+<li><p>The concurrent execution of multiple jobs on a single GPU may also be <strong>constrained by GPU memory capacity</strong>. A possible improvement is to ask users to indicate maximum GPU memory usage of their applications and consider the these constraints when constructing the graphs.</p>
+</li>
+<li><p>This paper does not consider <strong>the job which leverages multiple GPUs</strong>. These jobs are quite common in reality. When a job can occupy multiple GPUs, there are some additional constraints:</p>
+<ol>
+<li><p><strong>Inter-GPU connection</strong> (e.g., NVLink or InfiniBand) bandwidth is the potential bottleneck, especially for distributed training strategies relying on high GPU interconnect bandwidth, such as <em>Data Parallelism</em>. Improper job scheduling may lead to contention for bandwidth among multiple jobs, or jobs requiring high GPU interconnect bandwidth may run on different nodes.</p>
+</li>
+<li><p>When a single job leverages multiple GPUs, <strong>the workload types on different GPUs may not be the same</strong>. For example, in <em>Pipeline Parallelism</em>, different GPUs run different stages of the neural network.</p>
+</li>
+</ol>
+</li>
+<li><p>This paper does not clearly take into account <strong>the impact of memory hierarchy on performance</strong>, such as shared memory (or just implicitly consider it using a ML model). Some CUDA kernels are optimized by carefully utilizing CUDA SM shared memory, such as <em>Flash Attention</em>. When two kernels run together, does it lead to shared memory contention? Could it result in runtime errors or shared memory overflowing into global memory, causing a severe performance decline? Experiments in the paper can not answer these questions. Also, the selected profiling metrics to train stage 1 model listed in Figure 5 do not contains any metrics about shared memory capacity. Another possibility is that a ML model is already good enough to handle this problem. Regardless, the impact of memory hierarchy on GPU-sharing deserves further study.</p>
+</li>
+</ol>
+<p><img src="/metrics.png"></p>
+<center>Figure 5. Metrics Used to Train Stage 1 Prediction Model</center>
+
+<h3 id="Possible-Improvements"><a href="#Possible-Improvements" class="headerlink" title="Possible Improvements"></a>Possible Improvements</h3><p>I have some potential ideas to improve this work:</p>
+<ol>
+<li><p>As response to the first weakness mentioned above, we can extend GPUPool to enable it to schedule a new job to the GPU after the shorter job finishes. This improvement can be achieved by a simple modification: <strong>keep the running jobs in the incoming window, and if two jobs are still running in the same GPU, also keep the edge between them in the pairing graph</strong>. With this modification, if shorter job finishes, we can re-run the matching algorithm to find a new job to pair with it.</p>
+</li>
+<li><p>We can extend GPUPool to support <strong>multiple GPU job</strong>. To achieve that, we should consider inter-GPU connection bandwidth. This may include following modifications:</p>
+<ol>
+<li><p>Ask users to <strong>indicate the required inter-GPU bandwidth or connection types</strong> (e.g., NVLink&#x2F;PCIe&#x2F;Infiniband&#x2F;Ethernet).</p>
+</li>
+<li><p>Take a multiple GPU task as several sub-jobs. <strong>Each of sub-job is a single GPU job</strong>, with interconnection constraints. Then we can reuse the infrastructure of GPUPool to find the co-running chances.</p>
+</li>
+<li><p>Extend the last <strong>step “Execution” to consider the interconnection constraints</strong>, so it can dispatch sub-jobs to nodes that meet the constraints. This may require an efficient graph algorithm to find job placement, which requires a further research.</p>
+</li>
+</ol>
+</li>
+<li><p>Sometimes the goal of a data center is not just to improve resource utilization, but also to <strong>save energy</strong>. Improving resource utilization does not necessarily mean energy saving, because the chip’s speed $S$, power consumption $P$, and frequency $f$ have the following approximate relationship:</p>
+</li>
+</ol>
+<p>$$\begin{align}<br>   S &amp; \propto f \<br>   P &amp; \propto f^\alpha, \text{while}\ \alpha \in [2, 3]<br>\end{align}$$</p>
+<p>We can extend the optimization target of GPUPool to power consumption. This can be achieved by add a power prediction model with similar methods. Then we can use a multi-objective optimization algorithm to find the best job combination, considering both performance and power consumption.</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-01-29-wg-for-cluster/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024-01-29-wg-for-cluster/" class="post-title-link" itemprop="url">Building WireGuard VPN for Machine Learning Server Cluster</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-01-29 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-29T00:00:00-06:00">2024-01-29</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h2><p>机器学习集群需要一个安全的方式向用户暴露服务，以及跨公网服务器互联，为此需要部署 VPN 网络。</p>
+<p>VPN 网络的部署需要考虑如下因素：</p>
+<ol>
+<li>网络拓扑：需要选择合适的拓扑结构以尽可能降低延迟；</li>
+<li>用户管理：可以方便地进行用户的增减和授权；</li>
+<li>使用和维护简单。</li>
+</ol>
+<h2 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h2><h3 id="网络拓扑"><a href="#网络拓扑" class="headerlink" title="网络拓扑"></a>网络拓扑</h3><p>网络拓扑决定着延迟。</p>
+<p>延迟最低的方案显然是 full-mesh，即每一对 peer 之间都有直接的 P2P 连接。但这种拓扑结构的管理复杂度是 $\mathcal{O}(n^2)$ 的，并且每添加一个新的 peer 就需要修改所有其他 peer 的配置文件，还需要解决 NAT 带来的问题，这必须借助一些自动化的软件管理。我尝试了 <a target="_blank" rel="noopener" href="https://www.netmaker.io/">Netmaker</a> 和 <a target="_blank" rel="noopener" href="https://headscale.net/">Headscale</a>，但它们似乎都无法正确处理学校内的<strong>复杂网络环境</strong>，比如各种企业级路由器使用的 symmetric NAT，<strong>成功建立 P2P 的概率非常之低</strong>。</p>
+<p>最终我选择了 <strong>full-mesh 和 hub-and-spoke 相结合的拓扑</strong>。由于服务器数量和 IP 很少变化，手动配置一个服务器间的 full-mesh 网络是可行的。与此同时，提供一个 gateway server 作为用户接入的 hub，用户只需要与 gateway server 建立连接。由于大部分用户其实是在校内使用 VPN 的，因此连接到校内的 gateway server 并转发流量并不会带来太多额外延迟。这种结构可以平衡延迟与管理复杂度，用户的增减和授权也只需要在 gateway server 上操作。</p>
+<p><img src="/topo.png" alt="Network Topology"></p>
+<h3 id="协议选择"><a href="#协议选择" class="headerlink" title="协议选择"></a>协议选择</h3><p>流行的 OpenVPN 和 IPSec 都足够优秀，但新兴的 WireGuard 具有无可比拟的配置简单性。对于服务端，WireGuard 可以用几行配置文件定义一个 peer 和路由；对于用户，由于 WireGuard 采用基于密钥对的认证方式，只需要一个配置文件即可接入 VPN 网络，不需要额外的密码记忆和登录操作。</p>
+<h3 id="管理方式"><a href="#管理方式" class="headerlink" title="管理方式"></a>管理方式</h3><p>出于可预测性和稳定性的考量，我选择了手动配置的方法。服务器间的 full-mesh 网络一次配置后就不需要再频繁更改。而用户管理则通过一个脚本实现，当需要添加一个新用户时，脚本生成密钥对并分配 IP，把公钥和路由信息加入 gateway server 的 peer list 中，然后生成包含私钥和分配的 IP 的配置文件，并发给用户。</p>
+<p>Gateway server 上的用户 peer 配置示例：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Peer]</span></span><br><span class="line"><span class="attr">PublicKey</span> = &lt;redacted&gt;</span><br><span class="line"><span class="attr">AllowedIPs</span> = <span class="number">10.1</span>.x.y/<span class="number">32</span></span><br><span class="line"><span class="attr">AllowedIPs</span> = fd01::x:y/<span class="number">128</span></span><br><span class="line"><span class="attr">PersistentKeepalive</span> = <span class="number">25</span></span><br></pre></td></tr></table></figure>
+
+<p>用户的接入配置文件示例：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Interface]</span></span><br><span class="line"><span class="attr">PrivateKey</span> = &lt;redacted&gt;</span><br><span class="line"><span class="attr">Address</span> = <span class="number">10.1</span>.x.y/<span class="number">16</span></span><br><span class="line"><span class="attr">Address</span> = fd01::x:y/<span class="number">64</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Peer]</span></span><br><span class="line"><span class="attr">PublicKey</span> = &lt;redacted&gt;</span><br><span class="line"><span class="attr">AllowedIPs</span> = <span class="number">10.1</span>.<span class="number">0.0</span>/<span class="number">16</span>  <span class="comment"># route all VPN traffic to gateway server</span></span><br><span class="line"><span class="attr">AllowedIPs</span> = fd01::/<span class="number">64</span></span><br><span class="line"><span class="attr">Endpoint</span> = wg.ustcaigroup.xyz:<span class="number">51820</span>  <span class="comment"># gateway server is dual stack</span></span><br><span class="line"><span class="comment"># Endpoint = wg.ustcaigroup.xyz:51820  # IPv4</span></span><br><span class="line"><span class="comment"># Endpoint = wg.ustcaigroup.xyz:51820  # IPv6</span></span><br><span class="line"><span class="attr">PersistentKeepalive</span> = <span class="number">25</span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-11-24-storage-system-desgin/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023-11-24-storage-system-desgin/" class="post-title-link" itemprop="url">Building Storage System for Machine Learning Server Cluster</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-11-24 00:00:00" itemprop="dateCreated datePublished" datetime="2023-11-24T00:00:00-06:00">2023-11-24</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>This is an unfinished blog.</p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-11-14-ascend-910b-custom-op/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023-11-14-ascend-910b-custom-op/" class="post-title-link" itemprop="url">Ascend 910B 自定义 PyTorch 算子</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-11-14 00:00:00" itemprop="dateCreated datePublished" datetime="2023-11-14T00:00:00-06:00">2023-11-14</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>本文基于的硬件环境为 Ascend 910B3，基于的软件环境包括 <a target="_blank" rel="noopener" href="https://www.hiascend.com/developer/download/community/result">CANN 7.0-RC1</a>、<a target="_blank" rel="noopener" href="https://repo.huaweicloud.com/kunpeng/archive/Ascend/PyTorch/">PyTorch 1.11.0</a>、<a target="_blank" rel="noopener" href="https://gitee.com/ascend/pytorch/releases/tag/v5.0.rc3-pytorch1.11.0">Ascend PyTorch Adapter v5.0.rc3-pytorch1.11.0</a>。其他 CANN 和 PyTorch 版本上的情况可能略有不同。</p>
+<h2 id="注册过程"><a href="#注册过程" class="headerlink" title="注册过程"></a>注册过程</h2><h3 id="Ascend-PyTorch-Adapter-中添加自定义算子"><a href="#Ascend-PyTorch-Adapter-中添加自定义算子" class="headerlink" title="Ascend PyTorch Adapter 中添加自定义算子"></a>Ascend PyTorch Adapter 中添加自定义算子</h3><blockquote>
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0045.html">https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0045.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://gitee.com/ascend/samples/tree/master/operator/AddCustomSample/FrameworkLaunch/PytorchInvocation">https://gitee.com/ascend/samples/tree/master/operator/AddCustomSample/FrameworkLaunch/PytorchInvocation</a></li>
+</ul>
+</blockquote>
+<p>在 <code>torch_npu/csrc/aten/npu_native_functions.yaml</code> 中添加 <code>npu_add_custom</code> 函数：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">custom:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">func:</span> <span class="string">npu_add_custom(Tensor</span> <span class="string">x,</span> <span class="string">Tensor</span> <span class="string">y)</span> <span class="string">-&gt;</span> <span class="string">Tensor</span>  <span class="comment"># 添加的函数</span></span><br></pre></td></tr></table></figure>
+
+<p>在 <code>torch_npu/csrc/aten/ops/op_api</code> 中添加 <code>AddCustomKernelNpu.cpp</code> 文件：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;torch/csrc/autograd/custom_function.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;torch_npu/csrc/framework/utils/OpAdapter.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;torch_npu/csrc/aten/NPUNativeFunctions.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;torch_npu/csrc/aten/ops/op_api/op_api_common.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> at_npu &#123;</span><br><span class="line">  <span class="keyword">namespace</span> native &#123;</span><br><span class="line">    <span class="keyword">using</span> torch::autograd::Function;</span><br><span class="line">    <span class="keyword">using</span> torch::autograd::AutogradContext;</span><br><span class="line"></span><br><span class="line">    <span class="function">at::Tensor <span class="title">NPUNativeFunctions::npu_add_custom</span><span class="params">(<span class="type">const</span> at::Tensor&amp; x, <span class="type">const</span> at::Tensor&amp; y)</span> </span>&#123;</span><br><span class="line">        at::Tensor result = OpPreparation::<span class="built_in">ApplyTensor</span>(x); <span class="comment">// 创建输出内存</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// calculate the output result of the NPU</span></span><br><span class="line">        <span class="built_in">EXEC_NPU_CMD</span>(aclnnAddCustom, x, y, result);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="comment">// namespace native</span></span><br><span class="line">&#125; <span class="comment">// namespace at_npu</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>之后重新编译安装 <code>torch_npu</code>。</p>
+<h3 id="CANN-中添加自定义算子的实现"><a href="#CANN-中添加自定义算子的实现" class="headerlink" title="CANN 中添加自定义算子的实现"></a>CANN 中添加自定义算子的实现</h3><blockquote>
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0023.html">https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0023.html</a></li>
+</ul>
+</blockquote>
+<p>首先定义算子描述文件 <code>add_custom.json</code>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;op&quot;</span><span class="punctuation">:</span> <span class="string">&quot;AddCustom&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;language&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cpp&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;input_desc&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;x&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;param_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;required&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;format&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;ND&quot;</span></span><br><span class="line">                <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;fp16&quot;</span></span><br><span class="line">                <span class="punctuation">]</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;y&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;param_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;required&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;format&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;ND&quot;</span></span><br><span class="line">                <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;fp16&quot;</span></span><br><span class="line">                <span class="punctuation">]</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;output_desc&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;z&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;param_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;required&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;format&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;ND&quot;</span></span><br><span class="line">                <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;fp16&quot;</span></span><br><span class="line">                <span class="punctuation">]</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+<p>执行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msopgen gen -i add_custom.json -c ai_core-Ascend910B3 -f pytorch -out . -lan cpp</span><br></pre></td></tr></table></figure>
+
+<p>生成算子工程：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">AddCustom</span><br><span class="line">├── build.sh</span><br><span class="line">├── cmake </span><br><span class="line">│   ├── config.cmake</span><br><span class="line">│   ├── func.cmake</span><br><span class="line">│   ├── intf.cmake</span><br><span class="line">│   ├── makeself.cmake</span><br><span class="line">│   └── util</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">├── CMakePresets.json          // 修改 ASCEND_CANN_PACKAGE_PATH</span><br><span class="line">├── framework</span><br><span class="line">├── op_host</span><br><span class="line">│   ├── add_custom_tiling.h    // 定义 length 和 tiling 相关信息</span><br><span class="line">│   ├── add_custom.cpp         // 算子 host 侧实现</span><br><span class="line">│   ├── CMakeLists.txt</span><br><span class="line">├── op_kernel</span><br><span class="line">│   ├── CMakeLists.txt</span><br><span class="line">│   ├── add_custom.cpp         // 算子 kernel 侧实现</span><br><span class="line">└── scripts</span><br></pre></td></tr></table></figure>
+
+<p><code>CMakePresets.json</code> 中修改 <code>ASCEND_CANN_PACKAGE_PATH</code> 为 CANN 安装路径。</p>
+<p><code>op_host/add_custom_tiling.h</code> 的内容如下（简单实现）：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;register/tilingdata_base.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> optiling &#123;</span><br><span class="line"><span class="built_in">BEGIN_TILING_DATA_DEF</span>(AddCustomTilingData)</span><br><span class="line">    <span class="built_in">TILING_DATA_FIELD_DEF</span>(<span class="type">uint32_t</span>, size);  <span class="comment">// 定义 tensor size</span></span><br><span class="line">END_TILING_DATA_DEF;</span><br><span class="line"></span><br><span class="line"><span class="built_in">REGISTER_TILING_DATA_CLASS</span>(AddCustom, AddCustomTilingData)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>op_host/add_custom.cpp</code> 中修改算子调用时的 <code>block_dim</code>：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">context-&gt;<span class="built_in">SetBlockDim</span>(<span class="number">20</span>); <span class="comment">// 910B3 的 block_dim</span></span><br></pre></td></tr></table></figure>
+
+<p><code>op_kernel/add_custom.cpp</code> 是算子的具体实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel_operator.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> __DAV_C220_VEC__</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="function">__global__ __aicore__ <span class="type">void</span> <span class="title">add_custom</span><span class="params">(GM_ADDR x, GM_ADDR y, GM_ADDR z, GM_ADDR workspace, GM_ADDR tiling)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">GET_TILING_DATA</span>(tiling_data, tiling);</span><br><span class="line">    <span class="type">uint32_t</span> M = tiling_data.size;  <span class="comment">// 从 tiling_data 中获取 tensor size</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 重要：CANN 会尝试不同的 ccec 编译参数以推断算子的类型（VEC、CUBE、MIXED），如果不创建一个 stub 函数将会编译失败</span></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="function">__global__ __aicore__ <span class="type">void</span> <span class="title">add_custom</span><span class="params">(GM_ADDR x, GM_ADDR y, GM_ADDR z, GM_ADDR workspace, GM_ADDR tiling)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">pip_barrier</span>(PIPE_ALL);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="编译部署"><a href="#编译部署" class="headerlink" title="编译部署"></a>编译部署</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">bash build.sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./custom_opp_euleros_aarch64.run</span></span><br></pre></td></tr></table></figure>
+
+<p>PyTorch 中调用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch_npu</span><br><span class="line"></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"></span><br><span class="line">z = torch.npu_add_custom(x, y)  <span class="comment"># 由于是运行时编译，第一次运行时需要等待编译</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="注册原理"><a href="#注册原理" class="headerlink" title="注册原理"></a>注册原理</h2><p>TODO</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>TODO</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/zh-cn/page/2/">2</a><a class="extend next" rel="next" title="Next page" aria-label="Next page" href="/zh-cn/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>English</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="Select language">
+      
+        <option value="en" data-href="/zh-cn/index.html" selected="">
+          English
+        </option>
+      
+        <option value="zh-cn" data-href="/zh-cn/zh-cn/index.html" selected="">
+          zh-cn
+        </option>
+      
+    </select>
+  </div>
+
+  <div class="copyright">
+    &copy; 2023 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Monsoon</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/monsoon235" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

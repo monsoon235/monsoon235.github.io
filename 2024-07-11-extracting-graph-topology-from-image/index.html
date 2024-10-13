@@ -19,26 +19,26 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="The ProblemNow we have an image representing a graph, as shown in the figure below:  Suppose we already know the category of each pixel: background, node, or edge. How can we extract the graph topolog">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Extracting Graph Topology from Image">
-<meta property="og:url" content="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/">
+<meta property="og:url" content="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/index.html">
 <meta property="og:site_name" content="Monsoon&#39;s Blog">
 <meta property="og:description" content="The ProblemNow we have an image representing a graph, as shown in the figure below:  Suppose we already know the category of each pixel: background, node, or edge. How can we extract the graph topolog">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/image.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/nn.png">
-<meta property="article:published_time" content="2024-07-10T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-07-10T16:00:00.000Z">
+<meta property="og:image" content="https://monsoon-cs.moe/image.png">
+<meta property="og:image" content="https://monsoon-cs.moe/nn.png">
+<meta property="article:published_time" content="2024-07-11T05:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-11T05:00:00.000Z">
 <meta property="article:author" content="Monsoon">
 <meta property="article:tag" content="network">
 <meta property="article:tag" content="machine-learning">
 <meta property="article:tag" content="computer-vision">
 <meta property="article:tag" content="graph">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/image.png">
+<meta name="twitter:image" content="https://monsoon-cs.moe/image.png">
 
 
 <link rel="canonical" href="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/">
@@ -140,8 +140,9 @@
         </a>
       </div>
       <div class="site-state-item site-state-tags">
+          <a href="/tags/">
         <span class="site-state-item-count">52</span>
-        <span class="site-state-item-name">tags</span>
+        <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
 </div>
@@ -207,7 +208,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2024-07-11 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-11T00:00:00+08:00">2024-07-11</time>
+      <time title="Created: 2024-07-11 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-11T00:00:00-05:00">2024-07-11</time>
     </span>
 
   
@@ -220,7 +221,7 @@
     
     
     <div class="post-body" itemprop="articleBody"><h2 id="The-Problem"><a href="#The-Problem" class="headerlink" title="The Problem"></a>The Problem</h2><p>Now we have an image representing a graph, as shown in the figure below:</p>
-<p><img src="/2024-07-11-extracting-graph-topology-from-image/image.png"></p>
+<p><img src="/image.png"></p>
 <p>Suppose we already know the category of each pixel: background, node, or edge. How can we <strong>extract the graph topology</strong> from it and represent the graph by an adjacency matrix?</p>
 <h2 id="Challenges-in-Classical-Algorithm"><a href="#Challenges-in-Classical-Algorithm" class="headerlink" title="Challenges in Classical Algorithm"></a>Challenges in Classical Algorithm</h2><p>TODO</p>
 <h2 id="What-about-Neural-Network"><a href="#What-about-Neural-Network" class="headerlink" title="What about Neural Network?"></a>What about Neural Network?</h2><p>We can use a simple algorithm to extract the position of each node. Suppose the position of a node is $\mathbf{P}(x,y)$, and there are $N$ nodes in total.</p>
@@ -229,7 +230,7 @@
 <p>$$O&#x3D;\mathbf{f}(\mathbf{I}, \mathbf{P}_ 1, \mathbf{P}_ 2).$$</p>
 <p>The dataset can be synthesized by a simple program, and we can use any classification network (e.g., <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1905.11946">EfficientNet</a>) as our network architecture.</p>
 <p>The problem is how to feed $\left( \mathbf{P}_ 1, \mathbf{P}_ 2<br>\right)$​ into the network. We can add an additional “mask channel” to the image, where the pixels belonging to the two input nodes are marked as 1, and the others as 0. Finally, we input this 4-channel “image” into the network.</p>
-<p><img src="/2024-07-11-extracting-graph-topology-from-image/nn.png"></p>
+<p><img src="/nn.png"></p>
 <h2 id="Other-Notes"><a href="#Other-Notes" class="headerlink" title="Other Notes"></a>Other Notes</h2><p>TODO</p>
 
     </div>
@@ -291,6 +292,24 @@
 
   <footer class="footer">
     <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>English</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="Select language">
+      
+        <option value="en" data-href="/2024-07-11-extracting-graph-topology-from-image/" selected="">
+          English
+        </option>
+      
+        <option value="zh-cn" data-href="/zh-cn/2024-07-11-extracting-graph-topology-from-image/" selected="">
+          zh-cn
+        </option>
+      
+    </select>
+  </div>
 
   <div class="copyright">
     &copy; 2023 – 

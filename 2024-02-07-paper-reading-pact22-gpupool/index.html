@@ -19,26 +19,26 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="This blog is a write-up of the paper “GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud“ from PACT’22.  MotivationThis paper focuses on the GPU sharing in cloud scenarios. Current">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT&#39;22)">
-<meta property="og:url" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/">
+<meta property="og:url" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/index.html">
 <meta property="og:site_name" content="Monsoon&#39;s Blog">
 <meta property="og:description" content="This blog is a write-up of the paper “GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud“ from PACT’22.  MotivationThis paper focuses on the GPU sharing in cloud scenarios. Current">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/tb_sm.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/system-design.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/interference_matrix.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/stage2.2.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/gpu_sharing_compare.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/sorted_stp.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/throughput.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/ml_pred.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/metrics.png">
-<meta property="article:published_time" content="2024-02-06T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-03-30T16:00:00.000Z">
+<meta property="og:image" content="https://monsoon-cs.moe/tb_sm.png">
+<meta property="og:image" content="https://monsoon-cs.moe/system-design.png">
+<meta property="og:image" content="https://monsoon-cs.moe/interference_matrix.png">
+<meta property="og:image" content="https://monsoon-cs.moe/stage2.2.png">
+<meta property="og:image" content="https://monsoon-cs.moe/gpu_sharing_compare.png">
+<meta property="og:image" content="https://monsoon-cs.moe/sorted_stp.png">
+<meta property="og:image" content="https://monsoon-cs.moe/throughput.png">
+<meta property="og:image" content="https://monsoon-cs.moe/ml_pred.png">
+<meta property="og:image" content="https://monsoon-cs.moe/metrics.png">
+<meta property="article:published_time" content="2024-02-07T06:00:00.000Z">
+<meta property="article:modified_time" content="2024-03-31T05:00:00.000Z">
 <meta property="article:author" content="Monsoon">
 <meta property="article:tag" content="paper-reading">
 <meta property="article:tag" content="ml-system">
@@ -47,7 +47,7 @@
 <meta property="article:tag" content="pact">
 <meta property="article:tag" content="pact22">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/tb_sm.png">
+<meta name="twitter:image" content="https://monsoon-cs.moe/tb_sm.png">
 
 
 <link rel="canonical" href="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/">
@@ -149,8 +149,9 @@
         </a>
       </div>
       <div class="site-state-item site-state-tags">
+          <a href="/tags/">
         <span class="site-state-item-count">52</span>
-        <span class="site-state-item-name">tags</span>
+        <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
 </div>
@@ -216,14 +217,14 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2024-02-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00+08:00">2024-02-07</time>
+      <time title="Created: 2024-02-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00-06:00">2024-02-07</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-03-31 00:00:00" itemprop="dateModified" datetime="2024-03-31T00:00:00+08:00">2024-03-31</time>
+      <time title="Modified: 2024-03-31 00:00:00" itemprop="dateModified" datetime="2024-03-31T00:00:00-05:00">2024-03-31</time>
     </span>
 
   
@@ -274,7 +275,7 @@
 <li><p>They do not handle scenarios where incoming jobs must be distributed among multiple GPUs to satisfy QoS constraints.</p>
 </li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/tb_sm.png"></p>
+<p><img src="/tb_sm.png"></p>
 <center>Figure 1. Simulated system throughput of co-running `parb_spmv` and `rod_hotspot` at various TBs/SM settings</center>
 
 <p><strong>Problems of hardware TB scheduler</strong> which hinder the fine-grained sharing:</p>
@@ -318,7 +319,7 @@
 <li><p>Once we have predicted which job pairs can co-execute without violating QoS requirements, the scheduling task can be reduced to the classic maximum cardinality matching problem in graph theory.</p>
 </li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/system-design.png"></p>
+<p><img src="/system-design.png"></p>
 <center>Figure 2. Overall System Design of GPUPool</center>
 
 <p>Based on these 2 observations, the author proposed GPUPool. Its overall system design is shown in Figure 2. It consists of 4 steps:</p>
@@ -334,10 +335,10 @@
 </ol>
 </li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/interference_matrix.png"></p>
+<p><img src="/interference_matrix.png"></p>
 <center>Figure 3. Interference Matrix</center>
 
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/stage2.2.png"></p>
+<p><img src="/stage2.2.png"></p>
 <center>Figure 4. Concurrent Application Timeline</center>
 
 <ol start="3">
@@ -357,16 +358,16 @@
 </li>
 </ol>
 <p>The metrics is system throughput $STP&#x3D;\sum_{i&#x3D;1}^n \cfrac{t_{isolated}^i}{t_{shared}^i}$. $t_{isolated}^i$ and $t_{shared}^i$ are turnaround time of the i-th concurrent job when executing in an isolated and shared environment respectively. The paper also uses we use ${QoS}_{reached}$ to evaluate QoS fulfilment rate.</p>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/gpu_sharing_compare.png"></p>
+<p><img src="/gpu_sharing_compare.png"></p>
 <center>Comparison of GPU Sharing Systems</center>
 
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/sorted_stp.png"></p>
+<p><img src="/sorted_stp.png"></p>
 <center>Sorted STP on GPUs</center>
 
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/throughput.png"></p>
+<p><img src="/throughput.png"></p>
 <center>Throughput Normalized to QoS Target</center>
 
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/ml_pred.png"></p>
+<p><img src="/ml_pred.png"></p>
 <center>Prediction Accuracy of Different ML Techniques</center>
 
 <h2 id="Comments"><a href="#Comments" class="headerlink" title="Comments"></a>Comments</h2><h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>This paper targets the fine-grained GPU sharing problem in the cloud. I believe this work provides a valuable solution to this problem.</p>
@@ -405,7 +406,7 @@
 <li><p>This paper does not clearly take into account <strong>the impact of memory hierarchy on performance</strong>, such as shared memory (or just implicitly consider it using a ML model). Some CUDA kernels are optimized by carefully utilizing CUDA SM shared memory, such as <em>Flash Attention</em>. When two kernels run together, does it lead to shared memory contention? Could it result in runtime errors or shared memory overflowing into global memory, causing a severe performance decline? Experiments in the paper can not answer these questions. Also, the selected profiling metrics to train stage 1 model listed in Figure 5 do not contains any metrics about shared memory capacity. Another possibility is that a ML model is already good enough to handle this problem. Regardless, the impact of memory hierarchy on GPU-sharing deserves further study.</p>
 </li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/metrics.png"></p>
+<p><img src="/metrics.png"></p>
 <center>Figure 5. Metrics Used to Train Stage 1 Prediction Model</center>
 
 <h3 id="Possible-Improvements"><a href="#Possible-Improvements" class="headerlink" title="Possible Improvements"></a>Possible Improvements</h3><p>I have some potential ideas to improve this work:</p>
@@ -489,6 +490,24 @@
 
   <footer class="footer">
     <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>English</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="Select language">
+      
+        <option value="en" data-href="/2024-02-07-paper-reading-pact22-gpupool/" selected="">
+          English
+        </option>
+      
+        <option value="zh-cn" data-href="/zh-cn/2024-02-07-paper-reading-pact22-gpupool/" selected="">
+          zh-cn
+        </option>
+      
+    </select>
+  </div>
 
   <div class="copyright">
     &copy; 2023 – 

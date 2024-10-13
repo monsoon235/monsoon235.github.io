@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="See original publication page for more details. All my answer files can be browsed in here, or you can download zipped file (5.9G). RequirementsThis is a test for candidates who wish to participate in">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VCB-Studio Technical Director Entry Test 2023 and My Answer">
+<meta property="og:url" content="https://monsoon-cs.moe/zh-cn/2023-05-25-vcb/index.html">
+<meta property="og:site_name" content="Monsoon&#39;s Blog">
+<meta property="og:description" content="See original publication page for more details. All my answer files can be browsed in here, or you can download zipped file (5.9G). RequirementsThis is a test for candidates who wish to participate in">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://monsoon-cs.moe/pics/Q2_png.png">
+<meta property="og:image" content="https://monsoon-cs.moe/pics/Q2_webp.png">
+<meta property="og:image" content="https://monsoon-cs.moe/pics/Q2_avif.png">
+<meta property="og:image" content="https://monsoon-cs.moe/pics/Q2_jxl.png">
+<meta property="og:image" content="https://monsoon-cs.moe/pics/Q4.png">
+<meta property="og:image" content="https://monsoon-cs.moe/pics/m2ts-flame.png">
+<meta property="og:image" content="https://monsoon-cs.moe/pics/av1-flame.png">
+<meta property="og:image" content="https://monsoon-cs.moe/pics/m2ts-flame.png">
+<meta property="og:image" content="https://monsoon-cs.moe/pics/av1-flame.png">
+<meta property="og:image" content="https://monsoon-cs.moe/pics/vvc-flame.png">
+<meta property="article:published_time" content="2023-05-25T05:00:00.000Z">
+<meta property="article:modified_time" content="2023-05-25T05:00:00.000Z">
+<meta property="article:author" content="Monsoon">
+<meta property="article:tag" content="anime">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://monsoon-cs.moe/pics/Q2_png.png">
+
+
+<link rel="canonical" href="https://monsoon-cs.moe/zh-cn/2023-05-25-vcb/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-cn","comments":true,"permalink":"https://monsoon-cs.moe/2023-05-25-vcb/","path":"zh-cn/2023-05-25-vcb/","title":"VCB-Studio Technical Director Entry Test 2023 and My Answer"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>VCB-Studio Technical Director Entry Test 2023 and My Answer | Monsoon's Blog</title>
+  
+
+
+
+  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;3c9e3103682b4f6fbc36342486e67640&quot;}'></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Monsoon's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Monsoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>Sitemap</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Requirements"><span class="nav-number">1.</span> <span class="nav-text">Requirements</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Question1-15pt"><span class="nav-number">2.</span> <span class="nav-text">Question1 (15pt)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Question2-30pt"><span class="nav-number">3.</span> <span class="nav-text">Question2 (30pt)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Format-conversion-rules-of-scans-in-VCB-Studio-Collation-specifications"><span class="nav-number">3.1.</span> <span class="nav-text">(1) Format conversion rules of scans in VCB-Studio Collation specifications</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Converting-test"><span class="nav-number">3.2.</span> <span class="nav-text">(2) Converting test</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Comparison-and-comment"><span class="nav-number">3.3.</span> <span class="nav-text">(3) Comparison and comment</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Question3-30pt"><span class="nav-number">4.</span> <span class="nav-text">Question3 (30pt)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1"><span class="nav-number">4.1.</span> <span class="nav-text">(1)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2"><span class="nav-number">4.2.</span> <span class="nav-text">(2)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3"><span class="nav-number">4.3.</span> <span class="nav-text">(3)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Question4-35pt"><span class="nav-number">5.</span> <span class="nav-text">Question4 (35pt)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-VVC-encoding"><span class="nav-number">5.1.</span> <span class="nav-text">(1) VVC encoding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Comparing-source-video-and-reference-AV1-encoded-video"><span class="nav-number">5.2.</span> <span class="nav-text">(2) Comparing source video and reference AV1 encoded video</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Comparing-custom-VVC-encoded-video-and-reference-AV1-encoded-video"><span class="nav-number">5.3.</span> <span class="nav-text">(3) Comparing custom VVC encoded video and reference AV1 encoded video</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Question5-20pt"><span class="nav-number">6.</span> <span class="nav-text">Question5 (20pt)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Find-the-worst-frame"><span class="nav-number">6.1.</span> <span class="nav-text">(1) Find the worst frame</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Find-minimum-subsequence-sum"><span class="nav-number">6.2.</span> <span class="nav-text">(2) Find minimum subsequence sum</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Monsoon</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/monsoon235" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;monsoon235" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://t.me/monsoon235" title="Telegram → https:&#x2F;&#x2F;t.me&#x2F;monsoon235" rel="noopener me" target="_blank"><i class="fab fa-telegram fa-fw"></i>Telegram</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/big/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-05-25-vcb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="VCB-Studio Technical Director Entry Test 2023 and My Answer | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          VCB-Studio Technical Director Entry Test 2023 and My Answer
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-05-25 00:00:00" itemprop="dateCreated datePublished" datetime="2023-05-25T00:00:00-05:00">2023-05-25</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>See <a target="_blank" rel="noopener" href="https://vcb-s.com/archives/15949">original publication page</a> for more details.</p>
+<p>All my answer files can be browsed in <a target="_blank" rel="noopener" href="https://static.monsoon-cs.moe/public/VCB-Studio%20Entry%20Test%202023%20Answers/">here</a>, or you can download <a target="_blank" rel="noopener" href="https://static.monsoon-cs.moe/public/VCB-Studio%20Entry%20Test%202023%20Answers.zip">zipped file</a> (5.9G).</p>
+<h2 id="Requirements"><a href="#Requirements" class="headerlink" title="Requirements"></a>Requirements</h2><blockquote><p>This is a test for candidates who wish to participate in the training class organized by VCB-Studio. Finish as many problems as you can, and then do the following things:</p>
+<ol>
+<li>Pack your answers, result files, and necessary attachments into a <strong>zip&#x2F;rar&#x2F;7z</strong> file. Source files we provided and intermediate file in your encoding should not be packed in.</li>
+<li>Register a Baidu Net Disk account (<a target="_blank" rel="noopener" href="https://pan.baidu.com/">https://pan.baidu.com</a>), upload the zipped file and create a sharing link. Whether you like it or not, Baidu Net Disk has been the most effective way to share files within our team since day one. Other sharing methods will NOT be considered.</li>
+<li>Send the link via email to <a href="mailto:vcbs.training@gmail.com">vcbs.training@gmail.com</a> before <strong>Beijing Time (UTC+8) Monday, 23 Jan 2023, 23:59:59</strong>. Late submissions will NOT be considered.</li>
+<li>Prepare a QQ account. The follow-up training courses will be conducted in the QQ group.</li>
+</ol>
+<p>You should independently complete the answers without any public discussion. Any form of plagiarism will NOT be tolerated.</p>
+<p>This test has 5 questions. For question 2 and 3, you can choose ONE of them. Choosing both then we will pick one with higher points. The answers should be made in English.</p>
+</blockquote>
+
+<h2 id="Question1-15pt"><a href="#Question1-15pt" class="headerlink" title="Question1 (15pt)"></a>Question1 (15pt)</h2><blockquote><p>Please describe yourself as who you are, where do you study, how do you come to know VCB-Studio and why are you interested in this project, etc. Please do not write more than 500 words, or approximately 1 page. (15pt)</p>
+</blockquote>
+
+<p><em>Answers are hidden for privacy reasons.</em></p>
+<h2 id="Question2-30pt"><a href="#Question2-30pt" class="headerlink" title="Question2 (30pt)"></a>Question2 (30pt)</h2><blockquote><p>Scanned pictures (or simply scans) are an important part of BDRips, which are often released as lossless PNG, TIFF format or lossy JPG format. Scans feature high resolution and large size. In the file <strong>Q2.7z</strong>, two sets of pictures have been provided for you. PNGs are the source scans, and WEBPs are transcoded from PNGs according to VCB-Studio Collation specifications. Your tasks are:</p>
+<ol>
+<li>Summarize the format conversion rules of scans in VCB-Studio Collation specifications. (6pt)</li>
+<li>Convert the sources to AVIF and JPEG-XL format, with sizes comparable to the WEBPs. (12pt)</li>
+<li>Comment on the quality, encoding speed, and compatibility of AVIF and JPEG- XL, and why&#x2F;why not you may recommend us switching to the new format as the upgrade for WEBP in 2023. (12pt)</li>
+</ol>
+<p>You are free to utilize existing tools, but you need to describe clearly where you find the tool and how to use it.</p>
+</blockquote>
+
+<h3 id="1-Format-conversion-rules-of-scans-in-VCB-Studio-Collation-specifications"><a href="#1-Format-conversion-rules-of-scans-in-VCB-Studio-Collation-specifications" class="headerlink" title="(1) Format conversion rules of scans in VCB-Studio Collation specifications"></a>(1) Format conversion rules of scans in VCB-Studio Collation specifications</h3><p>Choosing a format with better image quality at the same size when ensuring compatibility.</p>
+<h3 id="2-Converting-test"><a href="#2-Converting-test" class="headerlink" title="(2) Converting test"></a>(2) Converting test</h3><p>See <code>Q2/convert.py</code> for my conversion code. <code>Pillow</code>, <code>pillow_avif_plugin</code> and <code>jxlpy</code> are used libraries. <code>Pillow</code> is the image processing library which I often use, it supports <code>WEBP</code> but not <code>AVIF</code> and <code>JPEG-XL</code>. So I find two <code>Pillow</code> plugins by Google to support <code>AVIF</code> and <code>JPEG-XL</code>.</p>
+<p><code>PNG</code> and <code>WEBP Ref</code> are given images, and <code>WEBP Cus</code>, <code>AVIF</code>, <code>JPEG-XL</code> are custom encoded images.</p>
+<p><code>WEBP Custom</code> is encoded by <code>Pillow</code>, which is backed by <code>libwebp</code>. Encoding speed is set to slowest(<code>6</code>), and quality is set to <code>90</code> to keep the same size with reference webp images.</p>
+<p><code>AVIF</code> is encoded by <code>pillow-avif-plugin</code>, which is backed by <code>libavif</code>. Encoding speed is set to slowest(<code>0</code>), and quality is set to <code>84</code> to get the comparable size with reference webp images.</p>
+<p><code>JPEG-XL</code> is encoded by <code>jxlpy</code>, which is backed by <code>libjxl</code>. Encoding speed is set to slowest(<code>9</code>), decoding speed is also slowest(<code>0</code>), and quality is set to <code>92</code> to get the comparable size with reference webp images.</p>
+<p>The following table shows the result:</p>
+<table>
+<thead>
+<tr>
+<th align="center">Image</th>
+<th align="center">PNG (size)</th>
+<th align="center">WEBP Ref (size)</th>
+<th align="center">WEBP Cus (size&#x2F;time)</th>
+<th align="center">AVIF (size&#x2F;time)</th>
+<th align="center">JPEG-XL (size&#x2F;time)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">01</td>
+<td align="center">26.97 MB</td>
+<td align="center">2.95 MB</td>
+<td align="center">2.95 MB &#x2F; 3.36 s</td>
+<td align="center">2.77 MB &#x2F; 37.77 s</td>
+<td align="center">2.56 MB &#x2F; 32.00 s</td>
+</tr>
+<tr>
+<td align="center">02</td>
+<td align="center">26.25 MB</td>
+<td align="center">2.93 MB</td>
+<td align="center">2.94 MB &#x2F; 3.27 s</td>
+<td align="center">2.71 MB &#x2F; 34.87 s</td>
+<td align="center">2.48 MB &#x2F; 33.07 s</td>
+</tr>
+<tr>
+<td align="center">03</td>
+<td align="center">3.60 MB</td>
+<td align="center">0.26 MB</td>
+<td align="center">0.26 MB &#x2F; 0.37 s</td>
+<td align="center">0.28 MB &#x2F; 11.48 s</td>
+<td align="center">0.28 MB &#x2F; 5.12 s</td>
+</tr>
+<tr>
+<td align="center">04</td>
+<td align="center">21.78 MB</td>
+<td align="center">1.03 MB</td>
+<td align="center">1.03 MB &#x2F; 2.06 s</td>
+<td align="center">1.32 MB &#x2F; 29.56 s</td>
+<td align="center">1.39 MB &#x2F; 32.25 s</td>
+</tr>
+<tr>
+<td align="center">05</td>
+<td align="center">2.65 MB</td>
+<td align="center">0.13 MB</td>
+<td align="center">0.13 MB &#x2F; 0.24 s</td>
+<td align="center">0.15 MB &#x2F; 9.29 s</td>
+<td align="center">0.18 MB &#x2F; 4.11 s</td>
+</tr>
+<tr>
+<td align="center">06</td>
+<td align="center">2.66 MB</td>
+<td align="center">0.13 MB</td>
+<td align="center">0.13 MB &#x2F; 0.25 s</td>
+<td align="center">0.15 MB &#x2F; 9.39 s</td>
+<td align="center">0.16 MB &#x2F; 3.81 s</td>
+</tr>
+<tr>
+<td align="center">07</td>
+<td align="center">24.38 MB</td>
+<td align="center">1.71 MB</td>
+<td align="center">1.71 MB &#x2F; 2.25 s</td>
+<td align="center">1.67 MB &#x2F; 27.78 s</td>
+<td align="center">1.68 MB &#x2F; 35.59 s</td>
+</tr>
+<tr>
+<td align="center">08</td>
+<td align="center">55.52 MB</td>
+<td align="center">7.58 MB</td>
+<td align="center">7.58 MB &#x2F; 26.48 s</td>
+<td align="center">7.93 MB &#x2F; 83.44 s</td>
+<td align="center">6.36 MB &#x2F; 72.90 s</td>
+</tr>
+<tr>
+<td align="center">09</td>
+<td align="center">44.39 MB</td>
+<td align="center">2.00 MB</td>
+<td align="center">2.00 MB &#x2F; 3.53 s</td>
+<td align="center">1.99 MB &#x2F; 59.79 s</td>
+<td align="center">2.47 MB &#x2F; 71.73 s</td>
+</tr>
+<tr>
+<td align="center">10</td>
+<td align="center">41.59 MB</td>
+<td align="center">1.21 MB</td>
+<td align="center">1.21 MB &#x2F; 3.11 s</td>
+<td align="center">1.16 MB &#x2F; 59.99 s</td>
+<td align="center">1.70 MB &#x2F; 63.65 s</td>
+</tr>
+</tbody></table>
+<p><strong>PS</strong>: <code>pillow-avif-plugin</code> uses 8 threads to encode images (on i7-11700), and I didn’t find an option to turn it off. Other encoders use only 1 thread. <code>jxlpy</code> example shows that it supports setting multithreading, but it doesn’t work.</p>
+<h3 id="3-Comparison-and-comment"><a href="#3-Comparison-and-comment" class="headerlink" title="(3) Comparison and comment"></a>(3) Comparison and comment</h3><p>Quality comparison:</p>
+<table>
+<thead>
+<tr>
+<th align="center"><code>PNG</code></th>
+<th align="center"><code>WEBP Ref</code></th>
+<th align="center"><code>AVIF</code></th>
+<th align="center"><code>JPEG-XL</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><img src="/pics/Q2_png.png"></td>
+<td align="center"><img src="/pics/Q2_webp.png"></td>
+<td align="center"><img src="/pics/Q2_avif.png"></td>
+<td align="center"><img src="/pics/Q2_jxl.png"></td>
+</tr>
+</tbody></table>
+<p>Above is a cropped part from 03 for the given encoding. The <code>WEBP</code> image has severe smearing in dark areas, and obvious color shift occurs in the red dots on the upper left and lower right. The <code>AVIF</code> image is better in smearing, but the color shift is the same as <code>WEBP</code>. The <code>JPEG-XL</code> image is relatively closest to reference <code>PNG</code> image.</p>
+<p>Detailed compatibility:</p>
+<table>
+<thead>
+<tr>
+<th align="center">Format</th>
+<th align="center">Windows</th>
+<th align="center">macOS</th>
+<th align="center">Android</th>
+<th align="center">iOS</th>
+<th align="center">Chrome</th>
+<th align="center">Firefox</th>
+<th align="center">Safari</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>WEBP</code></td>
+<td align="center">≥10</td>
+<td align="center">≥11</td>
+<td align="center">≥4</td>
+<td align="center">≥14</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="center"><code>AVIF</code></td>
+<td align="center">≥10-1903</td>
+<td align="center">≥13</td>
+<td align="center">≥12</td>
+<td align="center">≥16</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="center"><code>JPEG-XL</code></td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+</tr>
+</tbody></table>
+<p>PS: Results on Windows, macOS, Android and iOS are got by Google. Browser compatibility information can be found at <a target="_blank" rel="noopener" href="https://caniuse.com/">https://caniuse.com</a>.</p>
+<p>Summary:</p>
+<table>
+<thead>
+<tr>
+<th align="center">Format</th>
+<th align="center">Quality</th>
+<th align="center">Encoding Speed</th>
+<th align="center">Compatibility</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>WEBP</code></td>
+<td align="center">worst</td>
+<td align="center">fast</td>
+<td align="center">good</td>
+</tr>
+<tr>
+<td align="center"><code>AVIF</code></td>
+<td align="center">medium</td>
+<td align="center">slow</td>
+<td align="center">medium</td>
+</tr>
+<tr>
+<td align="center"><code>JPEG-XL</code></td>
+<td align="center">best</td>
+<td align="center">slow</td>
+<td align="center">bad</td>
+</tr>
+</tbody></table>
+<p>Due to the bad compatibility of <code>JPEG-XL</code>, it should not be considered an appropriate option. <code>AVIF</code> features the better image quality than <code>WEBP</code>, but is only well supported in new platforms, which needs time for adoption, especially for fragmented Android and Windows. Although <code>WBEP</code> takes huge advantage in encoding speed, I don’t think encoding speed is a factor that needs to be considered because even for large images, the encoding time is only about 1 minute, and the number of images not large. Compared with video encoding, this is a completely negligible time overhead.</p>
+<p>Summarily, I think <strong>now</strong> is not a suitable time to switch to <code>AVIF</code> or <code>JPEG-XL</code>. But two years later, it will be time for <code>AVIF</code> to show its strength.</p>
+<h2 id="Question3-30pt"><a href="#Question3-30pt" class="headerlink" title="Question3 (30pt)"></a>Question3 (30pt)</h2><blockquote><p>Recently 32-bit audio tracks have appeared in some of the latest Hi-Res music. Although now we would not see these annoying 32-bit tracks in the Blu-ray, we have to start working on them in advance. In the file <strong>Q3.7z</strong>, two 32-bit PCM files are provided for you. Your tasks are:</p>
+<ol>
+<li>Learn about 32-bit tracks and tell the difference between these two files. (6pt)</li>
+<li>Try to convert them to FLAC, ALAC, and WavPack losslessly. (15pt)</li>
+<li>Consider various aspects such as compression rate, encoding speed, and playback compatibility and select the format you recommend most for 32-bit audio. (9pt)</li>
+</ol>
+<p>You are free to utilize existing tools, but you need to describe clearly where you find the tool and how to use it.</p>
+</blockquote>
+
+<h3 id="1"><a href="#1" class="headerlink" title="(1)"></a>(1)</h3><p>Using <code>ffprobe</code> to get audio encoding info:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Input #0, wav, from &#x27;01.wav&#x27;:</span><br><span class="line">  Duration: 00:03:52.48, bitrate: 6144 kb/s</span><br><span class="line">  Stream #0:0: Audio: pcm_s32le ([1][0][0][0] / 0x0001), 96000 Hz, 2 channels, s32, 6144 kb/s</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Input #0, wav, from &#x27;02.wav&#x27;:</span><br><span class="line">  Duration: 00:07:03.00, bitrate: 6144 kb/s</span><br><span class="line">  Stream #0:0: Audio: pcm_f32le ([3][0][0][0] / 0x0003), 96000 Hz, 2 channels, flt, 6144 kb/s</span><br></pre></td></tr></table></figure>
+
+<p>The difference is: <code>01.wav</code> is encoded by <code>pcm_s32le</code>, and <code>02.wav</code> is encoded by <code>pcm_f32le</code>.</p>
+<p><code>pcm_s32le</code> means PCM encoding by 32-bit signed integer with little-endian byte ordering, while <code>pcm_s32le</code> means PCM encoding by 32-bit floating point with little-endian byte ordering.</p>
+<h3 id="2"><a href="#2" class="headerlink" title="(2)"></a>(2)</h3><p>I first tried to convert them losslessly using FFmpeg. If FFmpeg failed, I used Google to find a suitable codec.</p>
+<p>This is the result of my attempt:</p>
+<table>
+<thead>
+<tr>
+<th align="center">Format</th>
+<th align="center">32-bit integer</th>
+<th align="center">32-bit float</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>FLAC</code></td>
+<td align="center">FFmpeg ❌<br><a target="_blank" rel="noopener" href="https://github.com/xiph/flac"><code>flac</code></a> (from v1.4.0) ✅</td>
+<td align="center">FFmpeg ❌</td>
+</tr>
+<tr>
+<td align="center"><code>ALAC</code></td>
+<td align="center">FFmpeg (decoding only)<br><a target="_blank" rel="noopener" href="https://github.com/nu774/qaac"><code>qaac</code></a> (backed by Apple <code>CoreAudioToolbox</code>) ✅</td>
+<td align="center">FFmpeg ❌</td>
+</tr>
+<tr>
+<td align="center"><code>WavPack</code></td>
+<td align="center">FFmpeg ✅</td>
+<td align="center">FFmpeg ✅</td>
+</tr>
+</tbody></table>
+<p>The conversion command:</p>
+<table>
+<thead>
+<tr>
+<th align="center">Format</th>
+<th align="center">32-bit integer</th>
+<th align="center">32-bit float</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>FLAC</code></td>
+<td align="center"><code>flac -o 01.flac 01.wav</code></td>
+<td align="center">❌</td>
+</tr>
+<tr>
+<td align="center"><code>ALAC</code></td>
+<td align="center"><code>qaac64 -b 32 --alac -i 01.wav -o 01.m4a</code></td>
+<td align="center">❌</td>
+</tr>
+<tr>
+<td align="center"><code>WavPack</code></td>
+<td align="center"><code>ffmpeg -i 01.wav 01.wv</code></td>
+<td align="center"><code>ffmpeg -i 02.wav 02.wv</code></td>
+</tr>
+</tbody></table>
+<p>The resulting files are <code>Q3/01.flac</code>, <code>Q3/01.m4a</code>, <code>Q3/01.wv</code> and <code>Q3/02.wv</code>.</p>
+<h3 id="3"><a href="#3" class="headerlink" title="(3)"></a>(3)</h3><p>Encoding speed and compression rate of different encoding methods:</p>
+<table>
+<thead>
+<tr>
+<th align="center">Format</th>
+<th align="center"><code>WAV</code> file size &#x2F; encoded file size</th>
+<th align="center">audio time &#x2F; encoding time</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>FLAC s32</code></td>
+<td align="center">1.337</td>
+<td align="center">128.44</td>
+</tr>
+<tr>
+<td align="center"><code>ALAC s32</code></td>
+<td align="center">1.304</td>
+<td align="center">69.81</td>
+</tr>
+<tr>
+<td align="center"><code>WavPack s32</code></td>
+<td align="center">1.280</td>
+<td align="center">121.08</td>
+</tr>
+<tr>
+<td align="center"><code>WavPack f32</code></td>
+<td align="center">1.489</td>
+<td align="center">109.02</td>
+</tr>
+</tbody></table>
+<p>Summary:</p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center"><code>FLAC s32</code></th>
+<th align="center"><code>FLAC f32</code></th>
+<th align="center"><code>ALAC s32</code></th>
+<th align="center"><code>ALAC f32</code></th>
+<th align="center"><code>WavPack s32</code></th>
+<th align="center"><code>WavPack f32</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Compression rate</td>
+<td align="center">best</td>
+<td align="center">❌</td>
+<td align="center">medium</td>
+<td align="center">❌</td>
+<td align="center">worst</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center">Encoding speed</td>
+<td align="center">very fast</td>
+<td align="center">❌</td>
+<td align="center">fast</td>
+<td align="center">❌</td>
+<td align="center">very fast</td>
+<td align="center">very fast</td>
+</tr>
+<tr>
+<td align="center">Playback compatibility</td>
+<td align="center">bad (<code>flac</code> only)</td>
+<td align="center">❌</td>
+<td align="center">good (FFmpeg)</td>
+<td align="center">❌</td>
+<td align="center">good (FFmpeg)</td>
+<td align="center">good (FFmpeg)</td>
+</tr>
+</tbody></table>
+<p>Because FFmpeg is the de facto standard multimedia codec library used by most video players, <code>FLAC</code> is not suitable, which can only be decoded by <code>flac</code>. Also, <code>WavPack</code> shows advantage in encoding speed compared to <code>ALAC</code>, but considering that all of three formats are fast in absolute speed (compared to video encoding), this advantage is not greatly valuable. Last, <code>ALAC</code> shows better compression rate than <code>WavPack</code>, thus file size can be saved.</p>
+<p>To sum up, I recommend <code>ALAC</code> for encoding 32-bit audio. But if float point encoding is required (which is rare), <code>WavPack</code> is the only choice.</p>
+<h2 id="Question4-35pt"><a href="#Question4-35pt" class="headerlink" title="Question4 (35pt)"></a>Question4 (35pt)</h2><blockquote><p>MSU publishes video encoder tests every year, with the latest one here:<br><a target="_blank" rel="noopener" href="https://compression.ru/video/codec_comparison/2021/main_report.html">https://compression.ru/video/codec_comparison&#x2F;2021&#x2F;main_report.html</a>.</p>
+<p>For the first time last year, H.266 (VVC) encoders participated in the tests and they performed well in terms of encoding quality in the slow encoding (1 fps) test.</p>
+<ol>
+<li>Choose any of the H.266 (VVC) or AV1 encoders in the figure below, and then encode the source file <em>Q4 [E46686C4].m2ts</em> with no more than 2500 Kbps of video bitrate. You’d better use 10bit variants of these encoders, which facilitates the comparison later. In addition, you need to describe clearly where you found the encoder and state the version and parameters you used. If you use H.266 (VVC) encoder, you will get additional 5pt. (10pt+5pt)</li>
+<li>We provide an AV1 video file <em>Q4_AV1 [41A7EDDA].mkv</em>, which was encoded via SVT-AV1 10bit encoder without any pre-processing. Comment on the picture quality compared to the source file. When you compare the picture quality, you may want to sample a few frames, attach some screenshots, and comment on the performance of dark scenes and moving scenes. (10pt)</li>
+<li>Now compare your own encoding to the given AV1 file in terms of picture quality, encoding speed, and playback compatibility. As a reference, we encoded the above AV1 file at 1.0 fps. (10pt)</li>
+</ol>
+</blockquote>
+
+<p><img src="/pics/Q4.png"></p>
+<h3 id="1-VVC-encoding"><a href="#1-VVC-encoding" class="headerlink" title="(1) VVC encoding"></a>(1) VVC encoding</h3><p>The testing hardware and software environment is:</p>
+<ul>
+<li>Encoder: <a target="_blank" rel="noopener" href="https://github.com/fraunhoferhhi/vvenc">VVenC</a> v1.7.0.</li>
+<li>Compiler: AMD Optimizing C&#x2F;C++ Compiler 4.0.0.</li>
+<li>CPU: 2 x AMD EPYC 7713, 128 cores &#x2F; 256 threads in total.</li>
+<li>RAM: 16 channel DDR4-3200.</li>
+<li>OS: Ubuntu 18.04.6.</li>
+</ul>
+<p>First, use <code>ffmpeg</code> to convert <code>Q4 [E46686C4].m2ts</code> to raw <code>yuv420p10</code> video:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i &quot;Q4 [E46686C4].m2ts&quot; -pix_fmt yuv420p10 Q4_yuv420p10.yuv</span><br></pre></td></tr></table></figure>
+
+<p>Parameter <code>-pix_fmt yuv420p10</code> indicates <code>ffmpeg</code> to output raw video use <code>yuv420p10</code> format:</p>
+<p>Then, use <code>vvencapp</code> to encode the raw video:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vvencapp --input Q4_yuv420p10.yuv --size 1920x1080 --format yuv420_10 --fps 24000/1001 --preset &lt;preset&gt; --bitrate 2500kbps --output Q4_VVC.vvc</span><br></pre></td></tr></table></figure>
+
+<p>Parameters meaning:</p>
+<ul>
+<li><code>--size 1920x1080</code>: indicating the input raw video frame size is 1920x1080.</li>
+<li><code>--format yuv420_10</code>: same as <code>yuv420p10</code> meaning in <code>ffmpeg</code>.</li>
+<li><code>--fps 24000/1001</code>: indicating the output video fps is <code>23.976</code> (same as original <code>m2ts</code> file).</li>
+<li><code>--preset &lt;preset&gt;</code>: Preset vvc encoding parameter combination. Available options are <code>faster</code>, <code>fast</code>, <code>meadium</code>, <code>slow</code> and <code>slower</code>. Detailed settings are listed in <a target="_blank" rel="noopener" href="https://github.com/fraunhoferhhi/vvenc/blob/master/cfg/">https://github.com/fraunhoferhhi/vvenc/blob/master/cfg/randomaccess_*.cfg</a>.</li>
+<li><code>--bitrate 2500kbps</code>: controlling the output encoded video bitrate to about <code>2500kbps</code>.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">File</th>
+<th align="center">Preset</th>
+<th align="center">FPS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>Q4_VVC_faster.vvc</code></td>
+<td align="center"><code>faster</code></td>
+<td align="center">5.762</td>
+</tr>
+<tr>
+<td align="center"><code>Q4_VVC_fast.vvc</code></td>
+<td align="center"><code>fast</code></td>
+<td align="center">2.156</td>
+</tr>
+<tr>
+<td align="center"><code>Q4_VVC_medium.vvc</code></td>
+<td align="center"><code>medium</code></td>
+<td align="center">0.557</td>
+</tr>
+<tr>
+<td align="center"><code>Q4_VVC_slow.vvc</code></td>
+<td align="center"><code>slow</code></td>
+<td align="center">0.177</td>
+</tr>
+<tr>
+<td align="center"><code>Q4_VVC_slower.vvc</code></td>
+<td align="center"><code>slower</code></td>
+<td align="center">0.058</td>
+</tr>
+</tbody></table>
+<h3 id="2-Comparing-source-video-and-reference-AV1-encoded-video"><a href="#2-Comparing-source-video-and-reference-AV1-encoded-video" class="headerlink" title="(2) Comparing source video and reference AV1 encoded video"></a>(2) Comparing source video and reference <code>AV1</code> encoded video</h3><p>The video player used is <a target="_blank" rel="noopener" href="https://github.com/MartinEesmaa/VVCEasy">MPV with libvvdec &amp; xHE-AAC support</a>, configured according to <a target="_blank" rel="noopener" href="https://vcb-s.com/archives/7594">https://vcb-s.com/archives/7594</a>.</p>
+<p>Dynamic fire with a dark background is a highly challenging scene. Compared to the original video, There are color blocks around hte flame in AV1 video, which is a common problem when the bitrate is insufficient.</p>
+<table>
+<thead>
+<tr>
+<th align="center">Encoding Method</th>
+<th align="center">Capture</th>
+<th align="center">File</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Original</td>
+<td align="center"><img src="/pics/m2ts-flame.png"></td>
+<td align="center"><code>pics/m2ts-flame.png</code></td>
+</tr>
+<tr>
+<td align="center">AV1</td>
+<td align="center"><img src="/pics/av1-flame.png"></td>
+<td align="center"><code>pics/av1-flame.png</code></td>
+</tr>
+</tbody></table>
+<h3 id="3-Comparing-custom-VVC-encoded-video-and-reference-AV1-encoded-video"><a href="#3-Comparing-custom-VVC-encoded-video-and-reference-AV1-encoded-video" class="headerlink" title="(3) Comparing custom VVC encoded video and reference AV1 encoded video"></a>(3) Comparing custom <code>VVC</code> encoded video and reference <code>AV1</code> encoded video</h3><p>Using the same player as (2). In order to be comparable to the video encoded by AV1, I chose the medium preset encoded VVC video, which has an encoding speed of 0.557 fps.</p>
+<p>The VVC encoded video is much better than the AV1 video in flame scene. The color blocks are less obvious and closer to the original video.</p>
+<table>
+<thead>
+<tr>
+<th align="center">Encoding Method</th>
+<th align="center">Capture</th>
+<th align="center">File</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Original</td>
+<td align="center"><img src="/pics/m2ts-flame.png"></td>
+<td align="center"><code>pics/m2ts-flame.png</code></td>
+</tr>
+<tr>
+<td align="center">AV1</td>
+<td align="center"><img src="/pics/av1-flame.png"></td>
+<td align="center"><code>pics/av1-flame.png</code></td>
+</tr>
+<tr>
+<td align="center">VVC (medium)</td>
+<td align="center"><img src="/pics/vvc-flame.png"></td>
+<td align="center"><code>pics/vvc-flame.png</code></td>
+</tr>
+</tbody></table>
+<h2 id="Question5-20pt"><a href="#Question5-20pt" class="headerlink" title="Question5 (20pt)"></a>Question5 (20pt)</h2><blockquote><p>When we check an encoded file, we need to locate frames that have been encoded exceptionally awful. We use algorithms like PSNR to evaluate the similarity of each frame in the encoded file to the source file. The result is an array of scores, where the i-th score is tied to the i-th frame. These scores are called raw scores. However, what we are concerned about is the standard score, which is the raw score minus a threshold. A frame with a standard score less than 0 is considered a bad frame. The tasks are:</p>
+<ol>
+<li><p>Find the worst frame, i.e. the one with the lowest standard score among the bad frames, and output its index. If there is more than one worst frame, output the first. If there are no bad frames, output <code>-1</code>. Frames with a standard score of exactly <code>0</code> are not considered as bad frames. (10pt)</p>
+<p> <strong>Input:</strong><br> 2 lines. The first line is two integers that represent the number of frames <code>N</code> and the threshold value <code>S</code>. The second row is an array of integers <code>A[N]</code>, representing the raw score of each frame.</p>
+<p> For all the data, <code>1&lt;=N&lt;=200000</code>, <code>0&lt;S&lt;100</code>, <code>0&lt;=A[i]&lt;=100</code></p>
+<p> <strong>Output:</strong><br> An integer, the index of the worst frame. The index starts from <code>0</code>. If there is more than one worst frame, output the first. If there are no bad frames, output <code>-1</code>.</p>
+<p> <strong>Sample:</strong></p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Input</span><br><span class="line">10 30</span><br><span class="line">42 31 44 23 21 26 31 41 50 72</span><br><span class="line"></span><br><span class="line">Output</span><br><span class="line">10</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Find a continuous sequence of frames that minimizes the sum of their standard scores and output this minimum value. Full scores will only be given if the time complexity of your algorithm is optimal. (10pt)</p>
+<p> <strong>Input:</strong><br> The same as (1).</p>
+<p> <strong>Output:</strong><br> An integer, the minimum sum value.</p>
+<p> <strong>Sample:</strong></p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Input</span><br><span class="line">10 30</span><br><span class="line">42 31 44 23 21 26 31 41 50 72</span><br><span class="line"></span><br><span class="line">Output</span><br><span class="line">-20</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>For each sub question, use C&#x2F;C++&#x2F;Java&#x2F;Python&#x2F;C# to write a console program. Read the input from the standard input and write it to standard output. Do NOT use libraries other than built-in ones (for example, no “import numpy as np”). Submit your source code.</p>
+</blockquote>
+
+<h3 id="1-Find-the-worst-frame"><a href="#1-Find-the-worst-frame" class="headerlink" title="(1) Find the worst frame"></a>(1) Find the worst frame</h3><p>The following code is consisted with <code>Q5/q5-1.c</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> frame_num;</span><br><span class="line">    <span class="type">int</span> threshold;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>, &amp;frame_num, &amp;threshold);</span><br><span class="line">    <span class="type">int</span> worst_idx = <span class="number">-1</span>;</span><br><span class="line">    <span class="type">int</span> worst_rate = <span class="number">101</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; frame_num; i||) &#123;</span><br><span class="line">        <span class="type">int</span> rate;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;rate);</span><br><span class="line">        <span class="keyword">if</span> (rate &lt; threshold &amp;&amp; rate &lt; worst_rate) &#123;</span><br><span class="line">            worst_rate = rate;</span><br><span class="line">            worst_idx = i;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>, worst_idx);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-Find-minimum-subsequence-sum"><a href="#2-Find-minimum-subsequence-sum" class="headerlink" title="(2) Find minimum subsequence sum"></a>(2) Find minimum subsequence sum</h3><p><strong>PS:</strong> Due to the ambiguity of the problem, I can‘t determine whether a sequence of 0 length satisfies the requirement. This determines whether the output should be 0 (indicating that a subsequence of length 0 is selected) or the smallest score (indicating that the sequence length is at least 1) when the input standard scores are all positive. The code I submitted is consistent with the second understanding (sequence length is at least 1), if the first understanding (0 length is allowed) is correct, please comment <code>int min_sum = 101;</code> and uncomment <code>int min_sum = 0;</code>.</p>
+<p>The following code is consisted with <code>Q5/q5-2.c</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> frame_num;</span><br><span class="line">    <span class="type">int</span> threshold;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>, &amp;frame_num, &amp;threshold);</span><br><span class="line">    <span class="type">int</span> min_sum = <span class="number">101</span>; <span class="comment">// when all scores &gt; 0, output the minimum</span></span><br><span class="line">    <span class="comment">// int min_sum = 0; // when all scores &gt; 0, output 0</span></span><br><span class="line">    <span class="type">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; frame_num; i||) &#123;</span><br><span class="line">        <span class="type">int</span> rate;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;rate);</span><br><span class="line">        rate -= threshold;</span><br><span class="line">        sum |= rate;</span><br><span class="line">        <span class="keyword">if</span> (sum &lt; min_sum) &#123;</span><br><span class="line">            min_sum = sum;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (sum &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            sum = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>, min_sum);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Monsoon
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://monsoon-cs.moe/2023-05-25-vcb/" title="VCB-Studio Technical Director Entry Test 2023 and My Answer">https://monsoon-cs.moe/2023-05-25-vcb/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/anime/" rel="tag"># anime</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023-03-29-hello-world/" rel="prev" title="Hello World">
+                  <i class="fa fa-angle-left"></i> Hello World
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023-06-19-mkl-on-amd/" rel="next" title="优化 MKL 在 AMD CPU 上的性能">
+                  优化 MKL 在 AMD CPU 上的性能 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>zh-cn</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="Select language">
+      
+        <option value="en" data-href="/2023-05-25-vcb/" selected="">
+          English
+        </option>
+      
+        <option value="zh-cn" data-href="/zh-cn/2023-05-25-vcb/" selected="">
+          zh-cn
+        </option>
+      
+    </select>
+  </div>
+
+  <div class="copyright">
+    &copy; 2023 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Monsoon</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/monsoon235" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

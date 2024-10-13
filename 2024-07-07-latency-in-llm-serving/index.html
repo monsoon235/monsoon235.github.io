@@ -19,25 +19,25 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="PrefaceThere have been many excellent works on LLM serving, mainly focusing on improving the throughput. Meanwhile, in practical applications, latency is equally important for LLM serving. However, cu">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Latency in LLM Serving">
-<meta property="og:url" content="https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/">
+<meta property="og:url" content="https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/index.html">
 <meta property="og:site_name" content="Monsoon&#39;s Blog">
 <meta property="og:description" content="PrefaceThere have been many excellent works on LLM serving, mainly focusing on improving the throughput. Meanwhile, in practical applications, latency is equally important for LLM serving. However, cu">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/latency_in_llm_serving.png">
-<meta property="article:published_time" content="2024-07-06T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-07-06T16:00:00.000Z">
+<meta property="og:image" content="https://monsoon-cs.moe/latency_in_llm_serving.png">
+<meta property="article:published_time" content="2024-07-07T05:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-07T05:00:00.000Z">
 <meta property="article:author" content="Monsoon">
 <meta property="article:tag" content="ml-system">
 <meta property="article:tag" content="llm">
 <meta property="article:tag" content="vllm">
 <meta property="article:tag" content="deepspeed">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/latency_in_llm_serving.png">
+<meta name="twitter:image" content="https://monsoon-cs.moe/latency_in_llm_serving.png">
 
 
 <link rel="canonical" href="https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/">
@@ -139,8 +139,9 @@
         </a>
       </div>
       <div class="site-state-item site-state-tags">
+          <a href="/tags/">
         <span class="site-state-item-count">52</span>
-        <span class="site-state-item-name">tags</span>
+        <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
 </div>
@@ -206,7 +207,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2024-07-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-07T00:00:00+08:00">2024-07-07</time>
+      <time title="Created: 2024-07-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-07T00:00:00-05:00">2024-07-07</time>
     </span>
 
   
@@ -227,7 +228,7 @@
 <li><strong>TE2E</strong> ($t_ {e2e}$): Time of End-to-end.</li>
 </ul>
 <p>In practice, rather than the average or median latency, we usually consider the <strong>latency SLA</strong>, which means that 50%, 90%, and 99% of data should fall below certain thresholds.</p>
-<h2 id="Where-The-Latency-Comes-From"><a href="#Where-The-Latency-Comes-From" class="headerlink" title="Where The Latency Comes From?"></a>Where The Latency Comes From?</h2><p><img src="/2024-07-07-latency-in-llm-serving/latency_in_llm_serving.png"></p>
+<h2 id="Where-The-Latency-Comes-From"><a href="#Where-The-Latency-Comes-From" class="headerlink" title="Where The Latency Comes From?"></a>Where The Latency Comes From?</h2><p><img src="/latency_in_llm_serving.png"></p>
 <p>As shown in the figure above, the current popular LLM serving systems (such as vLLM, DeepSpeed) adopt an <strong>iteration-level scheduling strategy</strong>. The processing of each request is divided into the <strong>prefilling stage</strong> (prompt inference) and the <strong>generation stage</strong> (auto-regressive token-by-token generation). For systems such as Sarathi-Serve, the prompt is chunked to improve throughput, thus adding a <strong>chunked prefilling stage</strong>.</p>
 <p>The LLM serving system maintains <strong>3 queues</strong> to store requests in these 3 states. The scheduler runs in a loop, and in each iteration, it selects requests from these 3 queues with a certain strategy, and combines them into a batch for the inference engine.</p>
 <p>In such systems, the latency of requests mainly comes from 2 aspects: <strong>queue latency</strong> and <strong>inference latency</strong>. Assuming the latencies for a request from being added into the prefilling queue, chunked prefilling queue, generation queue to being selected by scheduler are $t_ {qp}$, $t_ {qc}$, $t_ {qg}$ respectively, and inference latency of engine if $t_ {inf}$.<br>We get:</p>
@@ -308,6 +309,24 @@
 
   <footer class="footer">
     <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>English</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="Select language">
+      
+        <option value="en" data-href="/2024-07-07-latency-in-llm-serving/" selected="">
+          English
+        </option>
+      
+        <option value="zh-cn" data-href="/zh-cn/2024-07-07-latency-in-llm-serving/" selected="">
+          zh-cn
+        </option>
+      
+    </select>
+  </div>
 
   <div class="copyright">
     &copy; 2023 – 

@@ -19,33 +19,33 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="This blog is a write-up of the paper “ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs“ from arXiv’24.  MotivationSome workloads (e.g., Simulation Engines for Deep">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[Paper Reading] ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs (arXiv&#39;24)">
-<meta property="og:url" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/">
+<meta property="og:url" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/index.html">
 <meta property="og:site_name" content="Monsoon&#39;s Blog">
 <meta property="og:description" content="This blog is a write-up of the paper “ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs“ from arXiv’24.  MotivationSome workloads (e.g., Simulation Engines for Deep">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/achieved_occ.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/dag_time.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/sync_overhead.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/acs_overview.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/seg.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/window.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/acs_hw_scheduler.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/acs_hw.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/hw_scheduler.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl_sim.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl_occ.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/eval_dcnn.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/eval_dcnn_occ.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/eval_scnn.png">
-<meta property="og:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/eval_scnn_occ.png">
-<meta property="article:published_time" content="2024-02-06T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-02-06T16:00:00.000Z">
+<meta property="og:image" content="https://monsoon-cs.moe/achieved_occ.png">
+<meta property="og:image" content="https://monsoon-cs.moe/dag_time.png">
+<meta property="og:image" content="https://monsoon-cs.moe/sync_overhead.png">
+<meta property="og:image" content="https://monsoon-cs.moe/acs_overview.png">
+<meta property="og:image" content="https://monsoon-cs.moe/seg.png">
+<meta property="og:image" content="https://monsoon-cs.moe/window.png">
+<meta property="og:image" content="https://monsoon-cs.moe/acs_hw_scheduler.png">
+<meta property="og:image" content="https://monsoon-cs.moe/acs_hw.png">
+<meta property="og:image" content="https://monsoon-cs.moe/hw_scheduler.png">
+<meta property="og:image" content="https://monsoon-cs.moe/eval_deep_rl.png">
+<meta property="og:image" content="https://monsoon-cs.moe/eval_deep_rl_sim.png">
+<meta property="og:image" content="https://monsoon-cs.moe/eval_deep_rl_occ.png">
+<meta property="og:image" content="https://monsoon-cs.moe/eval_dcnn.png">
+<meta property="og:image" content="https://monsoon-cs.moe/eval_dcnn_occ.png">
+<meta property="og:image" content="https://monsoon-cs.moe/eval_scnn.png">
+<meta property="og:image" content="https://monsoon-cs.moe/eval_scnn_occ.png">
+<meta property="article:published_time" content="2024-02-07T06:00:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T06:00:00.000Z">
 <meta property="article:author" content="Monsoon">
 <meta property="article:tag" content="paper-reading">
 <meta property="article:tag" content="arxiv">
@@ -54,7 +54,7 @@
 <meta property="article:tag" content="gpu">
 <meta property="article:tag" content="resource-scheduling">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/achieved_occ.png">
+<meta name="twitter:image" content="https://monsoon-cs.moe/achieved_occ.png">
 
 
 <link rel="canonical" href="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/">
@@ -156,8 +156,9 @@
         </a>
       </div>
       <div class="site-state-item site-state-tags">
+          <a href="/tags/">
         <span class="site-state-item-count">52</span>
-        <span class="site-state-item-name">tags</span>
+        <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
 </div>
@@ -223,7 +224,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2024-02-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00+08:00">2024-02-07</time>
+      <time title="Created: 2024-02-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00-06:00">2024-02-07</time>
     </span>
 
   
@@ -239,16 +240,16 @@
 <p>This blog is a write-up of the paper “<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.12377">ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs</a>“ from arXiv’24.</p>
 </blockquote>
 <h2 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h2><p>Some workloads (e.g., Simulation Engines for Deep RL, Dynamic DNNs) cannot fully utilize the massive parallelism of GPUs (see Figure 1). The main reason is that these workloads contain lots of <strong>small kernels</strong> which cannot fully utilize the GPU, and these kernels are not executed concurrently, although <strong>most of them are independent and in theory can be executed concurrently</strong>.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/achieved_occ.png" alt="Figure 1. Achieved Occupancy of simulation engines (up) and dynamic DNN (down)"></p>
+<p><img src="/achieved_occ.png" alt="Figure 1. Achieved Occupancy of simulation engines (up) and dynamic DNN (down)"></p>
 <p>But there are some challenges to execute these kernels concurrently:</p>
 <ol>
 <li><strong>Input-dependent kernel dependencies</strong>. For some workload, the the dependencies between kernels are only <strong>determined at runtime</strong> for each input. Constructing full computational graph and resolving dependencies before execution will introduce <strong>high latency</strong> (see Figure 2,average of 47% of overall execution time as the paper says).</li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/dag_time.png" alt="Figure 2. DAG construction time as % of execution time"></p>
+<p><img src="/dag_time.png" alt="Figure 2. DAG construction time as % of execution time"></p>
 <ol start="2">
 <li><strong>Irregular kernel dependencies</strong>. Some workloads have irregular computational graphs. We can partitioned the computational graph of the workload into independent streams of kernels. But this would require <strong>fine-grained scheduling</strong> and <strong>synchronization</strong>, with <strong>large overhead</strong> (see Figure 3).</li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/sync_overhead.png" alt="Figure 3. Kernel launch and synchronization overheads"></p>
+<p><img src="/sync_overhead.png" alt="Figure 3. Kernel launch and synchronization overheads"></p>
 <p>Existed solutions:</p>
 <ol>
 <li><p>CUDA Graph and AMD ATMI. They allow users specify dependencies between different kernels as DAG, and can eliminate the synchronization and kernel launch overhead. But the DAG needs to be constructed in <strong>full before execution</strong>, which imakes them not suitable for dynamic kernel dependencies (such as Dynamic DNNs).</p>
@@ -272,10 +273,10 @@
 </ol>
 <p><strong>The key idea is to perform the dependence checking and scheduling within a small window of kernels at runtime similar to out-of-order instruction scheduling.</strong></p>
 <p>The authors proposed Automatic Concurrent Scheduling (ACS) as solution. The overall design of ACS-SW is shown in Figure 4. It contains three main functionalities:</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/acs_overview.png" alt="Figure 4. ACS-SW Overview"></p>
+<p><img src="/acs_overview.png" alt="Figure 4. ACS-SW Overview"></p>
 <ol>
 <li><p><strong>Determining inter-kernel dependencies</strong>. By checking for <strong>overlaps between read segments and write segments</strong>, we determine dependencies between kernels. For a wide range of commonly used kernels (e.g., matrix multiplication, convolution), we can infer the read and write segments from the input easily. But for some kernels, it’s impossible to determine the range of memory accessed statically because of the potential indirect memory accesses, so the authors just assume the <strong>entire GPU memory may be accessed</strong>.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/seg.png" alt="Memory regions written to/accessed by the kernel"></p>
+<p><img src="/seg.png" alt="Memory regions written to/accessed by the kernel"></p>
 <p>The authors use a kernel wrapper to finish the dependency detection. <code>get_addresses()</code> is called to get <code>__read_segments__</code> and <code>__write_segments__</code>.</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ACE_wrapper</span> &#123;</span> </span><br><span class="line">  <span class="comment">//list of read,write segments defined as</span></span><br><span class="line">  <span class="comment">//[&#123;start_adr1,size1&#125;,&#123;start_adr2,size2&#125;..]</span></span><br><span class="line">  <span class="built_in">list</span> __read_segments__;</span><br><span class="line">  <span class="built_in">list</span> __write_segments__;</span><br><span class="line">  <span class="comment">// function which gets called at kernel</span></span><br><span class="line">  <span class="comment">// launch to populate read,write segments</span></span><br><span class="line">  <span class="type">void</span> <span class="title function_">get_addresses</span><span class="params">(</span></span><br><span class="line"><span class="params">    dim3 blocks, dim3 threads, ...</span></span><br><span class="line"><span class="params">  )</span>;</span><br><span class="line">  <span class="comment">// function declaration of the kernel</span></span><br><span class="line">  <span class="type">static</span> __global__ <span class="type">void</span> <span class="title function_">kernel</span><span class="params">(...)</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 </li>
@@ -287,7 +288,7 @@
 </ol>
 </li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/window.png" alt="Kernels in the scheduling window with their state and corresponding upstream kernels"></p>
+<p><img src="/window.png" alt="Kernels in the scheduling window with their state and corresponding upstream kernels"></p>
 <ol start="3">
 <li>Eliminating CPU synchronization overheads. See ACS-HW for more details.</li>
 </ol>
@@ -300,13 +301,13 @@
 </ol>
 <h3 id="ACS-SW"><a href="#ACS-SW" class="headerlink" title="ACS-SW"></a>ACS-SW</h3><h4 id="Window-Module"><a href="#Window-Module" class="headerlink" title="Window Module"></a>Window Module</h4><p>This module is to determining inter-kernel dependencies. It is implemented as a separate thread that manages the input FIFO queue and the scheduling window. The kernel state tracking is implemented in the hardware.</p>
 <h4 id="Scheduler-Module"><a href="#Scheduler-Module" class="headerlink" title="Scheduler Module"></a>Scheduler Module</h4><p>This module schedules and launches ready kernels for execution. It has fixed number of CUDA streams. Each stream contains only one kernel at any given time. Threads with empty streams poll the scheduling window for a ready kernel.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/acs_hw_scheduler.png" alt="ACS-SW: The scheduler module"></p>
+<p><img src="/acs_hw_scheduler.png" alt="ACS-SW: The scheduler module"></p>
 <h3 id="ACS-HW"><a href="#ACS-HW" class="headerlink" title="ACS-HW"></a>ACS-HW</h3><p>ACS-SW incurs kernel synchronization and launch overheads because scheduler module launches a kernel in the CPU. ACS-HW solves these problems by a software-hardware co-design.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/acs_hw.png" alt="ACS-HW Overview"></p>
+<p><img src="/acs_hw.png" alt="ACS-HW Overview"></p>
 <p>Software-side: maintains an input FIFO queue like ACS-SW, and a list of kernels in the GPU’s scheduling window, <strong>but it can be stale</strong>.</p>
 <p>Hardware-side: the scheduling window and its management are implemented in hardware on the GPU side.</p>
 <p>A key novelty in hardware design is <strong>two stage dependency detections</strong>. First, ACS use software to perform initial detection using stale kernel information (without frequent synchronize overhead), then utilizes hardware to correct outdated dependency information. This two-stage approach significantly reduces the hardware complexity.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/hw_scheduler.png" alt="ACS-HW Scheduler"></p>
+<p><img src="/hw_scheduler.png" alt="ACS-HW Scheduler"></p>
 <h2 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h2><ol>
 <li>Baseline: cuDNN implementation (for DNNs) and a jax implementation (for deep RL simulation), both using CUDA streams.</li>
 <li>ACS-SW: on real hardware.</li>
@@ -314,13 +315,13 @@
 <li>ACS-HW: on the GPU simulator.</li>
 <li>CUDAGraph.</li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl.png" alt="Deep RL physics simulations: Normalized Speedup"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl_sim.png" alt="Deep RL physics simulations: Normalized Speedup on GPU simulator"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl_occ.png" alt="Deep RL physics simulations: Achieved occupancy"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_dcnn.png" alt="Dynamic DNNs: Normalized speedup"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_dcnn_occ.png" alt="Dynamic DNNs: Achieved occupancy"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_scnn.png" alt="Static DNNs: Normalized speedup"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_scnn_occ.png" alt="Static DNNs: Achieved occupancy"></p>
+<p><img src="/eval_deep_rl.png" alt="Deep RL physics simulations: Normalized Speedup"></p>
+<p><img src="/eval_deep_rl_sim.png" alt="Deep RL physics simulations: Normalized Speedup on GPU simulator"></p>
+<p><img src="/eval_deep_rl_occ.png" alt="Deep RL physics simulations: Achieved occupancy"></p>
+<p><img src="/eval_dcnn.png" alt="Dynamic DNNs: Normalized speedup"></p>
+<p><img src="/eval_dcnn_occ.png" alt="Dynamic DNNs: Achieved occupancy"></p>
+<p><img src="/eval_scnn.png" alt="Static DNNs: Normalized speedup"></p>
+<p><img src="/eval_scnn_occ.png" alt="Static DNNs: Achieved occupancy"></p>
 <h2 id="Comments"><a href="#Comments" class="headerlink" title="Comments"></a>Comments</h2><h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>This paper focuses on the problem of low GPU utilization caused by the serial execution of numerous small CUDA kernels. I believe this paper effectively addresses this problem, particularly with the following innovative points that are impressive me:</p>
 <ol>
 <li><p><strong>Out-of-order dependency detection and scheduling</strong>. Out-of-order (OoO) is a common technique in micro-architecture and software (e.g., hard disk I&#x2F;O queue) designs. It’s an impressive and innovative idea to introduce OoO into this area to find the dynamic dependencies efficiently.</p>
@@ -406,6 +407,24 @@
 
   <footer class="footer">
     <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>English</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="Select language">
+      
+        <option value="en" data-href="/2024-02-07-paper-reading-arxiv24-acs/" selected="">
+          English
+        </option>
+      
+        <option value="zh-cn" data-href="/zh-cn/2024-02-07-paper-reading-arxiv24-acs/" selected="">
+          zh-cn
+        </option>
+      
+    </select>
+  </div>
 
   <div class="copyright">
     &copy; 2023 – 

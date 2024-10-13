@@ -19,14 +19,16 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
     <meta property="og:type" content="website">
 <meta property="og:title" content="Monsoon&#39;s Blog">
-<meta property="og:url" content="https://monsoon-cs.moe/">
+<meta property="og:url" content="https://monsoon-cs.moe/index.html">
 <meta property="og:site_name" content="Monsoon&#39;s Blog">
 <meta property="og:locale" content="en_US">
 <meta property="article:author" content="Monsoon">
+<meta property="article:tag" content="blog">
+<meta property="article:tag" content="computer science">
 <meta name="twitter:card" content="summary">
 
 
@@ -128,8 +130,9 @@
         </a>
       </div>
       <div class="site-state-item site-state-tags">
+          <a href="/tags/">
         <span class="site-state-item-count">52</span>
-        <span class="site-state-item-name">tags</span>
+        <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
 </div>
@@ -194,7 +197,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2024-10-12 00:00:00" itemprop="dateCreated datePublished" datetime="2024-10-12T00:00:00+08:00">2024-10-12</time>
+      <time title="Created: 2024-10-12 00:00:00" itemprop="dateCreated datePublished" datetime="2024-10-12T00:00:00-05:00">2024-10-12</time>
     </span>
 
   
@@ -215,7 +218,7 @@
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fe80::/64 dev eth0 proto kernel metric 1024 pref medium</span><br></pre></td></tr></table></figure>
 
 <p>IPv6 LLA 使用特定的算法从 MAC 地址中生成，即 EUI-64，例如网口的 MAC 地址为 <code>70:07:12:34:56:78</code> 时，生成的 EUI-64 为 <code>7207:12ff:fe34:5678</code>，LLA 则为 <code>fe80:7207:12ff:fe34:5678/64</code>（EUI-64 加上 <code>fe80</code> 的前缀）。具体的生成方式下图所示：</p>
-<p><img src="/2024-10-12-all-about-ipv6-addr-alloc/generating-link-local-address-example.png" alt="IPv6 LLA 生成过程，图源 https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac"></p>
+<p><img src="/generating-link-local-address-example.png" alt="IPv6 LLA 生成过程，图源 https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac"></p>
 <p>一般而言，路由器不会转发 LLA 地址的流量，它<strong>仅用于链路点对点通信</strong>。</p>
 <h3 id="GUA-Global-Unicast-Address，全局单播地址"><a href="#GUA-Global-Unicast-Address，全局单播地址" class="headerlink" title="GUA (Global Unicast Address，全局单播地址)"></a>GUA (Global Unicast Address，全局单播地址)</h3><p>IPv6 GUA (<code>2000::/3</code>) 可以对应到 IPv4 “公网 IP”的概念。理论上它是全球唯一的，并且可以用于公网通信。一个配置良好的网络架构应当能使每个设备都获取到 IPv6 GUA，以最大程度上发挥 IPv6 的 P2P 通信优势。</p>
 <h3 id="私有地址"><a href="#私有地址" class="headerlink" title="私有地址"></a>私有地址</h3><p><code>fc00::/7</code> 被定义为 IPv6 的私有地址，类似于 IPv4 中 的 <code>10.0.0.0/8</code>、<code>172.16.0.0/12</code> 和 <code>192.168.0.0/16</code>，用于局域网通信。与 LLA 不同的是，它可以被路由器转发。</p>
@@ -248,7 +251,7 @@
 <li><p>主机进行 DAD 检测，并使用 NA 消息向链路上的邻居通告新地址的使用。</p>
 </li>
 </ol>
-<p><img src="/2024-10-12-all-about-ipv6-addr-alloc/ipv6-stateless-address-autoconfiguration.gif" alt="SLAAC 流程，图源 https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac"></p>
+<p><img src="/ipv6-stateless-address-autoconfiguration.gif" alt="SLAAC 流程，图源 https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac"></p>
 <p>SLAAC 看起来很美好，但有个<strong>重要缺陷</strong>：不支持 DNS 信息的下发，主机必须通过其他方式（通常是 DHCPv6）获取 DNS。RA 中有两个标志位用以解决此问题：</p>
 <ul>
 <li><code>M</code> (Managed Address Configuration)：可以通过 DHCPv6 获取地址信息；</li>
@@ -334,7 +337,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2024-07-11 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-11T00:00:00+08:00">2024-07-11</time>
+      <time title="Created: 2024-07-11 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-11T00:00:00-05:00">2024-07-11</time>
     </span>
 
   
@@ -348,7 +351,7 @@
     
     <div class="post-body" itemprop="articleBody">
           <h2 id="The-Problem"><a href="#The-Problem" class="headerlink" title="The Problem"></a>The Problem</h2><p>Now we have an image representing a graph, as shown in the figure below:</p>
-<p><img src="/2024-07-11-extracting-graph-topology-from-image/image.png"></p>
+<p><img src="/image.png"></p>
 <p>Suppose we already know the category of each pixel: background, node, or edge. How can we <strong>extract the graph topology</strong> from it and represent the graph by an adjacency matrix?</p>
 <h2 id="Challenges-in-Classical-Algorithm"><a href="#Challenges-in-Classical-Algorithm" class="headerlink" title="Challenges in Classical Algorithm"></a>Challenges in Classical Algorithm</h2><p>TODO</p>
 <h2 id="What-about-Neural-Network"><a href="#What-about-Neural-Network" class="headerlink" title="What about Neural Network?"></a>What about Neural Network?</h2><p>We can use a simple algorithm to extract the position of each node. Suppose the position of a node is $\mathbf{P}(x,y)$, and there are $N$ nodes in total.</p>
@@ -357,7 +360,7 @@
 <p>$$O&#x3D;\mathbf{f}(\mathbf{I}, \mathbf{P}_ 1, \mathbf{P}_ 2).$$</p>
 <p>The dataset can be synthesized by a simple program, and we can use any classification network (e.g., <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1905.11946">EfficientNet</a>) as our network architecture.</p>
 <p>The problem is how to feed $\left( \mathbf{P}_ 1, \mathbf{P}_ 2<br>\right)$​ into the network. We can add an additional “mask channel” to the image, where the pixels belonging to the two input nodes are marked as 1, and the others as 0. Finally, we input this 4-channel “image” into the network.</p>
-<p><img src="/2024-07-11-extracting-graph-topology-from-image/nn.png"></p>
+<p><img src="/nn.png"></p>
 <h2 id="Other-Notes"><a href="#Other-Notes" class="headerlink" title="Other Notes"></a>Other Notes</h2><p>TODO</p>
 
       
@@ -414,7 +417,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2024-07-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-07T00:00:00+08:00">2024-07-07</time>
+      <time title="Created: 2024-07-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-07T00:00:00-05:00">2024-07-07</time>
     </span>
 
   
@@ -436,7 +439,7 @@
 <li><strong>TE2E</strong> ($t_ {e2e}$): Time of End-to-end.</li>
 </ul>
 <p>In practice, rather than the average or median latency, we usually consider the <strong>latency SLA</strong>, which means that 50%, 90%, and 99% of data should fall below certain thresholds.</p>
-<h2 id="Where-The-Latency-Comes-From"><a href="#Where-The-Latency-Comes-From" class="headerlink" title="Where The Latency Comes From?"></a>Where The Latency Comes From?</h2><p><img src="/2024-07-07-latency-in-llm-serving/latency_in_llm_serving.png"></p>
+<h2 id="Where-The-Latency-Comes-From"><a href="#Where-The-Latency-Comes-From" class="headerlink" title="Where The Latency Comes From?"></a>Where The Latency Comes From?</h2><p><img src="/latency_in_llm_serving.png"></p>
 <p>As shown in the figure above, the current popular LLM serving systems (such as vLLM, DeepSpeed) adopt an <strong>iteration-level scheduling strategy</strong>. The processing of each request is divided into the <strong>prefilling stage</strong> (prompt inference) and the <strong>generation stage</strong> (auto-regressive token-by-token generation). For systems such as Sarathi-Serve, the prompt is chunked to improve throughput, thus adding a <strong>chunked prefilling stage</strong>.</p>
 <p>The LLM serving system maintains <strong>3 queues</strong> to store requests in these 3 states. The scheduler runs in a loop, and in each iteration, it selects requests from these 3 queues with a certain strategy, and combines them into a batch for the inference engine.</p>
 <p>In such systems, the latency of requests mainly comes from 2 aspects: <strong>queue latency</strong> and <strong>inference latency</strong>. Assuming the latencies for a request from being added into the prefilling queue, chunked prefilling queue, generation queue to being selected by scheduler are $t_ {qp}$, $t_ {qc}$, $t_ {qg}$ respectively, and inference latency of engine if $t_ {inf}$.<br>We get:</p>
@@ -512,14 +515,14 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2024-03-06 00:00:00" itemprop="dateCreated datePublished" datetime="2024-03-06T00:00:00+08:00">2024-03-06</time>
+      <time title="Created: 2024-03-06 00:00:00" itemprop="dateCreated datePublished" datetime="2024-03-06T00:00:00-06:00">2024-03-06</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-03-07 00:00:00" itemprop="dateModified" datetime="2024-03-07T00:00:00+08:00">2024-03-07</time>
+      <time title="Modified: 2024-03-07 00:00:00" itemprop="dateModified" datetime="2024-03-07T00:00:00-06:00">2024-03-07</time>
     </span>
 
   
@@ -550,7 +553,7 @@
 <h3 id="Per-token-and-per-tensor"><a href="#Per-token-and-per-tensor" class="headerlink" title="Per-token and per-tensor"></a>Per-token and per-tensor</h3><p>From the above discussion, we know that practical quantization needs to satisfy at least:<br>$$\begin{aligned}<br>    p_ {n}(\cdot) &amp;&#x3D; p_ {nc} (\cdot), \quad \forall n, c, \\<br>    r_ {d}(\cdot) &amp;&#x3D; r_ {dc} (\cdot), \quad \forall d, c.<br>\end{aligned}$$<br>That is, the quantization function is same for all channels. Therefore, the basic constraint can be formulated as:<br>$$q_ {nd}^{-1}(\hat{y}_ {nd}) &#x3D; \sum_ {c&#x3D;1}^{C_ i} p_ {n}^{-1}(\hat{x}_ {nc}) \cdot r_ {d}^{-1}(\hat{w}_ {dc}),$$<br>Thus, we get <strong>per-channel quantization</strong>. If we further assume:<br>$$\begin{aligned}<br>    p(\cdot) &amp;&#x3D; p_ {nc} (\cdot), \quad \forall n, c, \\<br>    r(\cdot) &amp;&#x3D; r_ {dc} (\cdot), \quad \forall d, c.<br>\end{aligned}$$<br>That is, the quantization function is same for all elements in both $\mathbf{X}$ and $\mathbf{W}$. Therefore, the basic constraint can be formulated as:<br>$$q_ {nd}^{-1}(\hat{y}_ {nd}) &#x3D; q^{-1}(\hat{y}_ {nd}) &#x3D; \sum_ {c&#x3D;1}^{C_i} p^{-1}(\hat{x}_ {nc}) \cdot r^{-1}(\hat{w}_ {dc}).$$<br>We thus obtain <strong>per-tensor quantization</strong>. While both of these quantization methods have theoretical feasibility, the practical values of them are still limited by hardware support (as discussed in the next section).</p>
 <p>For convenience, the following discussion focuses only on per-token quantization. Per-tensor quantization can be seen as a special case of per-token quantization. The most commonly used quantization method in practice is <strong>symmetric uniform quantization</strong>, which scales the value range using multiplication, i.e.:<br>$$\begin{aligned}<br>    \hat{x}_ {nc} &amp;&#x3D; p_ {n}(x_ {nc}) &#x3D; p_ n x_ {nc}, \\<br>    \hat{w}_ {nd} &amp;&#x3D; r_ {d}(w_ {dc}) &#x3D; r_ d w_ {dc}, \\<br>    \hat{y}_ {dc} &amp;&#x3D; q_ {nd}(y_ {nd}) &#x3D; p_ n r_ d y_ {nd}.<br>\end{aligned}$$</p>
 <p>We can formulate per-token symmetric uniform quantization by matrix multiplication:<br>$$\begin{aligned}<br>    \hat{\mathbf{X}} &amp;&#x3D; \text{diag}(p_1,\cdots,p_ N)\cdot \mathbf{X} &#x3D; \begin{pmatrix}<br>        p_ 1 &amp; \cdots &amp; p_ 1 \\<br>        \vdots &amp; \ddots &amp; \vdots \\<br>        p_ N &amp; \cdots &amp; p_ N<br>    \end{pmatrix} \otimes \mathbf{X}, \\<br>    \hat{\mathbf{W}} &amp;&#x3D; \text{diag}(r_1,\cdots,r_ D)\cdot \mathbf{W} &#x3D; \begin{pmatrix}<br>        r_ 1 &amp; \cdots &amp; r_ D \\<br>        \vdots &amp; \ddots &amp; \vdots \\<br>        r_ 1 &amp; \cdots &amp; r_ D<br>    \end{pmatrix} \otimes \mathbf{W}, \\<br>    \hat{\mathbf{Y}} &amp;&#x3D; \text{diag}(p_1,\cdots,p_ N)\cdot \mathbf{Y} \cdot \text{diag}(r_1,\cdots,r_ D) &#x3D; \begin{pmatrix}<br>        p_ 1 r_ 1 &amp; \cdots &amp; p_ 1 r_ D \\<br>        \vdots &amp; \ddots &amp; \vdots \\<br>        p_ N r_ 1 &amp; \cdots &amp; p_ N r_ D<br>    \end{pmatrix} \otimes \mathbf{Y},<br>\end{aligned}$$<br>where $\otimes$ represents element-wise matrix multiplication. It can be observed that both quantization and dequantization <strong>can be efficiently implemented using element-wise matrix multiplication with dimension broadcasting</strong>. The following figure illustrates the computation process by an example:</p>
-<p><img src="/2024-03-06-quantization-gemm/quant_matrix.png"></p>
+<p><img src="/quant_matrix.png"></p>
 <h2 id="Hardware-requirements"><a href="#Hardware-requirements" class="headerlink" title="Hardware requirements"></a>Hardware requirements</h2><p>Hardware support still need to be considered when we try to utilize GEMM for quantization. For example, on NVIDIA GPUs, Tensor Core supports matrix multiplication for FP16 and INT8, but it doesn’t support mixed precision matrix multiplication for FP16&#x2F;INT8. This means that W8A8 quantization can benefit from Tensor Core, but W8A16 and W16A8 quantization lack hardware support and may not achieve real acceleration on NVIDIA GPUs. Many W8A16 and W16A8 quantization methods actually perform dequantization before GEMM and then use FP16 for computation. The actual acceleration effects of these methods require further discussion (see below).</p>
 <h2 id="Performance-analysis"><a href="#Performance-analysis" class="headerlink" title="Performance analysis"></a>Performance analysis</h2><p>The above discussion only shows that per-token quantization can leverage GEMM. The following words will show whether it can provide actual acceleration.</p>
 <p>We compare the following three setups:</p>
@@ -624,21 +627,21 @@
 <li>W8A16 quantization maintains a similar operations compared to FP16, but it slightly increases the total arithmetic intensity (more increase when $N$ is large). Therefore, <strong>it also has practical value in memory-bound scenarios</strong>, especially since activations in LLMs are typically harder to be quantized than weights.</li>
 </ol>
 <h2 id="Some-LLM-Quantization-works"><a href="#Some-LLM-Quantization-works" class="headerlink" title="Some LLM Quantization works"></a>Some LLM Quantization works</h2><h3 id="LLM-int8"><a href="#LLM-int8" class="headerlink" title="LLM.int8()"></a><code>LLM.int8()</code></h3><p><code>LLM.int8()</code> actually employs selective per-token quantization. It stores weights and activations in FP16 and then applies different strategies for different tokens, as illustrated below:</p>
-<p><img src="/2024-03-06-quantization-gemm/llm_int8.png" alt="LLM.int8()"></p>
+<p><img src="/llm_int8.png" alt="LLM.int8()"></p>
 <ul>
 <li>For tokens suitable for quantization, it applies per-token INT8 quantization to weights and activations, computes results using INT8 GEMM, and then dequantizes them to FP16.</li>
 <li>For tokens with outliers, it directly computed the FP16 GEMM.</li>
 </ul>
 <p>The results from these two parts can be combined to form the final result.</p>
 <h3 id="SmoothQuant"><a href="#SmoothQuant" class="headerlink" title="SmoothQuant"></a>SmoothQuant</h3><p>While per-channel quantization may not be practical, for LLM activation quantization, the main challenge arises from activations, where values with larger magnitudes may appear on some channels, as shown below:</p>
-<p><img src="/2024-03-06-quantization-gemm/smooth_quant_motivation.png"></p>
+<p><img src="/smooth_quant_motivation.png"></p>
 <p>SmoothQuant observed that these outliers occur consistently in specific channels, while outliers are rare in weights (thus easier to quantize). Therefore, it proposes to “balance” the quantization difficulty between activations and weights by introducing a per-channel scaling factor:</p>
-<p><img src="/2024-03-06-quantization-gemm/smooth_quant.png" alt="SmoothQuant"></p>
+<p><img src="/smooth_quant.png" alt="SmoothQuant"></p>
 <p>This “balance” can be formulated as:<br>$$\begin{aligned}<br>    \mathbf{Y}<br>    &amp;&#x3D; \mathbf{X}\mathbf{W}^\top \\<br>    &amp;&#x3D; \mathbf{X} \cdot \text{diag}(s_ 1,\cdots,s_ C) \cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1} \cdot \mathbf{W}^\top \\<br>    &amp; &#x3D; \left( \mathbf{X} \cdot \text{diag}(s_ 1,\cdots,s_ C) \right) \cdot \left( \mathbf{W}\cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1} \right)^\top.<br>\end{aligned}$$<br>By selecting appropriate scaling factors $\text{diag}(s_ 1,\cdots,s_ C)$, we can achieve the goal of balancing outlier values in activations, and then we can quantize $\mathbf{X} \cdot \text{diag}(s_ 1,\cdots,s_ C)$ and $\mathbf{W}\cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1}$. The following figure give an example:</p>
-<p><img src="/2024-03-06-quantization-gemm/smooth_quant_2.png" alt="SmoothQuant example"></p>
+<p><img src="/smooth_quant_2.png" alt="SmoothQuant example"></p>
 <p><strong>SmoothQuant is an excellent alternative to per-channel quantization</strong>, as demonstrated in the paper by its impressive performance in quantizing LLM to W8A8.</p>
 <h3 id="ZeroQuant"><a href="#ZeroQuant" class="headerlink" title="ZeroQuant"></a>ZeroQuant</h3><p>In the above performance analysis of W8A8, we found that using FP16 for activations I&#x2F;O reduces the overall arithmetic intensity after quantization, which may harm the throughput improvement in memory-bound scenarios. ZeroQuant addresses this issue by fusing the quantization into the previous operator and fusing the dequantization after GEMM, as shown in the figure below.</p>
-<p><img src="/2024-03-06-quantization-gemm/zero_quant.png" alt="ZeroQuant"></p>
+<p><img src="/zero_quant.png" alt="ZeroQuant"></p>
 <p>Thus, the activations I&#x2F;O between operators are still INT8, which reduces the total memory I&#x2F;O to $NC+CD+ND+2(N+D)$, boosting arithmetic intensity to original FP16 level , and fully leveraging the high throughput of INT8.</p>
 <h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>This blog provides a matrix multiplication perspective for quantization, indicating some fundamental requirements for practical quantization and explaining why per-channel quantization in impractical. It also discusses several examples of LLM per-token quantization, including <code>LLM.int8()</code>, SmoothQuant, and ZeroQuant.<br>They are all practical and demonstrate significant acceleration in real-world scenarios.</p>
 
@@ -696,14 +699,14 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2024-02-16 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-16T00:00:00+08:00">2024-02-16</time>
+      <time title="Created: 2024-02-16 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-16T00:00:00-06:00">2024-02-16</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-02-17 00:00:00" itemprop="dateModified" datetime="2024-02-17T00:00:00+08:00">2024-02-17</time>
+      <time title="Modified: 2024-02-17 00:00:00" itemprop="dateModified" datetime="2024-02-17T00:00:00-06:00">2024-02-17</time>
     </span>
 
   
@@ -822,7 +825,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2024-02-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00+08:00">2024-02-07</time>
+      <time title="Created: 2024-02-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00-06:00">2024-02-07</time>
     </span>
 
   
@@ -839,16 +842,16 @@
 <p>This blog is a write-up of the paper “<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.12377">ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs</a>“ from arXiv’24.</p>
 </blockquote>
 <h2 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h2><p>Some workloads (e.g., Simulation Engines for Deep RL, Dynamic DNNs) cannot fully utilize the massive parallelism of GPUs (see Figure 1). The main reason is that these workloads contain lots of <strong>small kernels</strong> which cannot fully utilize the GPU, and these kernels are not executed concurrently, although <strong>most of them are independent and in theory can be executed concurrently</strong>.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/achieved_occ.png" alt="Figure 1. Achieved Occupancy of simulation engines (up) and dynamic DNN (down)"></p>
+<p><img src="/achieved_occ.png" alt="Figure 1. Achieved Occupancy of simulation engines (up) and dynamic DNN (down)"></p>
 <p>But there are some challenges to execute these kernels concurrently:</p>
 <ol>
 <li><strong>Input-dependent kernel dependencies</strong>. For some workload, the the dependencies between kernels are only <strong>determined at runtime</strong> for each input. Constructing full computational graph and resolving dependencies before execution will introduce <strong>high latency</strong> (see Figure 2,average of 47% of overall execution time as the paper says).</li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/dag_time.png" alt="Figure 2. DAG construction time as % of execution time"></p>
+<p><img src="/dag_time.png" alt="Figure 2. DAG construction time as % of execution time"></p>
 <ol start="2">
 <li><strong>Irregular kernel dependencies</strong>. Some workloads have irregular computational graphs. We can partitioned the computational graph of the workload into independent streams of kernels. But this would require <strong>fine-grained scheduling</strong> and <strong>synchronization</strong>, with <strong>large overhead</strong> (see Figure 3).</li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/sync_overhead.png" alt="Figure 3. Kernel launch and synchronization overheads"></p>
+<p><img src="/sync_overhead.png" alt="Figure 3. Kernel launch and synchronization overheads"></p>
 <p>Existed solutions:</p>
 <ol>
 <li><p>CUDA Graph and AMD ATMI. They allow users specify dependencies between different kernels as DAG, and can eliminate the synchronization and kernel launch overhead. But the DAG needs to be constructed in <strong>full before execution</strong>, which imakes them not suitable for dynamic kernel dependencies (such as Dynamic DNNs).</p>
@@ -872,10 +875,10 @@
 </ol>
 <p><strong>The key idea is to perform the dependence checking and scheduling within a small window of kernels at runtime similar to out-of-order instruction scheduling.</strong></p>
 <p>The authors proposed Automatic Concurrent Scheduling (ACS) as solution. The overall design of ACS-SW is shown in Figure 4. It contains three main functionalities:</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/acs_overview.png" alt="Figure 4. ACS-SW Overview"></p>
+<p><img src="/acs_overview.png" alt="Figure 4. ACS-SW Overview"></p>
 <ol>
 <li><p><strong>Determining inter-kernel dependencies</strong>. By checking for <strong>overlaps between read segments and write segments</strong>, we determine dependencies between kernels. For a wide range of commonly used kernels (e.g., matrix multiplication, convolution), we can infer the read and write segments from the input easily. But for some kernels, it’s impossible to determine the range of memory accessed statically because of the potential indirect memory accesses, so the authors just assume the <strong>entire GPU memory may be accessed</strong>.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/seg.png" alt="Memory regions written to/accessed by the kernel"></p>
+<p><img src="/seg.png" alt="Memory regions written to/accessed by the kernel"></p>
 <p>The authors use a kernel wrapper to finish the dependency detection. <code>get_addresses()</code> is called to get <code>__read_segments__</code> and <code>__write_segments__</code>.</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ACE_wrapper</span> &#123;</span> </span><br><span class="line">  <span class="comment">//list of read,write segments defined as</span></span><br><span class="line">  <span class="comment">//[&#123;start_adr1,size1&#125;,&#123;start_adr2,size2&#125;..]</span></span><br><span class="line">  <span class="built_in">list</span> __read_segments__;</span><br><span class="line">  <span class="built_in">list</span> __write_segments__;</span><br><span class="line">  <span class="comment">// function which gets called at kernel</span></span><br><span class="line">  <span class="comment">// launch to populate read,write segments</span></span><br><span class="line">  <span class="type">void</span> <span class="title function_">get_addresses</span><span class="params">(</span></span><br><span class="line"><span class="params">    dim3 blocks, dim3 threads, ...</span></span><br><span class="line"><span class="params">  )</span>;</span><br><span class="line">  <span class="comment">// function declaration of the kernel</span></span><br><span class="line">  <span class="type">static</span> __global__ <span class="type">void</span> <span class="title function_">kernel</span><span class="params">(...)</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 </li>
@@ -887,7 +890,7 @@
 </ol>
 </li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/window.png" alt="Kernels in the scheduling window with their state and corresponding upstream kernels"></p>
+<p><img src="/window.png" alt="Kernels in the scheduling window with their state and corresponding upstream kernels"></p>
 <ol start="3">
 <li>Eliminating CPU synchronization overheads. See ACS-HW for more details.</li>
 </ol>
@@ -900,13 +903,13 @@
 </ol>
 <h3 id="ACS-SW"><a href="#ACS-SW" class="headerlink" title="ACS-SW"></a>ACS-SW</h3><h4 id="Window-Module"><a href="#Window-Module" class="headerlink" title="Window Module"></a>Window Module</h4><p>This module is to determining inter-kernel dependencies. It is implemented as a separate thread that manages the input FIFO queue and the scheduling window. The kernel state tracking is implemented in the hardware.</p>
 <h4 id="Scheduler-Module"><a href="#Scheduler-Module" class="headerlink" title="Scheduler Module"></a>Scheduler Module</h4><p>This module schedules and launches ready kernels for execution. It has fixed number of CUDA streams. Each stream contains only one kernel at any given time. Threads with empty streams poll the scheduling window for a ready kernel.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/acs_hw_scheduler.png" alt="ACS-SW: The scheduler module"></p>
+<p><img src="/acs_hw_scheduler.png" alt="ACS-SW: The scheduler module"></p>
 <h3 id="ACS-HW"><a href="#ACS-HW" class="headerlink" title="ACS-HW"></a>ACS-HW</h3><p>ACS-SW incurs kernel synchronization and launch overheads because scheduler module launches a kernel in the CPU. ACS-HW solves these problems by a software-hardware co-design.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/acs_hw.png" alt="ACS-HW Overview"></p>
+<p><img src="/acs_hw.png" alt="ACS-HW Overview"></p>
 <p>Software-side: maintains an input FIFO queue like ACS-SW, and a list of kernels in the GPU’s scheduling window, <strong>but it can be stale</strong>.</p>
 <p>Hardware-side: the scheduling window and its management are implemented in hardware on the GPU side.</p>
 <p>A key novelty in hardware design is <strong>two stage dependency detections</strong>. First, ACS use software to perform initial detection using stale kernel information (without frequent synchronize overhead), then utilizes hardware to correct outdated dependency information. This two-stage approach significantly reduces the hardware complexity.</p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/hw_scheduler.png" alt="ACS-HW Scheduler"></p>
+<p><img src="/hw_scheduler.png" alt="ACS-HW Scheduler"></p>
 <h2 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h2><ol>
 <li>Baseline: cuDNN implementation (for DNNs) and a jax implementation (for deep RL simulation), both using CUDA streams.</li>
 <li>ACS-SW: on real hardware.</li>
@@ -914,13 +917,13 @@
 <li>ACS-HW: on the GPU simulator.</li>
 <li>CUDAGraph.</li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl.png" alt="Deep RL physics simulations: Normalized Speedup"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl_sim.png" alt="Deep RL physics simulations: Normalized Speedup on GPU simulator"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl_occ.png" alt="Deep RL physics simulations: Achieved occupancy"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_dcnn.png" alt="Dynamic DNNs: Normalized speedup"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_dcnn_occ.png" alt="Dynamic DNNs: Achieved occupancy"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_scnn.png" alt="Static DNNs: Normalized speedup"></p>
-<p><img src="/2024-02-07-paper-reading-arxiv24-acs/eval_scnn_occ.png" alt="Static DNNs: Achieved occupancy"></p>
+<p><img src="/eval_deep_rl.png" alt="Deep RL physics simulations: Normalized Speedup"></p>
+<p><img src="/eval_deep_rl_sim.png" alt="Deep RL physics simulations: Normalized Speedup on GPU simulator"></p>
+<p><img src="/eval_deep_rl_occ.png" alt="Deep RL physics simulations: Achieved occupancy"></p>
+<p><img src="/eval_dcnn.png" alt="Dynamic DNNs: Normalized speedup"></p>
+<p><img src="/eval_dcnn_occ.png" alt="Dynamic DNNs: Achieved occupancy"></p>
+<p><img src="/eval_scnn.png" alt="Static DNNs: Normalized speedup"></p>
+<p><img src="/eval_scnn_occ.png" alt="Static DNNs: Achieved occupancy"></p>
 <h2 id="Comments"><a href="#Comments" class="headerlink" title="Comments"></a>Comments</h2><h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>This paper focuses on the problem of low GPU utilization caused by the serial execution of numerous small CUDA kernels. I believe this paper effectively addresses this problem, particularly with the following innovative points that are impressive me:</p>
 <ol>
 <li><p><strong>Out-of-order dependency detection and scheduling</strong>. Out-of-order (OoO) is a common technique in micro-architecture and software (e.g., hard disk I&#x2F;O queue) designs. It’s an impressive and innovative idea to introduce OoO into this area to find the dynamic dependencies efficiently.</p>
@@ -999,14 +1002,14 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2024-02-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00+08:00">2024-02-07</time>
+      <time title="Created: 2024-02-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00-06:00">2024-02-07</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2024-03-31 00:00:00" itemprop="dateModified" datetime="2024-03-31T00:00:00+08:00">2024-03-31</time>
+      <time title="Modified: 2024-03-31 00:00:00" itemprop="dateModified" datetime="2024-03-31T00:00:00-05:00">2024-03-31</time>
     </span>
 
   
@@ -1058,7 +1061,7 @@
 <li><p>They do not handle scenarios where incoming jobs must be distributed among multiple GPUs to satisfy QoS constraints.</p>
 </li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/tb_sm.png"></p>
+<p><img src="/tb_sm.png"></p>
 <center>Figure 1. Simulated system throughput of co-running `parb_spmv` and `rod_hotspot` at various TBs/SM settings</center>
 
 <p><strong>Problems of hardware TB scheduler</strong> which hinder the fine-grained sharing:</p>
@@ -1102,7 +1105,7 @@
 <li><p>Once we have predicted which job pairs can co-execute without violating QoS requirements, the scheduling task can be reduced to the classic maximum cardinality matching problem in graph theory.</p>
 </li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/system-design.png"></p>
+<p><img src="/system-design.png"></p>
 <center>Figure 2. Overall System Design of GPUPool</center>
 
 <p>Based on these 2 observations, the author proposed GPUPool. Its overall system design is shown in Figure 2. It consists of 4 steps:</p>
@@ -1118,10 +1121,10 @@
 </ol>
 </li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/interference_matrix.png"></p>
+<p><img src="/interference_matrix.png"></p>
 <center>Figure 3. Interference Matrix</center>
 
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/stage2.2.png"></p>
+<p><img src="/stage2.2.png"></p>
 <center>Figure 4. Concurrent Application Timeline</center>
 
 <ol start="3">
@@ -1141,16 +1144,16 @@
 </li>
 </ol>
 <p>The metrics is system throughput $STP&#x3D;\sum_{i&#x3D;1}^n \cfrac{t_{isolated}^i}{t_{shared}^i}$. $t_{isolated}^i$ and $t_{shared}^i$ are turnaround time of the i-th concurrent job when executing in an isolated and shared environment respectively. The paper also uses we use ${QoS}_{reached}$ to evaluate QoS fulfilment rate.</p>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/gpu_sharing_compare.png"></p>
+<p><img src="/gpu_sharing_compare.png"></p>
 <center>Comparison of GPU Sharing Systems</center>
 
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/sorted_stp.png"></p>
+<p><img src="/sorted_stp.png"></p>
 <center>Sorted STP on GPUs</center>
 
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/throughput.png"></p>
+<p><img src="/throughput.png"></p>
 <center>Throughput Normalized to QoS Target</center>
 
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/ml_pred.png"></p>
+<p><img src="/ml_pred.png"></p>
 <center>Prediction Accuracy of Different ML Techniques</center>
 
 <h2 id="Comments"><a href="#Comments" class="headerlink" title="Comments"></a>Comments</h2><h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>This paper targets the fine-grained GPU sharing problem in the cloud. I believe this work provides a valuable solution to this problem.</p>
@@ -1189,7 +1192,7 @@
 <li><p>This paper does not clearly take into account <strong>the impact of memory hierarchy on performance</strong>, such as shared memory (or just implicitly consider it using a ML model). Some CUDA kernels are optimized by carefully utilizing CUDA SM shared memory, such as <em>Flash Attention</em>. When two kernels run together, does it lead to shared memory contention? Could it result in runtime errors or shared memory overflowing into global memory, causing a severe performance decline? Experiments in the paper can not answer these questions. Also, the selected profiling metrics to train stage 1 model listed in Figure 5 do not contains any metrics about shared memory capacity. Another possibility is that a ML model is already good enough to handle this problem. Regardless, the impact of memory hierarchy on GPU-sharing deserves further study.</p>
 </li>
 </ol>
-<p><img src="/2024-02-07-paper-reading-pact22-gpupool/metrics.png"></p>
+<p><img src="/metrics.png"></p>
 <center>Figure 5. Metrics Used to Train Stage 1 Prediction Model</center>
 
 <h3 id="Possible-Improvements"><a href="#Possible-Improvements" class="headerlink" title="Possible Improvements"></a>Possible Improvements</h3><p>I have some potential ideas to improve this work:</p>
@@ -1266,7 +1269,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2024-01-29 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-29T00:00:00+08:00">2024-01-29</time>
+      <time title="Created: 2024-01-29 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-29T00:00:00-06:00">2024-01-29</time>
     </span>
 
   
@@ -1289,7 +1292,7 @@
 <h2 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h2><h3 id="网络拓扑"><a href="#网络拓扑" class="headerlink" title="网络拓扑"></a>网络拓扑</h3><p>网络拓扑决定着延迟。</p>
 <p>延迟最低的方案显然是 full-mesh，即每一对 peer 之间都有直接的 P2P 连接。但这种拓扑结构的管理复杂度是 $\mathcal{O}(n^2)$ 的，并且每添加一个新的 peer 就需要修改所有其他 peer 的配置文件，还需要解决 NAT 带来的问题，这必须借助一些自动化的软件管理。我尝试了 <a target="_blank" rel="noopener" href="https://www.netmaker.io/">Netmaker</a> 和 <a target="_blank" rel="noopener" href="https://headscale.net/">Headscale</a>，但它们似乎都无法正确处理学校内的<strong>复杂网络环境</strong>，比如各种企业级路由器使用的 symmetric NAT，<strong>成功建立 P2P 的概率非常之低</strong>。</p>
 <p>最终我选择了 <strong>full-mesh 和 hub-and-spoke 相结合的拓扑</strong>。由于服务器数量和 IP 很少变化，手动配置一个服务器间的 full-mesh 网络是可行的。与此同时，提供一个 gateway server 作为用户接入的 hub，用户只需要与 gateway server 建立连接。由于大部分用户其实是在校内使用 VPN 的，因此连接到校内的 gateway server 并转发流量并不会带来太多额外延迟。这种结构可以平衡延迟与管理复杂度，用户的增减和授权也只需要在 gateway server 上操作。</p>
-<p><img src="/2024-01-29-wg-for-cluster/topo.png" alt="Network Topology"></p>
+<p><img src="/topo.png" alt="Network Topology"></p>
 <h3 id="协议选择"><a href="#协议选择" class="headerlink" title="协议选择"></a>协议选择</h3><p>流行的 OpenVPN 和 IPSec 都足够优秀，但新兴的 WireGuard 具有无可比拟的配置简单性。对于服务端，WireGuard 可以用几行配置文件定义一个 peer 和路由；对于用户，由于 WireGuard 采用基于密钥对的认证方式，只需要一个配置文件即可接入 VPN 网络，不需要额外的密码记忆和登录操作。</p>
 <h3 id="管理方式"><a href="#管理方式" class="headerlink" title="管理方式"></a>管理方式</h3><p>出于可预测性和稳定性的考量，我选择了手动配置的方法。服务器间的 full-mesh 网络一次配置后就不需要再频繁更改。而用户管理则通过一个脚本实现，当需要添加一个新用户时，脚本生成密钥对并分配 IP，把公钥和路由信息加入 gateway server 的 peer list 中，然后生成包含私钥和分配的 IP 的配置文件，并发给用户。</p>
 <p>Gateway server 上的用户 peer 配置示例：</p>
@@ -1352,7 +1355,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2023-11-24 00:00:00" itemprop="dateCreated datePublished" datetime="2023-11-24T00:00:00+08:00">2023-11-24</time>
+      <time title="Created: 2023-11-24 00:00:00" itemprop="dateCreated datePublished" datetime="2023-11-24T00:00:00-06:00">2023-11-24</time>
     </span>
 
   
@@ -1423,7 +1426,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2023-11-14 00:00:00" itemprop="dateCreated datePublished" datetime="2023-11-14T00:00:00+08:00">2023-11-14</time>
+      <time title="Created: 2023-11-14 00:00:00" itemprop="dateCreated datePublished" datetime="2023-11-14T00:00:00-06:00">2023-11-14</time>
     </span>
 
   
@@ -1510,6 +1513,24 @@
 
   <footer class="footer">
     <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>English</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="Select language">
+      
+        <option value="en" data-href="/index.html" selected="">
+          English
+        </option>
+      
+        <option value="zh-cn" data-href="/zh-cn/index.html" selected="">
+          zh-cn
+        </option>
+      
+    </select>
+  </div>
 
   <div class="copyright">
     &copy; 2023 – 
