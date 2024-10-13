@@ -1,6 +1,6 @@
 {
   "name": "monsoon-blog",
-  "version": "0.0.1",
+  "version": "2024",
   "private": true,
   "scripts": {
     "build": "hexo generate",
@@ -9,24 +9,24 @@
     "server": "hexo server"
   },
   "hexo": {
-    "version": "7.1.1"
+    "version": "7.3.0"
   },
   "dependencies": {
-    "css": "^3.0.0",
-    "hexo": "^7.1.1",
+    "hexo": "^7.3.0",
     "hexo-generator-archive": "^2.0.0",
     "hexo-generator-category": "^2.0.0",
-    "hexo-generator-index": "^3.0.0",
+    "hexo-generator-index": "^4.0.0",
     "hexo-generator-tag": "^2.0.0",
     "hexo-generator-sitemap": "^3.0.1",
     "hexo-generator-feed": "^3.0.0",
+    "hexo-generator-i18n": "^0.0.10",
     "hexo-renderer-ejs": "^2.0.0",
-    "hexo-renderer-marked": "^6.0.0",
-    "hexo-renderer-stylus": "^3.0.0",
+    "hexo-renderer-marked": "^6.3.0",
+    "hexo-renderer-stylus": "^3.0.1",
     "hexo-server": "^3.0.0",
-    "hexo-theme-landscape": "^1.0.0",
-    "hexo-theme-next": "^8.15.0",
+    "hexo-theme-next": "^8.21.0",
     "hexo-fontawesome": "^2.4.0",
-    "hexo-tag-publications": "^0.3.3"
+    "hexo-tag-publications": "^0.3.8",
+    "css": "^3.0.0"
   }
 }
