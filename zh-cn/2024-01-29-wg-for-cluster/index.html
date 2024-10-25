@@ -28,7 +28,7 @@
 <meta property="og:site_name" content="Monsoon&#39;s Blog">
 <meta property="og:description" content="Motivation机器学习集群需要一个安全的方式向用户暴露服务，以及跨公网服务器互联，为此需要部署 VPN 网络。 VPN 网络的部署需要考虑如下因素：  网络拓扑：需要选择合适的拓扑结构以尽可能降低延迟； 用户管理：可以方便地进行用户的增减和授权； 使用和维护简单。  Design网络拓扑网络拓扑决定着延迟。 延迟最低的方案显然是 full-mesh，即每一对 peer 之间都有直接的 P2P">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://monsoon-cs.moe/topo.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-01-29-wg-for-cluster/topo.png">
 <meta property="article:published_time" content="2024-01-29T06:00:00.000Z">
 <meta property="article:modified_time" content="2024-01-29T06:00:00.000Z">
 <meta property="article:author" content="Monsoon">
@@ -37,7 +37,7 @@
 <meta property="article:tag" content="wireguard">
 <meta property="article:tag" content="vpn">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://monsoon-cs.moe/topo.png">
+<meta name="twitter:image" content="https://monsoon-cs.moe/2024-01-29-wg-for-cluster/topo.png">
 
 
 <link rel="canonical" href="https://monsoon-cs.moe/zh-cn/2024-01-29-wg-for-cluster/">
@@ -229,7 +229,7 @@
 <h2 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h2><h3 id="网络拓扑"><a href="#网络拓扑" class="headerlink" title="网络拓扑"></a>网络拓扑</h3><p>网络拓扑决定着延迟。</p>
 <p>延迟最低的方案显然是 full-mesh，即每一对 peer 之间都有直接的 P2P 连接。但这种拓扑结构的管理复杂度是 $\mathcal{O}(n^2)$ 的，并且每添加一个新的 peer 就需要修改所有其他 peer 的配置文件，还需要解决 NAT 带来的问题，这必须借助一些自动化的软件管理。我尝试了 <a target="_blank" rel="noopener" href="https://www.netmaker.io/">Netmaker</a> 和 <a target="_blank" rel="noopener" href="https://headscale.net/">Headscale</a>，但它们似乎都无法正确处理学校内的<strong>复杂网络环境</strong>，比如各种企业级路由器使用的 symmetric NAT，<strong>成功建立 P2P 的概率非常之低</strong>。</p>
 <p>最终我选择了 <strong>full-mesh 和 hub-and-spoke 相结合的拓扑</strong>。由于服务器数量和 IP 很少变化，手动配置一个服务器间的 full-mesh 网络是可行的。与此同时，提供一个 gateway server 作为用户接入的 hub，用户只需要与 gateway server 建立连接。由于大部分用户其实是在校内使用 VPN 的，因此连接到校内的 gateway server 并转发流量并不会带来太多额外延迟。这种结构可以平衡延迟与管理复杂度，用户的增减和授权也只需要在 gateway server 上操作。</p>
-<p><img src="/topo.png" alt="Network Topology"></p>
+<p><img src="/2024-01-29-wg-for-cluster/topo.png" alt="Network Topology"></p>
 <h3 id="协议选择"><a href="#协议选择" class="headerlink" title="协议选择"></a>协议选择</h3><p>流行的 OpenVPN 和 IPSec 都足够优秀，但新兴的 WireGuard 具有无可比拟的配置简单性。对于服务端，WireGuard 可以用几行配置文件定义一个 peer 和路由；对于用户，由于 WireGuard 采用基于密钥对的认证方式，只需要一个配置文件即可接入 VPN 网络，不需要额外的密码记忆和登录操作。</p>
 <h3 id="管理方式"><a href="#管理方式" class="headerlink" title="管理方式"></a>管理方式</h3><p>出于可预测性和稳定性的考量，我选择了手动配置的方法。服务器间的 full-mesh 网络一次配置后就不需要再频繁更改。而用户管理则通过一个脚本实现，当需要添加一个新用户时，脚本生成密钥对并分配 IP，把公钥和路由信息加入 gateway server 的 peer list 中，然后生成包含私钥和分配的 IP 的配置文件，并发给用户。</p>
 <p>Gateway server 上的用户 peer 配置示例：</p>

@@ -28,8 +28,8 @@
 <meta property="og:site_name" content="Monsoon&#39;s Blog">
 <meta property="og:description" content="序言IPv4 只有一种动态地址分配方式，即 DHCP，但 IPv6 就有 SLAAC 和 DHCPv6 两种分配方式，同时 DHCPv6 还存在 PD (Prefix Delegation) 的扩展。这三种分配方式之间又存在交互，使得 IPv6 分配过程中出现的问题远比 IPv4 多。大多数可以搜到的教程只从表面解决了问题，对于其后的技术细节模棱两可，而没有从根本上厘清 IPv6 与 IPv4 的">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://monsoon-cs.moe/generating-link-local-address-example.png">
-<meta property="og:image" content="https://monsoon-cs.moe/ipv6-stateless-address-autoconfiguration.gif">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/generating-link-local-address-example.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/ipv6-stateless-address-autoconfiguration.gif">
 <meta property="article:published_time" content="2024-10-12T05:00:00.000Z">
 <meta property="article:modified_time" content="2024-10-12T05:00:00.000Z">
 <meta property="article:author" content="Monsoon">
@@ -41,7 +41,7 @@
 <meta property="article:tag" content="dhcpv6">
 <meta property="article:tag" content="dhcpv6-pd">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://monsoon-cs.moe/generating-link-local-address-example.png">
+<meta name="twitter:image" content="https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/generating-link-local-address-example.png">
 
 
 <link rel="canonical" href="https://monsoon-cs.moe/zh-cn/2024-10-12-all-about-ipv6-addr-alloc/">
@@ -231,7 +231,7 @@
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fe80::/64 dev eth0 proto kernel metric 1024 pref medium</span><br></pre></td></tr></table></figure>
 
 <p>IPv6 LLA 使用特定的算法从 MAC 地址中生成，即 EUI-64，例如网口的 MAC 地址为 <code>70:07:12:34:56:78</code> 时，生成的 EUI-64 为 <code>7207:12ff:fe34:5678</code>，LLA 则为 <code>fe80:7207:12ff:fe34:5678/64</code>（EUI-64 加上 <code>fe80</code> 的前缀）。具体的生成方式下图所示：</p>
-<p><img src="/generating-link-local-address-example.png" alt="IPv6 LLA 生成过程，图源 https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac"></p>
+<p><img src="/2024-10-12-all-about-ipv6-addr-alloc/generating-link-local-address-example.png" alt="IPv6 LLA 生成过程，图源 https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac"></p>
 <p>一般而言，路由器不会转发 LLA 地址的流量，它<strong>仅用于链路点对点通信</strong>。</p>
 <h3 id="GUA-Global-Unicast-Address，全局单播地址"><a href="#GUA-Global-Unicast-Address，全局单播地址" class="headerlink" title="GUA (Global Unicast Address，全局单播地址)"></a>GUA (Global Unicast Address，全局单播地址)</h3><p>IPv6 GUA (<code>2000::/3</code>) 可以对应到 IPv4 “公网 IP”的概念。理论上它是全球唯一的，并且可以用于公网通信。一个配置良好的网络架构应当能使每个设备都获取到 IPv6 GUA，以最大程度上发挥 IPv6 的 P2P 通信优势。</p>
 <h3 id="私有地址"><a href="#私有地址" class="headerlink" title="私有地址"></a>私有地址</h3><p><code>fc00::/7</code> 被定义为 IPv6 的私有地址，类似于 IPv4 中 的 <code>10.0.0.0/8</code>、<code>172.16.0.0/12</code> 和 <code>192.168.0.0/16</code>，用于局域网通信。与 LLA 不同的是，它可以被路由器转发。</p>
@@ -264,7 +264,7 @@
 <li><p>主机进行 DAD 检测，并使用 NA 消息向链路上的邻居通告新地址的使用。</p>
 </li>
 </ol>
-<p><img src="/ipv6-stateless-address-autoconfiguration.gif" alt="SLAAC 流程，图源 https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac"></p>
+<p><img src="/2024-10-12-all-about-ipv6-addr-alloc/ipv6-stateless-address-autoconfiguration.gif" alt="SLAAC 流程，图源 https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac"></p>
 <p>SLAAC 看起来很美好，但有个<strong>重要缺陷</strong>：不支持 DNS 信息的下发，主机必须通过其他方式（通常是 DHCPv6）获取 DNS。RA 中有两个标志位用以解决此问题：</p>
 <ul>
 <li><code>M</code> (Managed Address Configuration)：可以通过 DHCPv6 获取地址信息；</li>

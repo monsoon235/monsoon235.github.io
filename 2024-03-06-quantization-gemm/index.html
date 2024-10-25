@@ -28,12 +28,12 @@
 <meta property="og:site_name" content="Monsoon&#39;s Blog">
 <meta property="og:description" content="IntroductionQuantization is a commonly used acceleration technique in NN inference. The primary computational workloads in NNs come from Convolution, Linear Layers, and Attention, which are implemente">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://monsoon-cs.moe/quant_matrix.png">
-<meta property="og:image" content="https://monsoon-cs.moe/llm_int8.png">
-<meta property="og:image" content="https://monsoon-cs.moe/smooth_quant_motivation.png">
-<meta property="og:image" content="https://monsoon-cs.moe/smooth_quant.png">
-<meta property="og:image" content="https://monsoon-cs.moe/smooth_quant_2.png">
-<meta property="og:image" content="https://monsoon-cs.moe/zero_quant.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-03-06-quantization-gemm/quant_matrix.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-03-06-quantization-gemm/llm_int8.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-03-06-quantization-gemm/smooth_quant_motivation.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-03-06-quantization-gemm/smooth_quant.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-03-06-quantization-gemm/smooth_quant_2.png">
+<meta property="og:image" content="https://monsoon-cs.moe/2024-03-06-quantization-gemm/zero_quant.png">
 <meta property="article:published_time" content="2024-03-06T06:00:00.000Z">
 <meta property="article:modified_time" content="2024-03-07T06:00:00.000Z">
 <meta property="article:author" content="Monsoon">
@@ -43,7 +43,7 @@
 <meta property="article:tag" content="gemm">
 <meta property="article:tag" content="cuda-kernel">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://monsoon-cs.moe/quant_matrix.png">
+<meta name="twitter:image" content="https://monsoon-cs.moe/2024-03-06-quantization-gemm/quant_matrix.png">
 
 
 <link rel="canonical" href="https://monsoon-cs.moe/2024-03-06-quantization-gemm/">
@@ -250,7 +250,7 @@
 <h3 id="Per-token-and-per-tensor"><a href="#Per-token-and-per-tensor" class="headerlink" title="Per-token and per-tensor"></a>Per-token and per-tensor</h3><p>From the above discussion, we know that practical quantization needs to satisfy at least:<br>$$\begin{aligned}<br>    p_ {n}(\cdot) &amp;&#x3D; p_ {nc} (\cdot), \quad \forall n, c, \\<br>    r_ {d}(\cdot) &amp;&#x3D; r_ {dc} (\cdot), \quad \forall d, c.<br>\end{aligned}$$<br>That is, the quantization function is same for all channels. Therefore, the basic constraint can be formulated as:<br>$$q_ {nd}^{-1}(\hat{y}_ {nd}) &#x3D; \sum_ {c&#x3D;1}^{C_ i} p_ {n}^{-1}(\hat{x}_ {nc}) \cdot r_ {d}^{-1}(\hat{w}_ {dc}),$$<br>Thus, we get <strong>per-channel quantization</strong>. If we further assume:<br>$$\begin{aligned}<br>    p(\cdot) &amp;&#x3D; p_ {nc} (\cdot), \quad \forall n, c, \\<br>    r(\cdot) &amp;&#x3D; r_ {dc} (\cdot), \quad \forall d, c.<br>\end{aligned}$$<br>That is, the quantization function is same for all elements in both $\mathbf{X}$ and $\mathbf{W}$. Therefore, the basic constraint can be formulated as:<br>$$q_ {nd}^{-1}(\hat{y}_ {nd}) &#x3D; q^{-1}(\hat{y}_ {nd}) &#x3D; \sum_ {c&#x3D;1}^{C_i} p^{-1}(\hat{x}_ {nc}) \cdot r^{-1}(\hat{w}_ {dc}).$$<br>We thus obtain <strong>per-tensor quantization</strong>. While both of these quantization methods have theoretical feasibility, the practical values of them are still limited by hardware support (as discussed in the next section).</p>
 <p>For convenience, the following discussion focuses only on per-token quantization. Per-tensor quantization can be seen as a special case of per-token quantization. The most commonly used quantization method in practice is <strong>symmetric uniform quantization</strong>, which scales the value range using multiplication, i.e.:<br>$$\begin{aligned}<br>    \hat{x}_ {nc} &amp;&#x3D; p_ {n}(x_ {nc}) &#x3D; p_ n x_ {nc}, \\<br>    \hat{w}_ {nd} &amp;&#x3D; r_ {d}(w_ {dc}) &#x3D; r_ d w_ {dc}, \\<br>    \hat{y}_ {dc} &amp;&#x3D; q_ {nd}(y_ {nd}) &#x3D; p_ n r_ d y_ {nd}.<br>\end{aligned}$$</p>
 <p>We can formulate per-token symmetric uniform quantization by matrix multiplication:<br>$$\begin{aligned}<br>    \hat{\mathbf{X}} &amp;&#x3D; \text{diag}(p_1,\cdots,p_ N)\cdot \mathbf{X} &#x3D; \begin{pmatrix}<br>        p_ 1 &amp; \cdots &amp; p_ 1 \\<br>        \vdots &amp; \ddots &amp; \vdots \\<br>        p_ N &amp; \cdots &amp; p_ N<br>    \end{pmatrix} \otimes \mathbf{X}, \\<br>    \hat{\mathbf{W}} &amp;&#x3D; \text{diag}(r_1,\cdots,r_ D)\cdot \mathbf{W} &#x3D; \begin{pmatrix}<br>        r_ 1 &amp; \cdots &amp; r_ D \\<br>        \vdots &amp; \ddots &amp; \vdots \\<br>        r_ 1 &amp; \cdots &amp; r_ D<br>    \end{pmatrix} \otimes \mathbf{W}, \\<br>    \hat{\mathbf{Y}} &amp;&#x3D; \text{diag}(p_1,\cdots,p_ N)\cdot \mathbf{Y} \cdot \text{diag}(r_1,\cdots,r_ D) &#x3D; \begin{pmatrix}<br>        p_ 1 r_ 1 &amp; \cdots &amp; p_ 1 r_ D \\<br>        \vdots &amp; \ddots &amp; \vdots \\<br>        p_ N r_ 1 &amp; \cdots &amp; p_ N r_ D<br>    \end{pmatrix} \otimes \mathbf{Y},<br>\end{aligned}$$<br>where $\otimes$ represents element-wise matrix multiplication. It can be observed that both quantization and dequantization <strong>can be efficiently implemented using element-wise matrix multiplication with dimension broadcasting</strong>. The following figure illustrates the computation process by an example:</p>
-<p><img src="/quant_matrix.png"></p>
+<p><img src="/2024-03-06-quantization-gemm/quant_matrix.png"></p>
 <h2 id="Hardware-requirements"><a href="#Hardware-requirements" class="headerlink" title="Hardware requirements"></a>Hardware requirements</h2><p>Hardware support still need to be considered when we try to utilize GEMM for quantization. For example, on NVIDIA GPUs, Tensor Core supports matrix multiplication for FP16 and INT8, but it doesn’t support mixed precision matrix multiplication for FP16&#x2F;INT8. This means that W8A8 quantization can benefit from Tensor Core, but W8A16 and W16A8 quantization lack hardware support and may not achieve real acceleration on NVIDIA GPUs. Many W8A16 and W16A8 quantization methods actually perform dequantization before GEMM and then use FP16 for computation. The actual acceleration effects of these methods require further discussion (see below).</p>
 <h2 id="Performance-analysis"><a href="#Performance-analysis" class="headerlink" title="Performance analysis"></a>Performance analysis</h2><p>The above discussion only shows that per-token quantization can leverage GEMM. The following words will show whether it can provide actual acceleration.</p>
 <p>We compare the following three setups:</p>
@@ -324,21 +324,21 @@
 <li>W8A16 quantization maintains a similar operations compared to FP16, but it slightly increases the total arithmetic intensity (more increase when $N$ is large). Therefore, <strong>it also has practical value in memory-bound scenarios</strong>, especially since activations in LLMs are typically harder to be quantized than weights.</li>
 </ol>
 <h2 id="Some-LLM-Quantization-works"><a href="#Some-LLM-Quantization-works" class="headerlink" title="Some LLM Quantization works"></a>Some LLM Quantization works</h2><h3 id="LLM-int8"><a href="#LLM-int8" class="headerlink" title="LLM.int8()"></a><code>LLM.int8()</code></h3><p><code>LLM.int8()</code> actually employs selective per-token quantization. It stores weights and activations in FP16 and then applies different strategies for different tokens, as illustrated below:</p>
-<p><img src="/llm_int8.png" alt="LLM.int8()"></p>
+<p><img src="/2024-03-06-quantization-gemm/llm_int8.png" alt="LLM.int8()"></p>
 <ul>
 <li>For tokens suitable for quantization, it applies per-token INT8 quantization to weights and activations, computes results using INT8 GEMM, and then dequantizes them to FP16.</li>
 <li>For tokens with outliers, it directly computed the FP16 GEMM.</li>
 </ul>
 <p>The results from these two parts can be combined to form the final result.</p>
 <h3 id="SmoothQuant"><a href="#SmoothQuant" class="headerlink" title="SmoothQuant"></a>SmoothQuant</h3><p>While per-channel quantization may not be practical, for LLM activation quantization, the main challenge arises from activations, where values with larger magnitudes may appear on some channels, as shown below:</p>
-<p><img src="/smooth_quant_motivation.png"></p>
+<p><img src="/2024-03-06-quantization-gemm/smooth_quant_motivation.png"></p>
 <p>SmoothQuant observed that these outliers occur consistently in specific channels, while outliers are rare in weights (thus easier to quantize). Therefore, it proposes to “balance” the quantization difficulty between activations and weights by introducing a per-channel scaling factor:</p>
-<p><img src="/smooth_quant.png" alt="SmoothQuant"></p>
+<p><img src="/2024-03-06-quantization-gemm/smooth_quant.png" alt="SmoothQuant"></p>
 <p>This “balance” can be formulated as:<br>$$\begin{aligned}<br>    \mathbf{Y}<br>    &amp;&#x3D; \mathbf{X}\mathbf{W}^\top \\<br>    &amp;&#x3D; \mathbf{X} \cdot \text{diag}(s_ 1,\cdots,s_ C) \cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1} \cdot \mathbf{W}^\top \\<br>    &amp; &#x3D; \left( \mathbf{X} \cdot \text{diag}(s_ 1,\cdots,s_ C) \right) \cdot \left( \mathbf{W}\cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1} \right)^\top.<br>\end{aligned}$$<br>By selecting appropriate scaling factors $\text{diag}(s_ 1,\cdots,s_ C)$, we can achieve the goal of balancing outlier values in activations, and then we can quantize $\mathbf{X} \cdot \text{diag}(s_ 1,\cdots,s_ C)$ and $\mathbf{W}\cdot \text{diag}(s_ 1,\cdots,s_ C)^{-1}$. The following figure give an example:</p>
-<p><img src="/smooth_quant_2.png" alt="SmoothQuant example"></p>
+<p><img src="/2024-03-06-quantization-gemm/smooth_quant_2.png" alt="SmoothQuant example"></p>
 <p><strong>SmoothQuant is an excellent alternative to per-channel quantization</strong>, as demonstrated in the paper by its impressive performance in quantizing LLM to W8A8.</p>
 <h3 id="ZeroQuant"><a href="#ZeroQuant" class="headerlink" title="ZeroQuant"></a>ZeroQuant</h3><p>In the above performance analysis of W8A8, we found that using FP16 for activations I&#x2F;O reduces the overall arithmetic intensity after quantization, which may harm the throughput improvement in memory-bound scenarios. ZeroQuant addresses this issue by fusing the quantization into the previous operator and fusing the dequantization after GEMM, as shown in the figure below.</p>
-<p><img src="/zero_quant.png" alt="ZeroQuant"></p>
+<p><img src="/2024-03-06-quantization-gemm/zero_quant.png" alt="ZeroQuant"></p>
 <p>Thus, the activations I&#x2F;O between operators are still INT8, which reduces the total memory I&#x2F;O to $NC+CD+ND+2(N+D)$, boosting arithmetic intensity to original FP16 level , and fully leveraging the high throughput of INT8.</p>
 <h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>This blog provides a matrix multiplication perspective for quantization, indicating some fundamental requirements for practical quantization and explaining why per-channel quantization in impractical. It also discusses several examples of LLM per-token quantization, including <code>LLM.int8()</code>, SmoothQuant, and ZeroQuant.<br>They are all practical and demonstrate significant acceleration in real-world scenarios.</p>
 
