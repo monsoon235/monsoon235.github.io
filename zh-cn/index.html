@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
     <meta property="og:type" content="website">
 <meta property="og:title" content="Monsoon&#39;s Blog">
@@ -33,7 +33,6 @@
 
 
 <link rel="canonical" href="https://monsoon-cs.moe/zh-cn/">
-
 
 
 <script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"en","comments":"","permalink":"","path":"zh-cn/index.html","title":""}</script>
@@ -125,13 +124,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-count">57</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -159,6 +158,100 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2024-12-22-uiuc-delta-code-server/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Monsoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Monsoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024-12-22-uiuc-delta-code-server/" class="post-title-link" itemprop="url">Using GPU accessible VS Code Server on UIUC Delta</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-12-22 00:00:00" itemprop="dateCreated datePublished" datetime="2024-12-22T00:00:00-06:00">2024-12-22</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="Why-writing-this-blog-post"><a href="#Why-writing-this-blog-post" class="headerlink" title="Why writing this blog post"></a>Why writing this blog post</h2><p>Many UIUC students rely on the <a target="_blank" rel="noopener" href="https://www.ncsa.illinois.edu/research/project-highlights/delta/">Delta</a> to access the GPU resources for their research. Delta provides 4 ssh-enabled login nodes, and lots of computing nodes with GPUs. Usually, we must ssh to the login node (by password and DUO 2FA OTP) first, and then use <code>srun</code> to request GPU resources to run our code. However, based on my experience, sometimes we could suffer many problems when using the Delta:</p>
+<ul>
+<li><strong>Unstable network connection</strong>: Connection is lost frequently when the network is poor. Each time when the VS Code Remote lost connection, you must reenter the password and DUO 2FA OTP (you have to unlock your phone to get the OTP) to reconnect, which is annoying, time-consuming, and distracting.</li>
+<li><strong>Broken <a target="_blank" rel="noopener" href="https://docs.ncsa.illinois.edu/systems/delta/en/latest/user_guide/ood/index.html">OnDemand Code Server</a></strong>: Although you can run VS COde Remote on the login nodes by ssh, there’s no GPU for debugging, and the computing nodes are not accessible by ssh. The alternative ways include <a target="_blank" rel="noopener" href="https://docs.ncsa.illinois.edu/systems/delta/en/latest/user_guide/ood/index.html">OnDemand Jupyter Lab and Code Server</a>. But the functions of Jupiter Lab are limited, and the Code Server is broken – When I try to request a Code Server on computing nodes, the system just queues and shows my request has been completed, <strong>no running status</strong>.</li>
+</ul>
+<p>Due to the above problems, debugging GPU programs on Delta are struggling. That’s why I wrote this blog post: by running private Code Server on computing nodes, and deploying a <a target="_blank" rel="noopener" href="https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/">Cloudflare Tunnel</a> reverse proxy, you can say goodbye to these annoying problems.</p>
+<h2 id="How-to"><a href="#How-to" class="headerlink" title="How to"></a>How to</h2><p>My solution is based on an <strong>observation</strong> about the Delta: all login nodes and computing nodes are in a trusted network. There’s no firewalls between them, which means you can access to any ports on the computing nodes from the login nodes.</p>
+<p>The main steps of my solution are simple:</p>
+<ol>
+<li>Use <code>srun</code> to get a tty on the computing node (e.g., on <code>gpua042</code> node).</li>
+<li>Run a Code Server on the computing node. It will listen on <code>0.0.0.0:8080</code>.</li>
+<li>Reverse proxy <code>gpua042:8080</code> to any port you have access. There are two approaches:<ul>
+<li>Use <code>ssh -L</code> to forward the port to your local machine.</li>
+<li>Use Cloudflare Tunnel to reverse proxy the port to a public domain. This approach is more stable in poor network conditions.</li>
+</ul>
+</li>
+</ol>
+<h3 id="Run-Code-Server"><a href="#Run-Code-Server" class="headerlink" title="Run Code Server"></a>Run Code Server</h3><p>Download the Code Server binary from the <a target="_blank" rel="noopener" href="https://github.com/coder/code-server">Github repository</a> (e.g., <code>code-server-4.96.2-linux-amd64.tar.gz</code>), and extract it. On the computing node, run:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> code-server-4.96.2-linux-amd64/bin</span><br><span class="line"></span><br><span class="line"><span class="comment">## no auth</span></span><br><span class="line">./code-server --bind-addr 0.0.0.0:8080 --auth none</span><br><span class="line"></span><br><span class="line"><span class="comment">## if port is exposed to untrusted network, use password auth</span></span><br><span class="line"><span class="comment">## password can be modified in ~/.config/code-server/config.yaml</span></span><br><span class="line">./code-server --bind-addr 0.0.0.0:8080</span><br></pre></td></tr></table></figure>
+
+<h3 id="Access-Code-Server"><a href="#Access-Code-Server" class="headerlink" title="Access Code Server"></a>Access Code Server</h3><h4 id="SSH-Port-Forwarding"><a href="#SSH-Port-Forwarding" class="headerlink" title="SSH Port Forwarding"></a>SSH Port Forwarding</h4><p><code>ssh -L</code> can forward a local port to a remote port. Run:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -L 127.0.0.1:8080:gpua042:8080 username@login.delta.ncsa.illinois.edu</span><br></pre></td></tr></table></figure>
+
+<p>Then open <code>http://127.0.0.1:8080</code> in your browser, and enjoy the Code Server!</p>
+<h4 id="Cloudflare-Tunnel"><a href="#Cloudflare-Tunnel" class="headerlink" title="Cloudflare Tunnel"></a>Cloudflare Tunnel</h4><p>Cloudflare Tunnel is more stable when your computer suffer from poor network connection. But it requires a domain name.</p>
+<p>TODO</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1371,121 +1464,6 @@
           <blockquote>
 <p>This is an unfinished blog.</p>
 </blockquote>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-11-14-ascend-910b-custom-op/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Monsoon">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023-11-14-ascend-910b-custom-op/" class="post-title-link" itemprop="url">Ascend 910B 自定义 PyTorch 算子</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2023-11-14 00:00:00" itemprop="dateCreated datePublished" datetime="2023-11-14T00:00:00-06:00">2023-11-14</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>本文基于的硬件环境为 Ascend 910B3，基于的软件环境包括 <a target="_blank" rel="noopener" href="https://www.hiascend.com/developer/download/community/result">CANN 7.0-RC1</a>、<a target="_blank" rel="noopener" href="https://repo.huaweicloud.com/kunpeng/archive/Ascend/PyTorch/">PyTorch 1.11.0</a>、<a target="_blank" rel="noopener" href="https://gitee.com/ascend/pytorch/releases/tag/v5.0.rc3-pytorch1.11.0">Ascend PyTorch Adapter v5.0.rc3-pytorch1.11.0</a>。其他 CANN 和 PyTorch 版本上的情况可能略有不同。</p>
-<h2 id="注册过程"><a href="#注册过程" class="headerlink" title="注册过程"></a>注册过程</h2><h3 id="Ascend-PyTorch-Adapter-中添加自定义算子"><a href="#Ascend-PyTorch-Adapter-中添加自定义算子" class="headerlink" title="Ascend PyTorch Adapter 中添加自定义算子"></a>Ascend PyTorch Adapter 中添加自定义算子</h3><blockquote>
-<p>参考：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0045.html">https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0045.html</a></li>
-<li><a target="_blank" rel="noopener" href="https://gitee.com/ascend/samples/tree/master/operator/AddCustomSample/FrameworkLaunch/PytorchInvocation">https://gitee.com/ascend/samples/tree/master/operator/AddCustomSample/FrameworkLaunch/PytorchInvocation</a></li>
-</ul>
-</blockquote>
-<p>在 <code>torch_npu/csrc/aten/npu_native_functions.yaml</code> 中添加 <code>npu_add_custom</code> 函数：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">custom:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">func:</span> <span class="string">npu_add_custom(Tensor</span> <span class="string">x,</span> <span class="string">Tensor</span> <span class="string">y)</span> <span class="string">-&gt;</span> <span class="string">Tensor</span>  <span class="comment"># 添加的函数</span></span><br></pre></td></tr></table></figure>
-
-<p>在 <code>torch_npu/csrc/aten/ops/op_api</code> 中添加 <code>AddCustomKernelNpu.cpp</code> 文件：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;torch/csrc/autograd/custom_function.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;torch_npu/csrc/framework/utils/OpAdapter.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;torch_npu/csrc/aten/NPUNativeFunctions.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;torch_npu/csrc/aten/ops/op_api/op_api_common.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> at_npu &#123;</span><br><span class="line">  <span class="keyword">namespace</span> native &#123;</span><br><span class="line">    <span class="keyword">using</span> torch::autograd::Function;</span><br><span class="line">    <span class="keyword">using</span> torch::autograd::AutogradContext;</span><br><span class="line"></span><br><span class="line">    <span class="function">at::Tensor <span class="title">NPUNativeFunctions::npu_add_custom</span><span class="params">(<span class="type">const</span> at::Tensor&amp; x, <span class="type">const</span> at::Tensor&amp; y)</span> </span>&#123;</span><br><span class="line">        at::Tensor result = OpPreparation::<span class="built_in">ApplyTensor</span>(x); <span class="comment">// 创建输出内存</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// calculate the output result of the NPU</span></span><br><span class="line">        <span class="built_in">EXEC_NPU_CMD</span>(aclnnAddCustom, x, y, result);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="comment">// namespace native</span></span><br><span class="line">&#125; <span class="comment">// namespace at_npu</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>之后重新编译安装 <code>torch_npu</code>。</p>
-<h3 id="CANN-中添加自定义算子的实现"><a href="#CANN-中添加自定义算子的实现" class="headerlink" title="CANN 中添加自定义算子的实现"></a>CANN 中添加自定义算子的实现</h3><blockquote>
-<p>参考：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0023.html">https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0023.html</a></li>
-</ul>
-</blockquote>
-<p>首先定义算子描述文件 <code>add_custom.json</code>：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;op&quot;</span><span class="punctuation">:</span> <span class="string">&quot;AddCustom&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;language&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cpp&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;input_desc&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;x&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;param_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;required&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;format&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;ND&quot;</span></span><br><span class="line">                <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;fp16&quot;</span></span><br><span class="line">                <span class="punctuation">]</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;y&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;param_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;required&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;format&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;ND&quot;</span></span><br><span class="line">                <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;fp16&quot;</span></span><br><span class="line">                <span class="punctuation">]</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;output_desc&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;z&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;param_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;required&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;format&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;ND&quot;</span></span><br><span class="line">                <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                    <span class="string">&quot;fp16&quot;</span></span><br><span class="line">                <span class="punctuation">]</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
-
-<p>执行</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msopgen gen -i add_custom.json -c ai_core-Ascend910B3 -f pytorch -out . -lan cpp</span><br></pre></td></tr></table></figure>
-
-<p>生成算子工程：</p>
-<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">AddCustom</span><br><span class="line">├── build.sh</span><br><span class="line">├── cmake </span><br><span class="line">│   ├── config.cmake</span><br><span class="line">│   ├── func.cmake</span><br><span class="line">│   ├── intf.cmake</span><br><span class="line">│   ├── makeself.cmake</span><br><span class="line">│   └── util</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">├── CMakePresets.json          // 修改 ASCEND_CANN_PACKAGE_PATH</span><br><span class="line">├── framework</span><br><span class="line">├── op_host</span><br><span class="line">│   ├── add_custom_tiling.h    // 定义 length 和 tiling 相关信息</span><br><span class="line">│   ├── add_custom.cpp         // 算子 host 侧实现</span><br><span class="line">│   ├── CMakeLists.txt</span><br><span class="line">├── op_kernel</span><br><span class="line">│   ├── CMakeLists.txt</span><br><span class="line">│   ├── add_custom.cpp         // 算子 kernel 侧实现</span><br><span class="line">└── scripts</span><br></pre></td></tr></table></figure>
-
-<p><code>CMakePresets.json</code> 中修改 <code>ASCEND_CANN_PACKAGE_PATH</code> 为 CANN 安装路径。</p>
-<p><code>op_host/add_custom_tiling.h</code> 的内容如下（简单实现）：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;register/tilingdata_base.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> optiling &#123;</span><br><span class="line"><span class="built_in">BEGIN_TILING_DATA_DEF</span>(AddCustomTilingData)</span><br><span class="line">    <span class="built_in">TILING_DATA_FIELD_DEF</span>(<span class="type">uint32_t</span>, size);  <span class="comment">// 定义 tensor size</span></span><br><span class="line">END_TILING_DATA_DEF;</span><br><span class="line"></span><br><span class="line"><span class="built_in">REGISTER_TILING_DATA_CLASS</span>(AddCustom, AddCustomTilingData)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><code>op_host/add_custom.cpp</code> 中修改算子调用时的 <code>block_dim</code>：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">context-&gt;<span class="built_in">SetBlockDim</span>(<span class="number">20</span>); <span class="comment">// 910B3 的 block_dim</span></span><br></pre></td></tr></table></figure>
-
-<p><code>op_kernel/add_custom.cpp</code> 是算子的具体实现：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel_operator.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> __DAV_C220_VEC__</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="function">__global__ __aicore__ <span class="type">void</span> <span class="title">add_custom</span><span class="params">(GM_ADDR x, GM_ADDR y, GM_ADDR z, GM_ADDR workspace, GM_ADDR tiling)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">GET_TILING_DATA</span>(tiling_data, tiling);</span><br><span class="line">    <span class="type">uint32_t</span> M = tiling_data.size;  <span class="comment">// 从 tiling_data 中获取 tensor size</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 重要：CANN 会尝试不同的 ccec 编译参数以推断算子的类型（VEC、CUBE、MIXED），如果不创建一个 stub 函数将会编译失败</span></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="function">__global__ __aicore__ <span class="type">void</span> <span class="title">add_custom</span><span class="params">(GM_ADDR x, GM_ADDR y, GM_ADDR z, GM_ADDR workspace, GM_ADDR tiling)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">pip_barrier</span>(PIPE_ALL);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
-
-<h3 id="编译部署"><a href="#编译部署" class="headerlink" title="编译部署"></a>编译部署</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">bash build.sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./custom_opp_euleros_aarch64.run</span></span><br></pre></td></tr></table></figure>
-
-<p>PyTorch 中调用：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch_npu</span><br><span class="line"></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"></span><br><span class="line">z = torch.npu_add_custom(x, y)  <span class="comment"># 由于是运行时编译，第一次运行时需要等待编译</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="注册原理"><a href="#注册原理" class="headerlink" title="注册原理"></a>注册原理</h2><p>TODO</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>TODO</p>
 
       
     </div>

@@ -2,18 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://monsoon-cs.moe/categories/index.html</loc>
+    <loc>https://monsoon-cs.moe/tags/index.html</loc>
     
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://monsoon-cs.moe/tags/index.html</loc>
+    <loc>https://monsoon-cs.moe/categories/index.html</loc>
     
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/2024-12-22-uiuc-delta-code-server/</loc>
+    
+    <lastmod>2024-12-22</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -184,7 +193,7 @@
 
   <url>
     <loc>https://monsoon-cs.moe/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -192,364 +201,399 @@
   
   <url>
     <loc>https://monsoon-cs.moe/tags/anime/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/hpc/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/mkl/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/amd/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/linux/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/nginx/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/quic/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/http3/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/tls/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/sni-routing/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/docker/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/ssh/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/iptables/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/anti-virus/</loc>
-    <lastmod>2024-10-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/proxy/</loc>
-    <lastmod>2024-10-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/warp/</loc>
-    <lastmod>2024-10-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/network/</loc>
-    <lastmod>2024-10-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/sing-box/</loc>
-    <lastmod>2024-10-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/clash/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/toefl/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/proxy/</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/warp/</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/network/</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/sing-box/</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/clash/</loc>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/pytorch/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/ascend/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/machine-learning/</loc>
-    <lastmod>2024-10-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/zfs/</loc>
-    <lastmod>2024-10-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/nfs/</loc>
-    <lastmod>2024-10-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/rdma/</loc>
-    <lastmod>2024-10-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/storage/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/wireguard/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/vpn/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/zfs/</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/nfs/</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/rdma/</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/storage/</loc>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/paper-reading/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/arxiv/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/arxiv24/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/ml-system/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/gpu/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/resource-scheduling/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/pact/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/pact22/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/losf/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/llm/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/quantization/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/gemm/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/cuda-kernel/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/vllm/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/deepspeed/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/computer-vision/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/graph/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/router/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/ipv6/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/slaac/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/dhcp/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/dhcpv6/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://monsoon-cs.moe/tags/dhcpv6-pd/</loc>
-    <lastmod>2024-10-25</lastmod>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/vscode/</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/cloudflare/</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/cloudflared/</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/uiuc/</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/delta/</loc>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
