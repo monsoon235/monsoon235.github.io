@@ -235,34 +235,6 @@
   </url>
   
   <url>
-    <loc>https://monsoon-cs.moe/tags/docker/</loc>
-    <lastmod>2025-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/ssh/</loc>
-    <lastmod>2025-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/iptables/</loc>
-    <lastmod>2025-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/anti-virus/</loc>
-    <lastmod>2025-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://monsoon-cs.moe/tags/nginx/</loc>
     <lastmod>2025-09-09</lastmod>
     <changefreq>weekly</changefreq>
@@ -292,6 +264,34 @@
   
   <url>
     <loc>https://monsoon-cs.moe/tags/sni-routing/</loc>
+    <lastmod>2025-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/docker/</loc>
+    <lastmod>2025-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/ssh/</loc>
+    <lastmod>2025-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/iptables/</loc>
+    <lastmod>2025-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/anti-virus/</loc>
     <lastmod>2025-09-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -473,6 +473,27 @@
   </url>
   
   <url>
+    <loc>https://monsoon-cs.moe/tags/quantization/</loc>
+    <lastmod>2025-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/gemm/</loc>
+    <lastmod>2025-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/cuda-kernel/</loc>
+    <lastmod>2025-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://monsoon-cs.moe/tags/vllm/</loc>
     <lastmod>2025-09-09</lastmod>
     <changefreq>weekly</changefreq>
@@ -495,27 +516,6 @@
   
   <url>
     <loc>https://monsoon-cs.moe/tags/graph/</loc>
-    <lastmod>2025-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/quantization/</loc>
-    <lastmod>2025-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/gemm/</loc>
-    <lastmod>2025-09-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/cuda-kernel/</loc>
     <lastmod>2025-09-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
