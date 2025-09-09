@@ -1,13 +1,14 @@
 ---
 title: About Me
 date: 2023-06-19
-updated: 2024-10-13
+updated: 2025-09-09
 lang: en
 sitemap: false
 ---
 
-I'm a PhD student of University of Illinois Urbana-Champaign (UIUC) since Aug 2024.
-Currently, my research interest is Machine Learning System.
+I'm a 2nd-year PhD student of University at Illinois Urbana-Champaign (UIUC) since Aug 2024.
+Currently, my research interest is in Machine Learning Systems.
+I'm working with [Prof. Minjia Zhang](https://minjiazhang.github.io/) of [Supercomputing System AI Lab (SSAIL)](https://supercomputing-system-ai-lab.github.io/).
 In the past I explored 3D vision (e.g., Feature Matching and NeRF).
 
 I obtained my Master's (2024) and Bachelor's Degree (2021) from the University of Science and Technology of China (USTC).
@@ -21,11 +22,12 @@ I obtained my Master's (2024) and Bachelor's Degree (2021) from the University o
 ## Publications
 
 {% publications %}
-Yu_2023_CVPR,Chang_2023_CVPR,zhu2023tiface,Jang_2023_ICCV
+yu2025voltanallmfeedbackdrivenfrequencycontrol,Yu_2023_CVPR,Chang_2023_CVPR,zhu2023tiface,Jang_2023_ICCV
 {% endpublications %}
 
 ## Research Experience
 
+- **PhD Student**, [SSAIL](https://supercomputing-system-ai-lab.github.io/), University of Illinois Urbana-Champaign, Aug 2024 - Now
 - **Graduate Student**, University of Science and Technology of China, Sep 2021 - Jun 2024
 - **Research Internship**, University of Hong Kong, Jul 2020 - Aug 2020
 
@@ -36,7 +38,7 @@ Yu_2023_CVPR,Chang_2023_CVPR,zhu2023tiface,Jang_2023_ICCV
 ## Interests
 
 - Computer Science
-- Linux: I use [Arch Linux](https://archlinux.org/) and [KDE](https://kde.org/) for my daily work.
+- Linux: I use [Arch Linux](https://archlinux.org/) and [KDE](https://kde.org/) for my daily work. I'm familiar with Linux system administration.
 - Anime:
   - Favorite anime directors: [Naoko Yamada (山田尚子)](https://en.wikipedia.org/wiki/Naoko_Yamada), [Satoshi Kon (今敏)](https://en.wikipedia.org/wiki/Satoshi_Kon)
   - Favorite TV anime: [*March Comes In like a Lion* (3月のライオン)](https://en.wikipedia.org/wiki/March_Comes_In_like_a_Lion)
