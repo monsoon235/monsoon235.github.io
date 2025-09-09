@@ -8,7 +8,7 @@ sitemap: false
 
 I'm a 2nd-year PhD student of University at Illinois Urbana-Champaign (UIUC) since Aug 2024.
 Currently, my research interest is in Machine Learning Systems.
-I'm working with [Prof. Minjia Zhang](https://minjiazhang.github.io/) of [Supercomputing System AI Lab (SSAIL)](https://supercomputing-system-ai-lab.github.io/).
+I'm working with [Prof. Minjia Zhang](https://minjiazhang.github.io/) from [Supercomputing System AI Lab (SSAIL)](https://supercomputing-system-ai-lab.github.io/).
 In the past I explored 3D vision (e.g., Feature Matching and NeRF).
 
 I obtained my Master's (2024) and Bachelor's Degree (2021) from the University of Science and Technology of China (USTC).
@@ -33,7 +33,7 @@ yu2025voltanallmfeedbackdrivenfrequencycontrol,Yu_2023_CVPR,Chang_2023_CVPR,zhu2
 
 ## Work Experience
 
-- **Teaching Assistance**, University of Science and Technology of China, Sep 2020 - Jan 2021
+- **Teaching Assistant**, University of Science and Technology of China, Sep 2020 - Jan 2021
 
 ## Interests
 
