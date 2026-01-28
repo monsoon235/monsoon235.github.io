@@ -1,7 +1,7 @@
 ---
 title: About Me
 date: 2023-06-19
-updated: 2025-09-09
+updated: 2026-01-28
 lang: en
 sitemap: false
 ---
@@ -22,7 +22,7 @@ I obtained my Master's (2024) and Bachelor's Degree (2021) from the University o
 ## Publications
 
 {% publications %}
-yu2025voltanallmfeedbackdrivenfrequencycontrol,Yu_2023_CVPR,Chang_2023_CVPR,zhu2023tiface,Jang_2023_ICCV
+yu2026superinfer,yu2025voltanallm,yu2023adaptive,chang2023structured,zhu2023tiface,jang2023vschh
 {% endpublications %}
 
 ## Research Experience
