@@ -445,6 +445,20 @@
   </url>
   
   <url>
+    <loc>https://monsoon-cs.moe/tags/pact/</loc>
+    <lastmod>2026-01-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://monsoon-cs.moe/tags/pact22/</loc>
+    <lastmod>2026-01-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://monsoon-cs.moe/tags/losf/</loc>
     <lastmod>2026-01-28</lastmod>
     <changefreq>weekly</changefreq>
@@ -474,20 +488,6 @@
   
   <url>
     <loc>https://monsoon-cs.moe/tags/cuda-kernel/</loc>
-    <lastmod>2026-01-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/pact/</loc>
-    <lastmod>2026-01-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://monsoon-cs.moe/tags/pact22/</loc>
     <lastmod>2026-01-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
