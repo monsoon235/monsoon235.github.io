@@ -1,0 +1,727 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>linux on Monsoon's Blog</title><link>https://monsoon-cs.moe/tags/linux/</link><description>Recent content in linux on Monsoon's Blog</description><generator>Hugo</generator><language>en</language><lastBuildDate>Sun, 22 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/tags/linux/index.xml" rel="self" type="application/rss+xml"/><item><title>Using GPU accessible VS Code Server on UIUC Delta</title><link>https://monsoon-cs.moe/2024-12-22-uiuc-delta-code-server/</link><pubDate>Sun, 22 Dec 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-12-22-uiuc-delta-code-server/</guid><description>&lt;h2 id="why-writing-this-blog-post"&gt;Why writing this blog post&lt;/h2&gt;
+&lt;p&gt;Many UIUC students rely on the &lt;a href="https://www.ncsa.illinois.edu/research/project-highlights/delta/"&gt;Delta&lt;/a&gt; to access the GPU resources for their research. Delta provides 4 ssh-enabled login nodes, and lots of computing nodes with GPUs. Usually, we must ssh to the login node (by password and DUO 2FA OTP) first, and then use &lt;code&gt;srun&lt;/code&gt; to request GPU resources to run our code. However, based on my experience, sometimes we could suffer many problems when using the Delta:&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="why-writing-this-blog-post">Why writing this blog post</h2>
+<p>Many UIUC students rely on the <a href="https://www.ncsa.illinois.edu/research/project-highlights/delta/">Delta</a> to access the GPU resources for their research. Delta provides 4 ssh-enabled login nodes, and lots of computing nodes with GPUs. Usually, we must ssh to the login node (by password and DUO 2FA OTP) first, and then use <code>srun</code> to request GPU resources to run our code. However, based on my experience, sometimes we could suffer many problems when using the Delta:</p>
+<ul>
+<li><strong>Unstable network connection</strong>: Connection is lost frequently when the network is poor. Each time when the VS Code Remote lost connection, you must reenter the password and DUO 2FA OTP (you have to unlock your phone to get the OTP) to reconnect, which is annoying, time-consuming, and distracting.</li>
+<li><strong>Broken <a href="https://docs.ncsa.illinois.edu/systems/delta/en/latest/user_guide/ood/index.html">OnDemand Code Server</a></strong>: Although you can run VS COde Remote on the login nodes by ssh, there&rsquo;s no GPU for debugging, and the computing nodes are not accessible by ssh. The alternative ways include <a href="https://docs.ncsa.illinois.edu/systems/delta/en/latest/user_guide/ood/index.html">OnDemand Jupyter Lab and Code Server</a>. But the functions of Jupiter Lab are limited, and the Code Server is broken &ndash; When I try to request a Code Server on computing nodes, the system just queues and shows my request has been completed, <strong>no running status</strong>.</li>
+</ul>
+<p>Due to the above problems, debugging GPU programs on Delta are struggling. That&rsquo;s why I wrote this blog post: by running private Code Server on computing nodes, and deploying a <a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/">Cloudflare Tunnel</a> reverse proxy, you can say goodbye to these annoying problems.</p>
+<h2 id="how-to">How to</h2>
+<p>My solution is based on an <strong>observation</strong> about the Delta: all login nodes and computing nodes are in a trusted network. There&rsquo;s no firewalls between them, which means you can access to any ports on the computing nodes from the login nodes.</p>
+<p>The main steps of my solution are simple:</p>
+<ol>
+<li>Use <code>srun</code> to get a tty on the computing node (e.g., on <code>gpua042</code> node).</li>
+<li>Run a Code Server on the computing node. It will listen on <code>0.0.0.0:8080</code>.</li>
+<li>Reverse proxy <code>gpua042:8080</code> to any port you have access. There are two approaches:
+<ul>
+<li>Use <code>ssh -L</code> to forward the port to your local machine.</li>
+<li>Use Cloudflare Tunnel to reverse proxy the port to a public domain. This approach is more stable in poor network conditions.</li>
+</ul>
+</li>
+</ol>
+<h3 id="run-code-server">Run Code Server</h3>
+<p>Download the Code Server binary from the <a href="https://github.com/coder/code-server">Github repository</a> (e.g., <code>code-server-4.96.2-linux-amd64.tar.gz</code>), and extract it. On the computing node, run:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> code-server-4.96.2-linux-amd64/bin
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## no auth</span>
+</span></span><span class="line"><span class="cl">./code-server --bind-addr 0.0.0.0:8080 --auth none
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## if port is exposed to untrusted network, use password auth</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## password can be modified in ~/.config/code-server/config.yaml</span>
+</span></span><span class="line"><span class="cl">./code-server --bind-addr 0.0.0.0:8080
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="access-code-server">Access Code Server</h3>
+<h4 id="ssh-port-forwarding">SSH Port Forwarding</h4>
+<p><code>ssh -L</code> can forward a local port to a remote port. Run:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh -L 127.0.0.1:8080:gpua042:8080 username@login.delta.ncsa.illinois.edu
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then open <code>http://127.0.0.1:8080</code> in your browser, and enjoy the Code Server!</p>
+<h4 id="cloudflare-tunnel">Cloudflare Tunnel</h4>
+<p>Cloudflare Tunnel is more stable when your computer suffer from poor network connection. But it requires a domain name.</p>
+<p>TODO</p>
+]]></content:encoded></item><item><title>NFS Performance Tuning</title><link>https://monsoon-cs.moe/2024-02-16-nfs-tuning/</link><pubDate>Fri, 16 Feb 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-02-16-nfs-tuning/</guid><description>&lt;h2 id="introduction"&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;This article is a guide to NFS performance tuning over a 10 Gbps network in production scenarios, which I have distilled from practice. It focuses in particular on optimizing the reading and writing of &lt;strong&gt;Lots of Small Files&lt;/strong&gt; (LOSF).&lt;/p&gt;
+&lt;h2 id="tuning"&gt;Tuning&lt;/h2&gt;
+&lt;h3 id="hardware"&gt;Hardware&lt;/h3&gt;
+&lt;p&gt;On the network hardware side, both &lt;strong&gt;bandwidth&lt;/strong&gt; and &lt;strong&gt;latency&lt;/strong&gt; matter.&lt;/p&gt;
+&lt;p&gt;To guarantee NFS performance, a high-bandwidth network is necessary. 10 Gbps is the baseline requirement for production scenarios; faster InfiniBand or RoCE networks can be chosen according to your needs and budget.&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="introduction">Introduction</h2>
+<p>This article is a guide to NFS performance tuning over a 10 Gbps network in production scenarios, which I have distilled from practice. It focuses in particular on optimizing the reading and writing of <strong>Lots of Small Files</strong> (LOSF).</p>
+<h2 id="tuning">Tuning</h2>
+<h3 id="hardware">Hardware</h3>
+<p>On the network hardware side, both <strong>bandwidth</strong> and <strong>latency</strong> matter.</p>
+<p>To guarantee NFS performance, a high-bandwidth network is necessary. 10 Gbps is the baseline requirement for production scenarios; faster InfiniBand or RoCE networks can be chosen according to your needs and budget.</p>
+<p>For the <strong>Lots of Small Files</strong> (LOSF) scenario, <strong>latency is more important than bandwidth</strong>. Many tuning tutorials overlook this and focus only on sequential read/write performance; even when they test 4K random read/write, they use the <strong>wrong testing method</strong> (the correct method is given below).</p>
+<p>The importance of latency lies in the fact that if a program&rsquo;s access to small files is <strong>intrinsically serialized</strong>, <strong>latency determines the upper bound of serialized IOPS</strong>. A latency of 0.1 ms caps serialized IOPS at 10k, while a latency of 1 ms corresponds to a cap of 1k.</p>
+<p>Intrinsically serialized access scenarios are very common. For example, when the home directory is placed on NFS, the loading of oh-my-zsh and the loading of Python packages are both intrinsically serialized. A 1 ms network latency makes these programs unacceptably slow (e.g., executing <code>import torch</code> takes more than 30s).</p>
+<p>Using a decent enterprise-grade switch and a properly configured network topology can minimize latency as much as possible. At the same time, the quality of optical modules and optical-to-electrical port modules can also have a huge impact on latency (the Chinet (中科光电) optical-to-electrical port module I originally used introduced an extra 0.1 ms of latency, causing IOPS to drop by 2/3).</p>
+<p>It should be noted that although RDMA can theoretically reduce latency, in actual testing I found that the difference in serialized IOPS between 10 Gbps Ethernet and 100 Gbps InfiniBand is not large; when the budget is limited, using only Ethernet is sufficient.</p>
+<p>TODO: jumbo frames</p>
+<h3 id="linux-kernel">Linux Kernel</h3>
+<p>The kernel network parameters need to be adjusted to suit a high-speed network:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="c1"># Ref: https://gist.github.com/mizanRahman/40ba603759bfb5153189ccdc9dbbd1e4</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Disable TCP slow start on idle connections</span>
+</span></span><span class="line"><span class="cl"><span class="na">net.ipv4.tcp_slow_start_after_idle</span> <span class="o">=</span> <span class="s">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Increase Linux autotuning TCP buffer limits</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Set max to 16MB for 1GE and 32M (33554432) or 54M (56623104) for 10GE</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Don&#39;t set tcp_mem itself! Let the kernel scale it based on RAM.</span>
+</span></span><span class="line"><span class="cl"><span class="na">net.core.rmem_max</span> <span class="o">=</span> <span class="s">56623104</span>
+</span></span><span class="line"><span class="cl"><span class="na">net.core.wmem_max</span> <span class="o">=</span> <span class="s">56623104</span>
+</span></span><span class="line"><span class="cl"><span class="na">net.core.rmem_default</span> <span class="o">=</span> <span class="s">56623104</span>
+</span></span><span class="line"><span class="cl"><span class="na">net.core.wmem_default</span> <span class="o">=</span> <span class="s">56623104</span>
+</span></span><span class="line"><span class="cl"><span class="na">net.core.optmem_max</span> <span class="o">=</span> <span class="s">40960</span>
+</span></span><span class="line"><span class="cl"><span class="na">net.ipv4.tcp_rmem</span> <span class="o">=</span> <span class="s">4096 87380 56623104</span>
+</span></span><span class="line"><span class="cl"><span class="na">net.ipv4.tcp_wmem</span> <span class="o">=</span> <span class="s">4096 65536 56623104</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># TCP Congestion Control</span>
+</span></span><span class="line"><span class="cl"><span class="na">net.ipv4.tcp_congestion_control</span> <span class="o">=</span> <span class="s">bbr</span>
+</span></span><span class="line"><span class="cl"><span class="na">net.core.default_qdisc</span> <span class="o">=</span> <span class="s">cake</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This set of settings needs to be applied on both the server and the client; it can be written into <code>/etc/sysctl.conf</code> to make it persistent.</p>
+<h3 id="server-side">Server Side</h3>
+<p>The number of NFS server threads can be set as large as possible; it can improve performance when the server load is relatively high, and I simply set it to the number of threads on the server. Modify <code>/etc/nfs.conf</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="k">[nfsd]</span>
+</span></span><span class="line"><span class="cl"><span class="na">threads</span><span class="o">=</span><span class="s">128</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The following NFS server parameters need to be adjusted:</p>
+<ul>
+<li><code>async</code>: treats synchronous I/O operations as asynchronous. For workloads dominated by synchronous reads/writes this can greatly improve performance, but it may cause data loss when the server crashes; it is not recommended when there are extremely high requirements for data integrity;</li>
+<li><code>no_subtree_check</code>: has no major impact on performance, but in some cases it can improve reliability (with a slight security risk at the same time). See [1].</li>
+</ul>
+<h3 id="client-side">Client Side</h3>
+<p>When there is no special reason, you should use the latest NFSv4.2 by default. When NFSv3 uses UDP as the underlying transport, it can cause data corruption over high-speed networks due to UDP packet sequence number issues; see [2].</p>
+<p>The following NFS client parameters need to be adjusted:</p>
+<ul>
+<li><code>proto=rdma</code>: set when the network supports RDMA;</li>
+<li><code>nocto</code>: disables close-to-open cache consistency semantics. The default NFS behavior is to write all changes back to the server when a file is closed. If you have relatively high requirements for file consistency across multiple clients, this option is not recommended;</li>
+<li><code>ac</code>: enables attribute caching, so the client caches file attributes. Likewise, for clusters with high requirements for data consistency, this option is not recommended;</li>
+<li><code>fsc</code>: uses FS-Cache to cache data locally. You also need to <a href="https://github.com/jnsnow/cachefilesd">configure cachefilesd</a>. Strangely, in my testing I did not find data being cached locally; this may require further investigation;</li>
+<li><code>nconnect=16</code>: sets up 16 TCP connections between the NFS client and server. By default the NFS client establishes only one TCP connection, and all RPCs are multiplexed over this connection. In some cases this limits the bandwidth of sequential reads/writes. Increasing <code>nconnect</code> (maximum value 16) can solve this problem.</li>
+</ul>
+<p>In particular, the <code>noatime</code> / <code>relatime</code> settings have no effect on NFS [3]; the NFS client always caches atime changes.</p>
+<p>Some tutorials recommend modifying <code>rsize</code> and <code>wsize</code>. In NFSv4.2 these two values are already negotiated to their maximum value <code>1048576</code> by default, so there is no need to change them manually; you only need to check whether they were negotiated correctly.</p>
+<p>According to [4], <code>sunrpc.tcp_max_slot_table_entries</code> may affect performance and can be increased appropriately (the default is <code>2</code>). In my testing, I found that when encountering a sustained small-file access workload on the order of tens of millions, NFS would sometimes hang. When I increased this parameter, the problem was resolved. Set <code>/etc/modprobe.d/sunrpc.conf</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="na">options sunrpc tcp_slot_table_entries</span><span class="o">=</span><span class="s">16384</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Sometimes I encounter a problem where <code>nfsd</code> consumes a large amount of CPU and performance drops sharply, while a large number of <code>delegreturn</code> RPC calls are recorded. According to [5], this can be resolved by disabling <code>fs.leases-enable</code>. Set <code>/etc/sysctl.conf</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="na">fs.leases-enable</span> <span class="o">=</span> <span class="s">0</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>When <code>nfsd</code> restarts for one reason or another, by default there is a 90s grace period for lock recovery, during which <code>nfsd</code> rejects all <code>open</code> requests, shown in the kernel log as:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">[1073511.138061] NFSD: starting 90-second grace period (net f0000000)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In practice I found that this period can be reduced appropriately to lessen the impact of <code>nfsd</code> restarts. Set <code>/etc/default/nfs-kernel-server</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Options for rpc.svcgssd.</span>
+</span></span><span class="line"><span class="cl"><span class="nv">RPCSVCGSSDOPTS</span><span class="o">=</span><span class="s2">&#34;--lease-time 10 --grace-time 10&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="testing">Testing</h2>
+<p>TODO</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>TODO</p>
+<h2 id="references">References</h2>
+<p>[1] <a href="https://man.archlinux.org/man/exports.5.en#no_subtree_check">https://man.archlinux.org/man/exports.5.en#no_subtree_check</a></p>
+<p>[2] <a href="https://man.archlinux.org/man/nfs.5.en#Using_NFS_over_UDP_on_high-speed_links">https://man.archlinux.org/man/nfs.5.en#Using_NFS_over_UDP_on_high-speed_links</a></p>
+<p>[3] <a href="https://man.archlinux.org/man/nfs.5.en#File_timestamp_maintenance">https://man.archlinux.org/man/nfs.5.en#File_timestamp_maintenance</a></p>
+<p>[4] <a href="https://learn.microsoft.com/en-us/azure/azure-netapp-files/performance-linux-concurrency-session-slots">https://learn.microsoft.com/en-us/azure/azure-netapp-files/performance-linux-concurrency-session-slots</a></p>
+<p>[5] <a href="https://docs.gitlab.com/ee/administration/nfs.html#disable-nfs-server-delegation">https://docs.gitlab.com/ee/administration/nfs.html#disable-nfs-server-delegation</a></p>
+]]></content:encoded></item><item><title>Building WireGuard VPN for Machine Learning Server Cluster</title><link>https://monsoon-cs.moe/2024-01-29-wg-for-cluster/</link><pubDate>Mon, 29 Jan 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-01-29-wg-for-cluster/</guid><description>&lt;h2 id="motivation"&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;A machine learning cluster needs a secure way to expose services to users, as well as to interconnect servers across the public network. For this, a VPN network needs to be deployed.&lt;/p&gt;
+&lt;p&gt;Deploying a VPN network requires considering the following factors:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Network topology: an appropriate topology must be chosen to minimize latency as much as possible;&lt;/li&gt;
+&lt;li&gt;User management: it should be easy to add or remove users and to authorize them;&lt;/li&gt;
+&lt;li&gt;Simplicity of use and maintenance.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="design"&gt;Design&lt;/h2&gt;
+&lt;h3 id="network-topology"&gt;Network Topology&lt;/h3&gt;
+&lt;p&gt;The network topology determines the latency.&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="motivation">Motivation</h2>
+<p>A machine learning cluster needs a secure way to expose services to users, as well as to interconnect servers across the public network. For this, a VPN network needs to be deployed.</p>
+<p>Deploying a VPN network requires considering the following factors:</p>
+<ol>
+<li>Network topology: an appropriate topology must be chosen to minimize latency as much as possible;</li>
+<li>User management: it should be easy to add or remove users and to authorize them;</li>
+<li>Simplicity of use and maintenance.</li>
+</ol>
+<h2 id="design">Design</h2>
+<h3 id="network-topology">Network Topology</h3>
+<p>The network topology determines the latency.</p>
+<p>The lowest-latency option is obviously full-mesh, i.e. every pair of peers has a direct P2P connection. However, the management complexity of this topology is $\mathcal{O}(n^2)$, and adding a new peer requires modifying the configuration files of all other peers. It also has to deal with the problems introduced by NAT, which requires some automated management software. I tried <a href="https://www.netmaker.io/">Netmaker</a> and <a href="https://headscale.net/">Headscale</a>, but neither of them seemed able to correctly handle the <strong>complex network environment</strong> within the campus, such as the symmetric NAT used by various enterprise-grade routers, and <strong>the probability of successfully establishing P2P was very low</strong>.</p>
+<p>In the end I chose a <strong>topology that combines full-mesh and hub-and-spoke</strong>. Since the number of servers and their IPs rarely change, manually configuring a full-mesh network among the servers is feasible. At the same time, a gateway server is provided as the hub for user access, and users only need to establish a connection with the gateway server. Since most users actually use the VPN within the campus, connecting to the on-campus gateway server and forwarding traffic through it does not introduce much additional latency. This structure balances latency and management complexity, and adding/removing and authorizing users only needs to be done on the gateway server.</p>
+<p><img alt="Network Topology" loading="lazy" src="/2024-01-29-wg-for-cluster/topo.png"></p>
+<h3 id="protocol-choice">Protocol Choice</h3>
+<p>The popular OpenVPN and IPSec are both good enough, but the emerging WireGuard offers unparalleled configuration simplicity. On the server side, WireGuard can define a peer and a route with just a few lines of configuration; on the user side, since WireGuard uses key-pair-based authentication, a single configuration file is enough to join the VPN network, with no need to remember an additional password or perform a login operation.</p>
+<h3 id="management-approach">Management Approach</h3>
+<p>For the sake of predictability and stability, I chose the manual configuration approach. The full-mesh network among servers does not need to be changed frequently once it is configured. User management, on the other hand, is implemented through a script: when a new user needs to be added, the script generates a key pair and allocates an IP, adds the public key and routing information to the gateway server&rsquo;s peer list, then generates a configuration file containing the private key and the allocated IP, and sends it to the user.</p>
+<p>Example of a user peer configuration on the gateway server:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="k">[Peer]</span>
+</span></span><span class="line"><span class="cl"><span class="na">PublicKey</span> <span class="o">=</span> <span class="s">&lt;redacted&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="na">AllowedIPs</span> <span class="o">=</span> <span class="s">10.1.x.y/32</span>
+</span></span><span class="line"><span class="cl"><span class="na">AllowedIPs</span> <span class="o">=</span> <span class="s">fd01::x:y/128</span>
+</span></span><span class="line"><span class="cl"><span class="na">PersistentKeepalive</span> <span class="o">=</span> <span class="s">25</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Example of a user&rsquo;s access configuration file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="k">[Interface]</span>
+</span></span><span class="line"><span class="cl"><span class="na">PrivateKey</span> <span class="o">=</span> <span class="s">&lt;redacted&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="na">Address</span> <span class="o">=</span> <span class="s">10.1.x.y/16</span>
+</span></span><span class="line"><span class="cl"><span class="na">Address</span> <span class="o">=</span> <span class="s">fd01::x:y/64</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">[Peer]</span>
+</span></span><span class="line"><span class="cl"><span class="na">PublicKey</span> <span class="o">=</span> <span class="s">&lt;redacted&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="na">AllowedIPs</span> <span class="o">=</span> <span class="s">10.1.0.0/16  # route all VPN traffic to gateway server</span>
+</span></span><span class="line"><span class="cl"><span class="na">AllowedIPs</span> <span class="o">=</span> <span class="s">fd01::/64</span>
+</span></span><span class="line"><span class="cl"><span class="na">Endpoint</span> <span class="o">=</span> <span class="s">wg.ustcaigroup.xyz:51820  # gateway server is dual stack</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Endpoint = wg.ustcaigroup.xyz:51820  # IPv4</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Endpoint = wg.ustcaigroup.xyz:51820  # IPv6</span>
+</span></span><span class="line"><span class="cl"><span class="na">PersistentKeepalive</span> <span class="o">=</span> <span class="s">25</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></content:encoded></item><item><title>Building Storage System for Machine Learning Server Cluster</title><link>https://monsoon-cs.moe/2023-11-24-storage-system-desgin/</link><pubDate>Fri, 24 Nov 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-11-24-storage-system-desgin/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;This is an unfinished blog.&lt;/p&gt;
+&lt;/blockquote&gt;</description><content:encoded>&lt;blockquote>
+&lt;p>This is an unfinished blog.&lt;/p>
+&lt;/blockquote>
+</content:encoded></item><item><title>Custom PyTorch Operators on Ascend 910B</title><link>https://monsoon-cs.moe/2023-11-14-ascend-910b-custom-op/</link><pubDate>Tue, 14 Nov 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-11-14-ascend-910b-custom-op/</guid><description>&lt;h2 id="environment"&gt;Environment&lt;/h2&gt;
+&lt;p&gt;The hardware environment this article is based on is the Ascend 910B3, and the software environment includes &lt;a href="https://www.hiascend.com/developer/download/community/result"&gt;CANN 7.0-RC1&lt;/a&gt;, &lt;a href="https://repo.huaweicloud.com/kunpeng/archive/Ascend/PyTorch/"&gt;PyTorch 1.11.0&lt;/a&gt;, and &lt;a href="https://gitee.com/ascend/pytorch/releases/tag/v5.0.rc3-pytorch1.11.0"&gt;Ascend PyTorch Adapter v5.0.rc3-pytorch1.11.0&lt;/a&gt;. The situation on other CANN and PyTorch versions may differ slightly.&lt;/p&gt;
+&lt;h2 id="registration-process"&gt;Registration Process&lt;/h2&gt;
+&lt;h3 id="adding-a-custom-operator-in-the-ascend-pytorch-adapter"&gt;Adding a Custom Operator in the Ascend PyTorch Adapter&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;References:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0045.html"&gt;https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0045.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://gitee.com/ascend/samples/tree/master/operator/AddCustomSample/FrameworkLaunch/PytorchInvocation"&gt;https://gitee.com/ascend/samples/tree/master/operator/AddCustomSample/FrameworkLaunch/PytorchInvocation&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Add the &lt;code&gt;npu_add_custom&lt;/code&gt; function in &lt;code&gt;torch_npu/csrc/aten/npu_native_functions.yaml&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nt"&gt;custom&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="nt"&gt;func&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;npu_add_custom(Tensor x, Tensor y) -&amp;gt; Tensor &lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;# 添加的函数&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Add the file &lt;code&gt;AddCustomKernelNpu.cpp&lt;/code&gt; in &lt;code&gt;torch_npu/csrc/aten/ops/op_api&lt;/code&gt;:&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="environment">Environment</h2>
+<p>The hardware environment this article is based on is the Ascend 910B3, and the software environment includes <a href="https://www.hiascend.com/developer/download/community/result">CANN 7.0-RC1</a>, <a href="https://repo.huaweicloud.com/kunpeng/archive/Ascend/PyTorch/">PyTorch 1.11.0</a>, and <a href="https://gitee.com/ascend/pytorch/releases/tag/v5.0.rc3-pytorch1.11.0">Ascend PyTorch Adapter v5.0.rc3-pytorch1.11.0</a>. The situation on other CANN and PyTorch versions may differ slightly.</p>
+<h2 id="registration-process">Registration Process</h2>
+<h3 id="adding-a-custom-operator-in-the-ascend-pytorch-adapter">Adding a Custom Operator in the Ascend PyTorch Adapter</h3>
+<blockquote>
+<p>References:</p>
+<ul>
+<li><a href="https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0045.html">https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0045.html</a></li>
+<li><a href="https://gitee.com/ascend/samples/tree/master/operator/AddCustomSample/FrameworkLaunch/PytorchInvocation">https://gitee.com/ascend/samples/tree/master/operator/AddCustomSample/FrameworkLaunch/PytorchInvocation</a></li>
+</ul>
+</blockquote>
+<p>Add the <code>npu_add_custom</code> function in <code>torch_npu/csrc/aten/npu_native_functions.yaml</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">custom</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">func</span><span class="p">:</span><span class="w"> </span><span class="l">npu_add_custom(Tensor x, Tensor y) -&gt; Tensor </span><span class="w"> </span><span class="c"># 添加的函数</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Add the file <code>AddCustomKernelNpu.cpp</code> in <code>torch_npu/csrc/aten/ops/op_api</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;torch/csrc/autograd/custom_function.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;torch_npu/csrc/framework/utils/OpAdapter.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;torch_npu/csrc/aten/NPUNativeFunctions.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;torch_npu/csrc/aten/ops/op_api/op_api_common.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="n">at_npu</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">namespace</span> <span class="n">native</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">using</span> <span class="n">torch</span><span class="o">::</span><span class="n">autograd</span><span class="o">::</span><span class="n">Function</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">using</span> <span class="n">torch</span><span class="o">::</span><span class="n">autograd</span><span class="o">::</span><span class="n">AutogradContext</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">at</span><span class="o">::</span><span class="n">Tensor</span> <span class="n">NPUNativeFunctions</span><span class="o">::</span><span class="n">npu_add_custom</span><span class="p">(</span><span class="k">const</span> <span class="n">at</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">,</span> <span class="k">const</span> <span class="n">at</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&amp;</span> <span class="n">y</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">at</span><span class="o">::</span><span class="n">Tensor</span> <span class="n">result</span> <span class="o">=</span> <span class="n">OpPreparation</span><span class="o">::</span><span class="n">ApplyTensor</span><span class="p">(</span><span class="n">x</span><span class="p">);</span> <span class="c1">// 创建输出内存
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// calculate the output result of the NPU
+</span></span></span><span class="line"><span class="cl">        <span class="n">EXEC_NPU_CMD</span><span class="p">(</span><span class="n">aclnnAddCustom</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">result</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="c1">// namespace native
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="c1">// namespace at_npu
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Afterwards, recompile and reinstall <code>torch_npu</code>.</p>
+<h3 id="adding-the-custom-operator-implementation-in-cann">Adding the Custom Operator Implementation in CANN</h3>
+<blockquote>
+<p>References:</p>
+<ul>
+<li><a href="https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0023.html">https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0023.html</a></li>
+</ul>
+</blockquote>
+<p>First, define the operator description file <code>add_custom.json</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;op&#34;</span><span class="p">:</span> <span class="s2">&#34;AddCustom&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;language&#34;</span><span class="p">:</span> <span class="s2">&#34;cpp&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;input_desc&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;x&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;param_type&#34;</span><span class="p">:</span> <span class="s2">&#34;required&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;format&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;ND&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">],</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;fp16&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;y&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;param_type&#34;</span><span class="p">:</span> <span class="s2">&#34;required&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;format&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;ND&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">],</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;fp16&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;output_desc&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;z&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;param_type&#34;</span><span class="p">:</span> <span class="s2">&#34;required&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;format&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;ND&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">],</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;fp16&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Run</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">msopgen gen -i add_custom.json -c ai_core-Ascend910B3 -f pytorch -out . -lan cpp
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>to generate the operator project:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">AddCustom
+</span></span><span class="line"><span class="cl">├── build.sh
+</span></span><span class="line"><span class="cl">├── cmake 
+</span></span><span class="line"><span class="cl">│   ├── config.cmake
+</span></span><span class="line"><span class="cl">│   ├── func.cmake
+</span></span><span class="line"><span class="cl">│   ├── intf.cmake
+</span></span><span class="line"><span class="cl">│   ├── makeself.cmake
+</span></span><span class="line"><span class="cl">│   └── util
+</span></span><span class="line"><span class="cl">├── CMakeLists.txt
+</span></span><span class="line"><span class="cl">├── CMakePresets.json          // 修改 ASCEND_CANN_PACKAGE_PATH
+</span></span><span class="line"><span class="cl">├── framework
+</span></span><span class="line"><span class="cl">├── op_host
+</span></span><span class="line"><span class="cl">│   ├── add_custom_tiling.h    // 定义 length 和 tiling 相关信息
+</span></span><span class="line"><span class="cl">│   ├── add_custom.cpp         // 算子 host 侧实现
+</span></span><span class="line"><span class="cl">│   ├── CMakeLists.txt
+</span></span><span class="line"><span class="cl">├── op_kernel
+</span></span><span class="line"><span class="cl">│   ├── CMakeLists.txt
+</span></span><span class="line"><span class="cl">│   ├── add_custom.cpp         // 算子 kernel 侧实现
+</span></span><span class="line"><span class="cl">└── scripts
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In <code>CMakePresets.json</code>, change <code>ASCEND_CANN_PACKAGE_PATH</code> to the CANN installation path.</p>
+<p>The content of <code>op_host/add_custom_tiling.h</code> is as follows (a simple implementation):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;register/tilingdata_base.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="n">optiling</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="n">BEGIN_TILING_DATA_DEF</span><span class="p">(</span><span class="n">AddCustomTilingData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">TILING_DATA_FIELD_DEF</span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>  <span class="c1">// 定义 tensor size
+</span></span></span><span class="line"><span class="cl"><span class="n">END_TILING_DATA_DEF</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">REGISTER_TILING_DATA_CLASS</span><span class="p">(</span><span class="n">AddCustom</span><span class="p">,</span> <span class="n">AddCustomTilingData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In <code>op_host/add_custom.cpp</code>, modify the <code>block_dim</code> used when the operator is invoked:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">context</span><span class="o">-&gt;</span><span class="n">SetBlockDim</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span> <span class="c1">// 910B3 的 block_dim
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>op_kernel/add_custom.cpp</code> is the concrete implementation of the operator:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;kernel_operator.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#ifdef __DAV_C220_VEC__
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">extern</span> <span class="s">&#34;C&#34;</span> <span class="n">__global__</span> <span class="n">__aicore__</span> <span class="kt">void</span> <span class="n">add_custom</span><span class="p">(</span><span class="n">GM_ADDR</span> <span class="n">x</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">y</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">z</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">workspace</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">tiling</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">GET_TILING_DATA</span><span class="p">(</span><span class="n">tiling_data</span><span class="p">,</span> <span class="n">tiling</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">M</span> <span class="o">=</span> <span class="n">tiling_data</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>  <span class="c1">// 从 tiling_data 中获取 tensor size
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#else
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 重要：CANN 会尝试不同的 ccec 编译参数以推断算子的类型（VEC、CUBE、MIXED），如果不创建一个 stub 函数将会编译失败
+</span></span></span><span class="line"><span class="cl"><span class="k">extern</span> <span class="s">&#34;C&#34;</span> <span class="n">__global__</span> <span class="n">__aicore__</span> <span class="kt">void</span> <span class="n">add_custom</span><span class="p">(</span><span class="n">GM_ADDR</span> <span class="n">x</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">y</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">z</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">workspace</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">tiling</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pip_barrier</span><span class="p">(</span><span class="n">PIPE_ALL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="compilation-and-deployment">Compilation and Deployment</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ bash build.sh
+</span></span><span class="line"><span class="cl">$ ./custom_opp_euleros_aarch64.run
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Calling it in PyTorch:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch_npu</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">z</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">npu_add_custom</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>  <span class="c1"># 由于是运行时编译，第一次运行时需要等待编译</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="registration-principles">Registration Principles</h2>
+<p>TODO</p>
+<h2 id="references">References</h2>
+<p>TODO</p>
+]]></content:encoded></item><item><title>Catching Mining Virus</title><link>https://monsoon-cs.moe/2023-11-01-catching-mining-virus/</link><pubDate>Wed, 01 Nov 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-11-01-catching-mining-virus/</guid><description>&lt;h2 id="problem"&gt;Problem&lt;/h2&gt;
+&lt;p&gt;On October 30, 2023, I received a warning message from the data center administrator, informing me that the firewall detected mining traffic sending from the server managed by me.&lt;/p&gt;
+&lt;p&gt;&lt;img loading="lazy" src="https://monsoon-cs.moe/2023-11-01-catching-mining-virus/firewall_warning.png"&gt;&lt;/p&gt;
+&lt;p&gt;The &amp;ldquo;mining traffic&amp;rdquo; was a &lt;code&gt;bitcoin.sipa.be&lt;/code&gt; DNS request sent to &lt;code&gt;223.5.5.5&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Initially, I thought it was a simple task to find the virus process, just like my previous encounter with another mining virus. In that case, the hacker logged in the server by hacking a weak SSH password, gained root permission possibly by an privilege escalation vulnerability exploitation (it was a server running EOL Ubuntu 16.04). Then a cron job was set up to run a mining virus.&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="problem">Problem</h2>
+<p>On October 30, 2023, I received a warning message from the data center administrator, informing me that the firewall detected mining traffic sending from the server managed by me.</p>
+<p><img loading="lazy" src="/2023-11-01-catching-mining-virus/firewall_warning.png"></p>
+<p>The &ldquo;mining traffic&rdquo; was a <code>bitcoin.sipa.be</code> DNS request sent to <code>223.5.5.5</code>.</p>
+<p>Initially, I thought it was a simple task to find the virus process, just like my previous encounter with another mining virus. In that case, the hacker logged in the server by hacking a weak SSH password, gained root permission possibly by an privilege escalation vulnerability exploitation (it was a server running EOL Ubuntu 16.04). Then a cron job was set up to run a mining virus.</p>
+<p>However, this time the situation was different. I couldn&rsquo;t find any suspicious processes, and there was no unusual GPU usage. Since I didn&rsquo;t deploy any monitoring programs to record historical processes and sockets, the investigation couldn&rsquo;t get started.</p>
+<p>On October 31, I received the same warning again. Each time when mining traffic is detected, the firewall will block the server&rsquo;s outbound network. Loss of Internet will cause lots of troubles.</p>
+<p>I suspected that someone may have suffered a <strong>supply chain attack</strong>, such as, downloading a Python package containing a virus, or cloning code from GitHub and running it without any check.</p>
+<p>The immediate task is to identify who and which process was responsible.</p>
+<h2 id="solution">Solution</h2>
+<p>While I can&rsquo;t directly determine who or which process, I can block and log suspicious traffic for further investigation.</p>
+<p>This job can be done by <code>iptables</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># iptables -N LOGDROP                   # create a new chain</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># iptables -A LOGDROP -j LOG --log-uid  # log info</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># iptables -A LOGDROP -j DROP           # drop packet</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># iptables -I OUTPUT 1 -p udp -m string --string &#34;bitcoin&#34; --algo bm -j LOGDROP     # match string &#34;bitcoin&#34; in udp packet</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <code>--log-uid</code> option can enable UID recording in <code>/var/log/kern.log</code>, for example:</p>
+<pre tabindex="0"><code class="language-log" data-lang="log">IN= OUT=wg0 SRC=10.1.92.3 DST=10.1.2.13 LEN=42 TOS=0x00 PREC=0x00 TTL=64 ID=23294 DF PROTO=UDP SPT=52328 DPT=2333 LEN=22 UID=2109 GID=2109
+</code></pre><h2 id="result">Result</h2>
+<p>I&rsquo;m waiting the next requests sent by virus.</p>
+]]></content:encoded></item><item><title>Optimizing MKL Performance on AMD CPUs</title><link>https://monsoon-cs.moe/2023-06-19-mkl-on-amd/</link><pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-06-19-mkl-on-amd/</guid><description>&lt;h2 id="the-problem"&gt;The Problem&lt;/h2&gt;
+&lt;p&gt;My lab has some AMD EPYC 7713 servers. We bought them because some people in the group run programs with very high CPU load (I don&amp;rsquo;t know what kind of load it is, or why it can&amp;rsquo;t run on the GPU, and I don&amp;rsquo;t have the energy to help everyone solve it one by one). AMD processors with their many cores are a great fit for this kind of demand.&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="the-problem">The Problem</h2>
+<p>My lab has some AMD EPYC 7713 servers. We bought them because some people in the group run programs with very high CPU load (I don&rsquo;t know what kind of load it is, or why it can&rsquo;t run on the GPU, and I don&rsquo;t have the energy to help everyone solve it one by one). AMD processors with their many cores are a great fit for this kind of demand.</p>
+<p>But as nice as AMD processors are, using them in a deep-learning lab brings an extra problem: the numpy and PyTorch installed by Anaconda both use MKL as their BLAS implementation by default, and MKL&rsquo;s library functions are also the hotspots of most high-CPU-load programs. However, <strong>MKL checks whether it is running on an Intel CPU, and if not, the optimizations have no effect.</strong></p>
+<p>Since this is a deep-learning lab, few people have enough HPC background to compile suitable versions of numpy and PyTorch themselves, and it&rsquo;s hard for them to break away from Anaconda, so the dependency on MKL is hard to remove. For this reason I needed a solution that is <strong>transparent to ordinary users</strong>.</p>
+<h2 id="the-solution">The Solution</h2>
+<p>A widely circulated solution can be found via search engines: set the environment variable <code>MKL_DEBUG_CPU_TYPE=5</code>. This used to work, but <strong>it no longer works for MKL 2020 and later versions</strong>.</p>
+<p>In the end I found a more clever solution <a href="https://documentation.sigma2.no/jobs/mkl.html">here</a>.</p>
+<p>MKL calls a function <code>mkl_serv_intel_cpu_true()</code> to check whether it is running on an Intel CPU. As long as we provide a fake <code>mkl_serv_intel_cpu_true()</code> that always returns <code>1</code>, we can trick MKL into thinking it is running on an Intel CPU.</p>
+<p>To do this, we can use Linux&rsquo;s <strong><code>LD_PRELOAD</code> mechanism</strong>. The dynamic library pointed to by <code>LD_PRELOAD</code> has the highest loading priority, so as long as we compile the desired <code>mkl_serv_intel_cpu_true()</code> function into an <code>so</code> file and point <code>LD_PRELOAD</code> at it, we can load this function ahead of everything else.</p>
+<blockquote>
+<p>I have often heard of the <code>LD_PRELOAD</code> mechanism being used for library-function hijacking attacks; here it counts as a clever use.</p>
+</blockquote>
+<h2 id="implementation">Implementation</h2>
+<p>Create <code>mkl_trick.c</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">mkl_serv_intel_cpu_true</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Compile it with <code>gcc -shared -fPIC -o libmkl_trick.so mkl_trick.c</code>, and copy the generated <code>libmkl_trick.so</code> to <code>/usr/local/lib</code>.</p>
+<p>Add the following to the shell&rsquo;s global initialization file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">MKL_DEBUG_CPU_TYPE</span><span class="o">=</span><span class="m">5</span>  <span class="c1"># compatibility with older MKL versions</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">MKL_ENABLE_INSTRUCTIONS</span><span class="o">=</span>AVX2  <span class="c1"># optional, tells MKL it can use AVX2</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LD_PRELOAD</span><span class="o">=</span>/usr/local/lib/libmkl_trick.so
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Some of my labmates use Bash and some use ZSH, so both need to be modified:</p>
+<ul>
+<li>Bash: create the file <code>/etc/profile.d/mkl.sh</code> and add the above content</li>
+<li>ZSH: add it to <code>/etc/zsh/zshenv</code></li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://documentation.sigma2.no/jobs/mkl.html">https://documentation.sigma2.no/jobs/mkl.html</a></li>
+</ul>
+]]></content:encoded></item></channel></rss>

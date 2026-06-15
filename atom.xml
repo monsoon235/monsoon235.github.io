@@ -1,579 +1,92 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Monsoon&#39;s Blog</title>
-  <icon>https://monsoon-cs.moe/icon.png</icon>
-  
-  <link href="https://monsoon-cs.moe/atom.xml" rel="self"/>
-  
-  <link href="https://monsoon-cs.moe/"/>
-  <updated>2024-12-22T06:00:00.000Z</updated>
-  <id>https://monsoon-cs.moe/</id>
-  
-  <author>
-    <name>Monsoon</name>
-    
-  </author>
-  
-  <generator uri="https://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>Using GPU accessible VS Code Server on UIUC Delta</title>
-    <link href="https://monsoon-cs.moe/2024-12-22-uiuc-delta-code-server/"/>
-    <id>https://monsoon-cs.moe/2024-12-22-uiuc-delta-code-server/</id>
-    <published>2024-12-22T06:00:00.000Z</published>
-    <updated>2024-12-22T06:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;Why-writing-this-blog-post&quot;&gt;&lt;a href=&quot;#Why-writing-this-blog-post&quot; class=&quot;headerlink&quot; title=&quot;Why writing this blog post&quot;&gt;&lt;/a&gt;Why</summary>
-        
-      
-    
-    
-    
-    
-    <category term="linux" scheme="https://monsoon-cs.moe/tags/linux/"/>
-    
-    <category term="ssh" scheme="https://monsoon-cs.moe/tags/ssh/"/>
-    
-    <category term="network" scheme="https://monsoon-cs.moe/tags/network/"/>
-    
-    <category term="vscode" scheme="https://monsoon-cs.moe/tags/vscode/"/>
-    
-    <category term="cloudflare" scheme="https://monsoon-cs.moe/tags/cloudflare/"/>
-    
-    <category term="cloudflared" scheme="https://monsoon-cs.moe/tags/cloudflared/"/>
-    
-    <category term="uiuc" scheme="https://monsoon-cs.moe/tags/uiuc/"/>
-    
-    <category term="delta" scheme="https://monsoon-cs.moe/tags/delta/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>关于 IPv6 地址分配的一切</title>
-    <link href="https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/"/>
-    <id>https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/</id>
-    <published>2024-10-12T05:00:00.000Z</published>
-    <updated>2024-10-12T05:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;序言&quot;&gt;&lt;a href=&quot;#序言&quot; class=&quot;headerlink&quot; title=&quot;序言&quot;&gt;&lt;/a&gt;序言&lt;/h2&gt;&lt;p&gt;IPv4 只有一种动态地址分配方式，即 DHCP，但 IPv6 就有 SLAAC 和 DHCPv6 两种分配方式，同时 DHCPv6</summary>
-        
-      
-    
-    
-    
-    
-    <category term="network" scheme="https://monsoon-cs.moe/tags/network/"/>
-    
-    <category term="router" scheme="https://monsoon-cs.moe/tags/router/"/>
-    
-    <category term="ipv6" scheme="https://monsoon-cs.moe/tags/ipv6/"/>
-    
-    <category term="slaac" scheme="https://monsoon-cs.moe/tags/slaac/"/>
-    
-    <category term="dhcp" scheme="https://monsoon-cs.moe/tags/dhcp/"/>
-    
-    <category term="dhcpv6" scheme="https://monsoon-cs.moe/tags/dhcpv6/"/>
-    
-    <category term="dhcpv6-pd" scheme="https://monsoon-cs.moe/tags/dhcpv6-pd/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Extracting Graph Topology from Image</title>
-    <link href="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/"/>
-    <id>https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/</id>
-    <published>2024-07-11T05:00:00.000Z</published>
-    <updated>2024-07-11T05:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;The-Problem&quot;&gt;&lt;a href=&quot;#The-Problem&quot; class=&quot;headerlink&quot; title=&quot;The Problem&quot;&gt;&lt;/a&gt;The Problem&lt;/h2&gt;&lt;p&gt;Now we have an image representing</summary>
-        
-      
-    
-    
-    
-    
-    <category term="network" scheme="https://monsoon-cs.moe/tags/network/"/>
-    
-    <category term="machine-learning" scheme="https://monsoon-cs.moe/tags/machine-learning/"/>
-    
-    <category term="computer-vision" scheme="https://monsoon-cs.moe/tags/computer-vision/"/>
-    
-    <category term="graph" scheme="https://monsoon-cs.moe/tags/graph/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Latency in LLM Serving</title>
-    <link href="https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/"/>
-    <id>https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/</id>
-    <published>2024-07-07T05:00:00.000Z</published>
-    <updated>2024-07-07T05:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;Preface&quot;&gt;&lt;a href=&quot;#Preface&quot; class=&quot;headerlink&quot; title=&quot;Preface&quot;&gt;&lt;/a&gt;Preface&lt;/h2&gt;&lt;p&gt;There have been many excellent works on LLM</summary>
-        
-      
-    
-    
-    
-    
-    <category term="ml-system" scheme="https://monsoon-cs.moe/tags/ml-system/"/>
-    
-    <category term="llm" scheme="https://monsoon-cs.moe/tags/llm/"/>
-    
-    <category term="vllm" scheme="https://monsoon-cs.moe/tags/vllm/"/>
-    
-    <category term="deepspeed" scheme="https://monsoon-cs.moe/tags/deepspeed/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>How Quantization Works: From a Matrix Multiplication Perspective</title>
-    <link href="https://monsoon-cs.moe/2024-03-06-quantization-gemm/"/>
-    <id>https://monsoon-cs.moe/2024-03-06-quantization-gemm/</id>
-    <published>2024-03-06T06:00:00.000Z</published>
-    <updated>2024-03-07T06:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;Introduction&quot;&gt;&lt;a href=&quot;#Introduction&quot; class=&quot;headerlink&quot; title=&quot;Introduction&quot;&gt;&lt;/a&gt;Introduction&lt;/h2&gt;&lt;p&gt;Quantization is a commonly</summary>
-        
-      
-    
-    
-    
-    
-    <category term="ml-system" scheme="https://monsoon-cs.moe/tags/ml-system/"/>
-    
-    <category term="llm" scheme="https://monsoon-cs.moe/tags/llm/"/>
-    
-    <category term="quantization" scheme="https://monsoon-cs.moe/tags/quantization/"/>
-    
-    <category term="gemm" scheme="https://monsoon-cs.moe/tags/gemm/"/>
-    
-    <category term="cuda-kernel" scheme="https://monsoon-cs.moe/tags/cuda-kernel/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>NFS Performance Tuning</title>
-    <link href="https://monsoon-cs.moe/2024-02-16-nfs-tuning/"/>
-    <id>https://monsoon-cs.moe/2024-02-16-nfs-tuning/</id>
-    <published>2024-02-16T06:00:00.000Z</published>
-    <updated>2024-02-17T06:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;本文是我在实践中总结出的生产场景下 10 Gbps 网络下的 NFS</summary>
-        
-      
-    
-    
-    
-    
-    <category term="linux" scheme="https://monsoon-cs.moe/tags/linux/"/>
-    
-    <category term="nfs" scheme="https://monsoon-cs.moe/tags/nfs/"/>
-    
-    <category term="losf" scheme="https://monsoon-cs.moe/tags/losf/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>[Paper Reading] ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs (arXiv&#39;24)</title>
-    <link href="https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/"/>
-    <id>https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/</id>
-    <published>2024-02-07T06:00:00.000Z</published>
-    <updated>2024-02-07T06:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;This blog is a write-up of the paper “&lt;a href=&quot;https://arxiv.org/abs/2401.12377&quot;&gt;ACS: Concurrent Kernel Execution on</summary>
-        
-      
-    
-    
-    
-    
-    <category term="paper-reading" scheme="https://monsoon-cs.moe/tags/paper-reading/"/>
-    
-    <category term="arxiv" scheme="https://monsoon-cs.moe/tags/arxiv/"/>
-    
-    <category term="arxiv24" scheme="https://monsoon-cs.moe/tags/arxiv24/"/>
-    
-    <category term="ml-system" scheme="https://monsoon-cs.moe/tags/ml-system/"/>
-    
-    <category term="gpu" scheme="https://monsoon-cs.moe/tags/gpu/"/>
-    
-    <category term="resource-scheduling" scheme="https://monsoon-cs.moe/tags/resource-scheduling/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT&#39;22)</title>
-    <link href="https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/"/>
-    <id>https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/</id>
-    <published>2024-02-07T06:00:00.000Z</published>
-    <updated>2024-03-31T05:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;This blog is a write-up of the paper “&lt;a href=&quot;https://dl.acm.org/doi/10.1145/3559009.3569650&quot;&gt;GPUPool: A Holistic Approach</summary>
-        
-      
-    
-    
-    
-    
-    <category term="paper-reading" scheme="https://monsoon-cs.moe/tags/paper-reading/"/>
-    
-    <category term="ml-system" scheme="https://monsoon-cs.moe/tags/ml-system/"/>
-    
-    <category term="gpu" scheme="https://monsoon-cs.moe/tags/gpu/"/>
-    
-    <category term="resource-scheduling" scheme="https://monsoon-cs.moe/tags/resource-scheduling/"/>
-    
-    <category term="pact" scheme="https://monsoon-cs.moe/tags/pact/"/>
-    
-    <category term="pact22" scheme="https://monsoon-cs.moe/tags/pact22/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Building WireGuard VPN for Machine Learning Server Cluster</title>
-    <link href="https://monsoon-cs.moe/2024-01-29-wg-for-cluster/"/>
-    <id>https://monsoon-cs.moe/2024-01-29-wg-for-cluster/</id>
-    <published>2024-01-29T06:00:00.000Z</published>
-    <updated>2024-01-29T06:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;Motivation&quot;&gt;&lt;a href=&quot;#Motivation&quot; class=&quot;headerlink&quot;</summary>
-        
-      
-    
-    
-    
-    
-    <category term="linux" scheme="https://monsoon-cs.moe/tags/linux/"/>
-    
-    <category term="network" scheme="https://monsoon-cs.moe/tags/network/"/>
-    
-    <category term="wireguard" scheme="https://monsoon-cs.moe/tags/wireguard/"/>
-    
-    <category term="vpn" scheme="https://monsoon-cs.moe/tags/vpn/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Building Storage System for Machine Learning Server Cluster</title>
-    <link href="https://monsoon-cs.moe/2023-11-24-storage-system-desgin/"/>
-    <id>https://monsoon-cs.moe/2023-11-24-storage-system-desgin/</id>
-    <published>2023-11-24T06:00:00.000Z</published>
-    <updated>2023-11-24T06:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;This is an unfinished</summary>
-        
-      
-    
-    
-    
-    
-    <category term="linux" scheme="https://monsoon-cs.moe/tags/linux/"/>
-    
-    <category term="zfs" scheme="https://monsoon-cs.moe/tags/zfs/"/>
-    
-    <category term="nfs" scheme="https://monsoon-cs.moe/tags/nfs/"/>
-    
-    <category term="rdma" scheme="https://monsoon-cs.moe/tags/rdma/"/>
-    
-    <category term="storage" scheme="https://monsoon-cs.moe/tags/storage/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Ascend 910B 自定义 PyTorch 算子</title>
-    <link href="https://monsoon-cs.moe/2023-11-14-ascend-910b-custom-op/"/>
-    <id>https://monsoon-cs.moe/2023-11-14-ascend-910b-custom-op/</id>
-    <published>2023-11-14T06:00:00.000Z</published>
-    <updated>2023-11-14T06:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;环境&quot;&gt;&lt;a href=&quot;#环境&quot; class=&quot;headerlink&quot; title=&quot;环境&quot;&gt;&lt;/a&gt;环境&lt;/h2&gt;&lt;p&gt;本文基于的硬件环境为 Ascend 910B3，基于的软件环境包括 &lt;a</summary>
-        
-      
-    
-    
-    
-    
-    <category term="linux" scheme="https://monsoon-cs.moe/tags/linux/"/>
-    
-    <category term="pytorch" scheme="https://monsoon-cs.moe/tags/pytorch/"/>
-    
-    <category term="ascend" scheme="https://monsoon-cs.moe/tags/ascend/"/>
-    
-    <category term="machine-learning" scheme="https://monsoon-cs.moe/tags/machine-learning/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Building Proxy Service for Team</title>
-    <link href="https://monsoon-cs.moe/2023-11-09-proxy-for-team/"/>
-    <id>https://monsoon-cs.moe/2023-11-09-proxy-for-team/</id>
-    <published>2023-11-09T06:00:00.000Z</published>
-    <updated>2023-11-09T06:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;blockquote&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Monsoon's Blog</title><link>https://monsoon-cs.moe/</link><description>Recent content on Monsoon's Blog</description><generator>Hugo</generator><language>en</language><lastBuildDate>Sun, 22 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/atom.xml" rel="self" type="application/rss+xml"/><item><title>Using GPU accessible VS Code Server on UIUC Delta</title><link>https://monsoon-cs.moe/2024-12-22-uiuc-delta-code-server/</link><pubDate>Sun, 22 Dec 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-12-22-uiuc-delta-code-server/</guid><description>&lt;h2 id="why-writing-this-blog-post"&gt;Why writing this blog post&lt;/h2&gt;
+&lt;p&gt;Many UIUC students rely on the &lt;a href="https://www.ncsa.illinois.edu/research/project-highlights/delta/"&gt;Delta&lt;/a&gt; to access the GPU resources for their research. Delta provides 4 ssh-enabled login nodes, and lots of computing nodes with GPUs. Usually, we must ssh to the login node (by password and DUO 2FA OTP) first, and then use &lt;code&gt;srun&lt;/code&gt; to request GPU resources to run our code. However, based on my experience, sometimes we could suffer many problems when using the Delta:&lt;/p&gt;</description></item><item><title>All About IPv6 Address Allocation</title><link>https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/</link><pubDate>Sat, 12 Oct 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/</guid><description>&lt;h2 id="preface"&gt;Preface&lt;/h2&gt;
+&lt;p&gt;IPv4 has only one method of dynamic address allocation, namely DHCP, but IPv6 has two allocation methods, SLAAC and DHCPv6, and DHCPv6 additionally has the PD (Prefix Delegation) extension. These three allocation methods also interact with each other, which makes problems arising during IPv6 allocation far more common than with IPv4. Most tutorials you can find only solve problems superficially, are ambiguous about the underlying technical details, and do not fundamentally clarify the differences between IPv6 and IPv4.&lt;/p&gt;</description></item><item><title>Extracting Graph Topology from Image</title><link>https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/</link><pubDate>Thu, 11 Jul 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/</guid><description>&lt;h2 id="the-problem"&gt;The Problem&lt;/h2&gt;
+&lt;p&gt;Now we have an image representing a graph, as shown in the figure below:&lt;/p&gt;
+&lt;p&gt;&lt;img loading="lazy" src="/2024-07-11-extracting-graph-topology-from-image/image.png"&gt;&lt;/p&gt;
+&lt;p&gt;Suppose we already know the category of each pixel: background, node, or edge. How can we &lt;strong&gt;extract the graph topology&lt;/strong&gt; from it and represent the graph by an adjacency matrix?&lt;/p&gt;
+&lt;h2 id="challenges-in-classical-algorithm"&gt;Challenges in Classical Algorithm&lt;/h2&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;h2 id="what-about-neural-network"&gt;What about Neural Network?&lt;/h2&gt;
+&lt;p&gt;We can use a simple algorithm to extract the position of each node. Suppose the position of a node is $\mathbf{P}(x,y)$, and there are $N$ nodes in total.&lt;/p&gt;</description></item><item><title>Latency in LLM Serving</title><link>https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/</link><pubDate>Sun, 07 Jul 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-07-07-latency-in-llm-serving/</guid><description>&lt;h2 id="preface"&gt;Preface&lt;/h2&gt;
+&lt;p&gt;There have been many excellent works on LLM serving, mainly focusing on improving the throughput. Meanwhile, in practical applications, latency is equally important for LLM serving. However, &lt;strong&gt;currently few works focus on improvement of LLM serving latency, especially the latency optimization under SLA constraint&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;This blog attempts to summarize the basic concepts and problems in this direction, and give some novel research directions based on some analysis of latency in LLM serving.&lt;/p&gt;</description></item><item><title>How Quantization Works: From a Matrix Multiplication Perspective</title><link>https://monsoon-cs.moe/2024-03-06-quantization-gemm/</link><pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-03-06-quantization-gemm/</guid><description>&lt;h2 id="introduction"&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;Quantization is a commonly used acceleration technique in NN inference. The primary computational workloads in NNs come from Convolution, Linear Layers, and Attention, which are implemented by GEMM in the lower level. This blog aims to &lt;strong&gt;discuss the principles of quantization from the matrix multiplication perspective and to explain why some quantization methods are impractical&lt;/strong&gt;. It also aims to review several LLM quantization methods from this perspective.&lt;/p&gt;
+&lt;p&gt;I define &lt;strong&gt;practical quantization&lt;/strong&gt; as follows:&lt;/p&gt;</description></item><item><title>NFS Performance Tuning</title><link>https://monsoon-cs.moe/2024-02-16-nfs-tuning/</link><pubDate>Fri, 16 Feb 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-02-16-nfs-tuning/</guid><description>&lt;h2 id="introduction"&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;This article is a guide to NFS performance tuning over a 10 Gbps network in production scenarios, which I have distilled from practice. It focuses in particular on optimizing the reading and writing of &lt;strong&gt;Lots of Small Files&lt;/strong&gt; (LOSF).&lt;/p&gt;
+&lt;h2 id="tuning"&gt;Tuning&lt;/h2&gt;
+&lt;h3 id="hardware"&gt;Hardware&lt;/h3&gt;
+&lt;p&gt;On the network hardware side, both &lt;strong&gt;bandwidth&lt;/strong&gt; and &lt;strong&gt;latency&lt;/strong&gt; matter.&lt;/p&gt;
+&lt;p&gt;To guarantee NFS performance, a high-bandwidth network is necessary. 10 Gbps is the baseline requirement for production scenarios; faster InfiniBand or RoCE networks can be chosen according to your needs and budget.&lt;/p&gt;</description></item><item><title>[Paper Reading] ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs (arXiv'24)</title><link>https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/</link><pubDate>Wed, 07 Feb 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;This blog is a write-up of the paper &amp;ldquo;&lt;a href="https://arxiv.org/abs/2401.12377"&gt;ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs&lt;/a&gt;&amp;rdquo; from arXiv'24.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="motivation"&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;Some workloads (e.g., Simulation Engines for Deep RL, Dynamic DNNs) cannot fully utilize the massive parallelism of GPUs (see Figure 1). The main reason is that these workloads contain lots of &lt;strong&gt;small kernels&lt;/strong&gt; which cannot fully utilize the GPU, and these kernels are not executed concurrently, although &lt;strong&gt;most of them are independent and in theory can be executed concurrently&lt;/strong&gt;.&lt;/p&gt;</description></item><item><title>[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT'22)</title><link>https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/</link><pubDate>Wed, 07 Feb 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;This blog is a write-up of the paper &amp;ldquo;&lt;a href="https://dl.acm.org/doi/10.1145/3559009.3569650"&gt;GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud&lt;/a&gt;&amp;rdquo; from PACT'22.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="motivation"&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;This paper focuses on the &lt;strong&gt;GPU sharing in cloud scenarios&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Currently, existing GPU sharing techniques can be categorized into 2 types:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Time-sharing&lt;/strong&gt; means executing each concurrent VM on a full device in a round-robin fashion. &lt;strong&gt;Pros&lt;/strong&gt;: Simple and mature. &lt;strong&gt;Cons&lt;/strong&gt;: VMs could still under-utilize the hardware within each time slice.&lt;/p&gt;</description></item><item><title>Building WireGuard VPN for Machine Learning Server Cluster</title><link>https://monsoon-cs.moe/2024-01-29-wg-for-cluster/</link><pubDate>Mon, 29 Jan 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-01-29-wg-for-cluster/</guid><description>&lt;h2 id="motivation"&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;A machine learning cluster needs a secure way to expose services to users, as well as to interconnect servers across the public network. For this, a VPN network needs to be deployed.&lt;/p&gt;
+&lt;p&gt;Deploying a VPN network requires considering the following factors:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Network topology: an appropriate topology must be chosen to minimize latency as much as possible;&lt;/li&gt;
+&lt;li&gt;User management: it should be easy to add or remove users and to authorize them;&lt;/li&gt;
+&lt;li&gt;Simplicity of use and maintenance.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="design"&gt;Design&lt;/h2&gt;
+&lt;h3 id="network-topology"&gt;Network Topology&lt;/h3&gt;
+&lt;p&gt;The network topology determines the latency.&lt;/p&gt;</description></item><item><title>Building Storage System for Machine Learning Server Cluster</title><link>https://monsoon-cs.moe/2023-11-24-storage-system-desgin/</link><pubDate>Fri, 24 Nov 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-11-24-storage-system-desgin/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;This is an unfinished blog.&lt;/p&gt;
+&lt;/blockquote&gt;</description></item><item><title>Custom PyTorch Operators on Ascend 910B</title><link>https://monsoon-cs.moe/2023-11-14-ascend-910b-custom-op/</link><pubDate>Tue, 14 Nov 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-11-14-ascend-910b-custom-op/</guid><description>&lt;h2 id="environment"&gt;Environment&lt;/h2&gt;
+&lt;p&gt;The hardware environment this article is based on is the Ascend 910B3, and the software environment includes &lt;a href="https://www.hiascend.com/developer/download/community/result"&gt;CANN 7.0-RC1&lt;/a&gt;, &lt;a href="https://repo.huaweicloud.com/kunpeng/archive/Ascend/PyTorch/"&gt;PyTorch 1.11.0&lt;/a&gt;, and &lt;a href="https://gitee.com/ascend/pytorch/releases/tag/v5.0.rc3-pytorch1.11.0"&gt;Ascend PyTorch Adapter v5.0.rc3-pytorch1.11.0&lt;/a&gt;. The situation on other CANN and PyTorch versions may differ slightly.&lt;/p&gt;
+&lt;h2 id="registration-process"&gt;Registration Process&lt;/h2&gt;
+&lt;h3 id="adding-a-custom-operator-in-the-ascend-pytorch-adapter"&gt;Adding a Custom Operator in the Ascend PyTorch Adapter&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;References:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0045.html"&gt;https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0045.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://gitee.com/ascend/samples/tree/master/operator/AddCustomSample/FrameworkLaunch/PytorchInvocation"&gt;https://gitee.com/ascend/samples/tree/master/operator/AddCustomSample/FrameworkLaunch/PytorchInvocation&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Add the &lt;code&gt;npu_add_custom&lt;/code&gt; function in &lt;code&gt;torch_npu/csrc/aten/npu_native_functions.yaml&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nt"&gt;custom&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="nt"&gt;func&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;npu_add_custom(Tensor x, Tensor y) -&amp;gt; Tensor &lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;# 添加的函数&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Add the file &lt;code&gt;AddCustomKernelNpu.cpp&lt;/code&gt; in &lt;code&gt;torch_npu/csrc/aten/ops/op_api&lt;/code&gt;:&lt;/p&gt;</description></item><item><title>Building Proxy Service for Team</title><link>https://monsoon-cs.moe/2023-11-09-proxy-for-team/</link><pubDate>Thu, 09 Nov 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-11-09-proxy-for-team/</guid><description>&lt;blockquote&gt;
 &lt;p&gt;This is an unfinished blog.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2 id=&quot;Preface&quot;&gt;&lt;a href=&quot;#Preface&quot; class=&quot;headerlink&quot;</summary>
-        
-      
-    
-    
-    
-    
-    <category term="proxy" scheme="https://monsoon-cs.moe/tags/proxy/"/>
-    
-    <category term="warp" scheme="https://monsoon-cs.moe/tags/warp/"/>
-    
-    <category term="network" scheme="https://monsoon-cs.moe/tags/network/"/>
-    
-    <category term="sing-box" scheme="https://monsoon-cs.moe/tags/sing-box/"/>
-    
-    <category term="clash" scheme="https://monsoon-cs.moe/tags/clash/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>我的 TOEFL 经验</title>
-    <link href="https://monsoon-cs.moe/2023-11-05-toefl-exp/"/>
-    <id>https://monsoon-cs.moe/2023-11-05-toefl-exp/</id>
-    <published>2023-11-05T05:00:00.000Z</published>
-    <updated>2023-12-10T06:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;作为高考以来带给我最大焦虑感的考试，TOEFL 让我 2023</summary>
-        
-      
-    
-    
-    
-    
-    <category term="toefl" scheme="https://monsoon-cs.moe/tags/toefl/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Catching Mining Virus</title>
-    <link href="https://monsoon-cs.moe/2023-11-01-catching-mining-virus/"/>
-    <id>https://monsoon-cs.moe/2023-11-01-catching-mining-virus/</id>
-    <published>2023-11-01T05:00:00.000Z</published>
-    <updated>2023-11-01T05:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;Problem&quot;&gt;&lt;a href=&quot;#Problem&quot; class=&quot;headerlink&quot; title=&quot;Problem&quot;&gt;&lt;/a&gt;Problem&lt;/h2&gt;&lt;p&gt;On October 30, 2023, I received a warning message</summary>
-        
-      
-    
-    
-    
-    
-    <category term="linux" scheme="https://monsoon-cs.moe/tags/linux/"/>
-    
-    <category term="iptables" scheme="https://monsoon-cs.moe/tags/iptables/"/>
-    
-    <category term="anti-virus" scheme="https://monsoon-cs.moe/tags/anti-virus/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>利用 SSH 反向隧道登录 BitaHub 中的容器并长期占用 GPU</title>
-    <link href="https://monsoon-cs.moe/2023-10-20-bitahub/"/>
-    <id>https://monsoon-cs.moe/2023-10-20-bitahub/</id>
-    <published>2023-10-20T05:00:00.000Z</published>
-    <updated>2023-10-20T05:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;问题&quot;&gt;&lt;a href=&quot;#问题&quot; class=&quot;headerlink&quot; title=&quot;问题&quot;&gt;&lt;/a&gt;问题&lt;/h2&gt;&lt;p&gt;每年的 CVPR 前 GPU 总是供不应求，需要从其他地方借卡。USTC 有一个供校内用户使用的 &lt;a</summary>
-        
-      
-    
-    
-    
-    
-    <category term="docker" scheme="https://monsoon-cs.moe/tags/docker/"/>
-    
-    <category term="ssh" scheme="https://monsoon-cs.moe/tags/ssh/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Nginx 启用 QUIC 并和 SNI 分流共存</title>
-    <link href="https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/"/>
-    <id>https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/</id>
-    <published>2023-09-26T05:00:00.000Z</published>
-    <updated>2023-09-26T05:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;问题&quot;&gt;&lt;a href=&quot;#问题&quot; class=&quot;headerlink&quot; title=&quot;问题&quot;&gt;&lt;/a&gt;问题&lt;/h2&gt;&lt;p&gt;Nginx 自从 1.25.0 版本以来对 QUIC 的支持&lt;a</summary>
-        
-      
-    
-    
-    
-    
-    <category term="nginx" scheme="https://monsoon-cs.moe/tags/nginx/"/>
-    
-    <category term="quic" scheme="https://monsoon-cs.moe/tags/quic/"/>
-    
-    <category term="http3" scheme="https://monsoon-cs.moe/tags/http3/"/>
-    
-    <category term="tls" scheme="https://monsoon-cs.moe/tags/tls/"/>
-    
-    <category term="sni-routing" scheme="https://monsoon-cs.moe/tags/sni-routing/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>优化 MKL 在 AMD CPU 上的性能</title>
-    <link href="https://monsoon-cs.moe/2023-06-19-mkl-on-amd/"/>
-    <id>https://monsoon-cs.moe/2023-06-19-mkl-on-amd/</id>
-    <published>2023-06-19T05:00:00.000Z</published>
-    <updated>2023-06-19T05:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;问题&quot;&gt;&lt;a href=&quot;#问题&quot; class=&quot;headerlink&quot; title=&quot;问题&quot;&gt;&lt;/a&gt;问题&lt;/h2&gt;&lt;p&gt;实验室有一些 AMD EPYC 7713 的服务器，采购的原因是组里有一些人的程序有非常高的 CPU</summary>
-        
-      
-    
-    
-    
-    
-    <category term="hpc" scheme="https://monsoon-cs.moe/tags/hpc/"/>
-    
-    <category term="mkl" scheme="https://monsoon-cs.moe/tags/mkl/"/>
-    
-    <category term="amd" scheme="https://monsoon-cs.moe/tags/amd/"/>
-    
-    <category term="linux" scheme="https://monsoon-cs.moe/tags/linux/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>VCB-Studio Technical Director Entry Test 2023 and My Answer</title>
-    <link href="https://monsoon-cs.moe/2023-05-25-vcb/"/>
-    <id>https://monsoon-cs.moe/2023-05-25-vcb/</id>
-    <published>2023-05-25T05:00:00.000Z</published>
-    <updated>2023-05-25T05:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;See &lt;a href=&quot;https://vcb-s.com/archives/15949&quot;&gt;original publication page&lt;/a&gt; for more details.&lt;/p&gt;
-&lt;p&gt;All my answer files can be browsed</summary>
-        
-      
-    
-    
-    
-    
-    <category term="anime" scheme="https://monsoon-cs.moe/tags/anime/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Hello World</title>
-    <link href="https://monsoon-cs.moe/2023-03-29-hello-world/"/>
-    <id>https://monsoon-cs.moe/2023-03-29-hello-world/</id>
-    <published>2023-03-29T05:00:00.000Z</published>
-    <updated>2023-03-29T05:00:00.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;&lt;strong&gt;My first post on</summary>
-        
-      
-    
-    
-    
-    
-  </entry>
-  
-</feed>
+&lt;h2 id="preface"&gt;Preface&lt;/h2&gt;
+&lt;p&gt;Due to &lt;a href="https://en.wikipedia.org/wiki/Internet_censorship_in_China"&gt;Internet censorship in China&lt;/a&gt; (known as &lt;em&gt;GFW&lt;/em&gt;, &lt;em&gt;Great Firewall&lt;/em&gt;, &lt;em&gt;防火长城&lt;/em&gt;), many websites (e.g. Google, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity issues. In China, the means to circumvent internet censorship is referred to as &lt;em&gt;翻墙&lt;/em&gt; (means &lt;em&gt;climbing over the wall&lt;/em&gt;).&lt;/p&gt;
+&lt;p&gt;In China, to freely access the Internet, a proxy is essential. Despite various commercial options available, they may not be suitable for everyone. Therefore, I have constructed a user-friendly and easy-to-maintain proxy system for my research group, as a part of my responsibilities as a system administrator.&lt;/p&gt;</description></item><item><title>My TOEFL Experience</title><link>https://monsoon-cs.moe/2023-11-05-toefl-exp/</link><pubDate>Sun, 05 Nov 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-11-05-toefl-exp/</guid><description>&lt;h2 id="preface"&gt;Preface&lt;/h2&gt;
+&lt;p&gt;As the exam that has caused me the most anxiety since the gaokao, the TOEFL kept me in the dark for most of 2023, and it is also the exam I invested the most time and money into.&lt;/p&gt;
+&lt;p&gt;At the start I set a goal of 100 total and 20 in speaking. Along the way I went through countless days of lost confidence, of being drowned by anxiety, of practicing speaking until my tongue tied itself in knots — and finally, on November 3, 2023, I checked my scores and was satisfied.&lt;/p&gt;</description></item><item><title>Catching Mining Virus</title><link>https://monsoon-cs.moe/2023-11-01-catching-mining-virus/</link><pubDate>Wed, 01 Nov 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-11-01-catching-mining-virus/</guid><description>&lt;h2 id="problem"&gt;Problem&lt;/h2&gt;
+&lt;p&gt;On October 30, 2023, I received a warning message from the data center administrator, informing me that the firewall detected mining traffic sending from the server managed by me.&lt;/p&gt;
+&lt;p&gt;&lt;img loading="lazy" src="/2023-11-01-catching-mining-virus/firewall_warning.png"&gt;&lt;/p&gt;
+&lt;p&gt;The &amp;ldquo;mining traffic&amp;rdquo; was a &lt;code&gt;bitcoin.sipa.be&lt;/code&gt; DNS request sent to &lt;code&gt;223.5.5.5&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Initially, I thought it was a simple task to find the virus process, just like my previous encounter with another mining virus. In that case, the hacker logged in the server by hacking a weak SSH password, gained root permission possibly by an privilege escalation vulnerability exploitation (it was a server running EOL Ubuntu 16.04). Then a cron job was set up to run a mining virus.&lt;/p&gt;</description></item><item><title>Using an SSH Reverse Tunnel to Log Into BitaHub Containers and Hold GPUs Long-Term</title><link>https://monsoon-cs.moe/2023-10-20-bitahub/</link><pubDate>Fri, 20 Oct 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-10-20-bitahub/</guid><description>&lt;h2 id="problem"&gt;Problem&lt;/h2&gt;
+&lt;p&gt;Every year before CVPR, GPUs are always in short supply, and we need to borrow cards from elsewhere. USTC provides &lt;a href="https://bitahub.ustc.edu.cn/"&gt;BitaHub&lt;/a&gt; for on-campus users, but it suffers from the same shortage of cards before CVPR. At the same time, its job-submission-based usage model is very inconvenient: submitting jobs that occupy multiple cards often requires a long wait in the queue, and its data management approach is downright user-hostile.&lt;/p&gt;
+&lt;p&gt;As the server administrator for my group, in order to make my life easier before CVPR and to avoid repeating the 2021 pre-CVPR ordeal of scrambling to allocate resources, I needed to improve the BitaHub experience:&lt;/p&gt;</description></item><item><title>Enabling QUIC in Nginx While Keeping SNI Routing</title><link>https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/</link><pubDate>Tue, 26 Sep 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/</guid><description>&lt;h2 id="problem"&gt;Problem&lt;/h2&gt;
+&lt;p&gt;Since version 1.25.0, Nginx&amp;rsquo;s support for QUIC &lt;a href="https://nginx.org/en/docs/quic.html"&gt;has been merged into mainline&lt;/a&gt;. Users who want to try it out can simply use the official &lt;code&gt;nginx&lt;/code&gt; docker image, which is very convenient.&lt;/p&gt;
+&lt;p&gt;However, the nginx on my server uses &lt;a href="https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html"&gt;SNI routing&lt;/a&gt;, driven by the needs of a new generation of TLS-based proxy protocols such as &lt;a href="https://github.com/ihciah/shadow-tls"&gt;Shadow TLS&lt;/a&gt; and &lt;a href="https://github.com/XTLS/REALITY"&gt;Xray Reality&lt;/a&gt;. These proxy protocols cannot have their TLS layer handled by nginx on their behalf (unlike earlier protocols that could use gRPC/WebSocket and the like as their data transport). But in order to achieve the best camouflage effect, using the &lt;code&gt;443/tcp&lt;/code&gt; port is necessary (the whitelisted target sites used for camouflage generally only serve HTTPS on the &lt;code&gt;443/tcp&lt;/code&gt; port). Therefore, multiplexing the &lt;code&gt;443/tcp&lt;/code&gt; port is necessary.&lt;/p&gt;</description></item><item><title>Optimizing MKL Performance on AMD CPUs</title><link>https://monsoon-cs.moe/2023-06-19-mkl-on-amd/</link><pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-06-19-mkl-on-amd/</guid><description>&lt;h2 id="the-problem"&gt;The Problem&lt;/h2&gt;
+&lt;p&gt;My lab has some AMD EPYC 7713 servers. We bought them because some people in the group run programs with very high CPU load (I don&amp;rsquo;t know what kind of load it is, or why it can&amp;rsquo;t run on the GPU, and I don&amp;rsquo;t have the energy to help everyone solve it one by one). AMD processors with their many cores are a great fit for this kind of demand.&lt;/p&gt;</description></item><item><title>VCB-Studio Technical Director Entry Test 2023 and My Answer</title><link>https://monsoon-cs.moe/2023-05-25-vcb/</link><pubDate>Thu, 25 May 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-05-25-vcb/</guid><description>&lt;p&gt;See &lt;a href="https://vcb-s.com/archives/15949"&gt;original publication page&lt;/a&gt; for more details.&lt;/p&gt;
+&lt;p&gt;All my answer files can be browsed in &lt;a href="https://static.monsoon-cs.moe/public/VCB-Studio%20Entry%20Test%202023%20Answers/"&gt;here&lt;/a&gt;, or you can download &lt;a href="https://static.monsoon-cs.moe/public/VCB-Studio%20Entry%20Test%202023%20Answers.zip"&gt;zipped file&lt;/a&gt; (5.9G).&lt;/p&gt;
+&lt;h2 id="requirements"&gt;Requirements&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This is a test for candidates who wish to participate in the training class organized by VCB-Studio. Finish as many problems as you can, and then do the following things:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Pack your answers, result files, and necessary attachments into a &lt;strong&gt;zip/rar/7z&lt;/strong&gt; file. Source files we provided and intermediate file in your encoding should not be packed in.&lt;/li&gt;
+&lt;li&gt;Register a Baidu Net Disk account (&lt;a href="https://pan.baidu.com"&gt;https://pan.baidu.com&lt;/a&gt;), upload the zipped file and create a sharing link. Whether you like it or not, Baidu Net Disk has been the most effective way to share files within our team since day one. Other sharing methods will NOT be considered.&lt;/li&gt;
+&lt;li&gt;Send the link via email to &lt;a href="mailto:vcbs.training@gmail.com"&gt;vcbs.training@gmail.com&lt;/a&gt; before &lt;strong&gt;Beijing Time (UTC+8) Monday, 23 Jan 2023, 23:59:59&lt;/strong&gt;. Late submissions will NOT be considered.&lt;/li&gt;
+&lt;li&gt;Prepare a QQ account. The follow-up training courses will be conducted in the QQ group.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;You should independently complete the answers without any public discussion. Any form of plagiarism will NOT be tolerated.&lt;/p&gt;</description></item><item><title>Hello World</title><link>https://monsoon-cs.moe/2023-03-29-hello-world/</link><pubDate>Wed, 29 Mar 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-03-29-hello-world/</guid><description>&lt;p&gt;&lt;strong&gt;My first post on blog!&lt;/strong&gt;&lt;/p&gt;</description></item></channel></rss>

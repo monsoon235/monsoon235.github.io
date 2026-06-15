@@ -1,372 +1,167 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
-
-<script class="next-config" data-name="main" type="application/json">{"hostname":"monsoon-cs.moe","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"atom-one-light","dark":"atom-one-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
-
-    <meta name="description" content="问题Nginx 自从 1.25.0 版本以来对 QUIC 的支持已被合并入 mainline，对于想体验的用户而言可以直接使用官方发布的 nginx docker 镜像，非常方便。 但是我的服务器上的 nginx 使用了 SNI 分流，源于 Shadow TLS 和 Xray Reality 等新一代基于 TLS 的代理协议的需求。这些代理协议并不能由 nginx 代为处理 TLS 层（和之前可以">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Nginx 启用 QUIC 并和 SNI 分流共存">
-<meta property="og:url" content="https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/index.html">
-<meta property="og:site_name" content="Monsoon&#39;s Blog">
-<meta property="og:description" content="问题Nginx 自从 1.25.0 版本以来对 QUIC 的支持已被合并入 mainline，对于想体验的用户而言可以直接使用官方发布的 nginx docker 镜像，非常方便。 但是我的服务器上的 nginx 使用了 SNI 分流，源于 Shadow TLS 和 Xray Reality 等新一代基于 TLS 的代理协议的需求。这些代理协议并不能由 nginx 代为处理 TLS 层（和之前可以">
-<meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-09-26T05:00:00.000Z">
-<meta property="article:modified_time" content="2023-09-26T05:00:00.000Z">
-<meta property="article:author" content="Monsoon">
-<meta property="article:tag" content="nginx">
-<meta property="article:tag" content="quic">
-<meta property="article:tag" content="http3">
-<meta property="article:tag" content="tls">
-<meta property="article:tag" content="sni-routing">
-<meta name="twitter:card" content="summary">
-
-
-<link rel="canonical" href="https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/">
-
-
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/","path":"2023-09-26-nginx-quic-with-ssl-preread/","title":"Nginx 启用 QUIC 并和 SNI 分流共存"}</script>
-
-<script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Nginx 启用 QUIC 并和 SNI 分流共存 | Monsoon's Blog</title>
-  
-
-
-
-  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;3c9e3103682b4f6fbc36342486e67640&quot;}'></script>
-
-
-
-
-
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
-<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
-
-  
-
-
-
-  <script src="/js/third-party/fancybox.js" defer></script>
-
-
-
-  
-
-
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
-
-
-
-  <noscript>
-    <link rel="stylesheet" href="/css/noscript.css">
-  </noscript>
-<link rel="alternate" href="/atom.xml" title="Monsoon's Blog" type="application/atom+xml">
-</head>
-
-<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
-  <div class="headband"></div>
-
-  <main class="main">
-    <div class="column">
-      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏" role="button">
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <i class="logo-line"></i>
-      <p class="site-title">Monsoon's Blog</p>
-      <i class="logo-line"></i>
-    </a>
-  </div>
-
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger" aria-label="搜索" role="button">
-    </div>
-  </div>
-</div>
-
-
-
-<nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
-  </ul>
-</nav>
-
-
-
-
-</header>
-        
-  
-  <aside class="sidebar">
-
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
-      <ul class="sidebar-nav">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <div class="sidebar-panel-container">
-        <!--noindex-->
-        <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95"><span class="nav-number">3.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
-        </div>
-        <!--/noindex-->
-
-        <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">Monsoon</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<div class="site-state-wrap animated">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-        <a href="/archives/">
-          <span class="site-state-item-count">19</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-tags">
-          <a href="/tags/">
-        <span class="site-state-item-count">57</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-  <div class="links-of-author animated">
-      <span class="links-of-author-item">
-        <a href="https://github.com/monsoon235" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;monsoon235" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="https://t.me/monsoon235" title="Telegram → https:&#x2F;&#x2F;t.me&#x2F;monsoon235" rel="noopener me" target="_blank"><i class="fab fa-telegram fa-fw"></i>Telegram</a>
-      </span>
-  </div>
-  <div class="cc-license animated" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/big/by_nc_sa.svg" alt="Creative Commons"></a>
-  </div>
-
-        </div>
-      </div>
-    </div>
-
-    
-  </aside>
-
-
-    </div>
-
-    <div class="main-inner post posts-expand">
-
-
-  
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Monsoon">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Nginx 启用 QUIC 并和 SNI 分流共存 | Monsoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          Nginx 启用 QUIC 并和 SNI 分流共存
-        </h1>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2023-09-26 00:00:00" itemprop="dateCreated datePublished" datetime="2023-09-26T00:00:00-05:00">2023-09-26</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody"><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>Nginx 自从 1.25.0 版本以来对 QUIC 的支持<a target="_blank" rel="noopener" href="https://nginx.org/en/docs/quic.html">已被合并入 mainline</a>，对于想体验的用户而言可以直接使用官方发布的 <code>nginx</code> docker 镜像，非常方便。</p>
-<p>但是我的服务器上的 nginx 使用了 <a target="_blank" rel="noopener" href="https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html">SNI 分流</a>，源于 <a target="_blank" rel="noopener" href="https://github.com/ihciah/shadow-tls">Shadow TLS</a> 和 <a target="_blank" rel="noopener" href="https://github.com/XTLS/REALITY">Xray Reality</a> 等新一代基于 TLS 的代理协议的需求。这些代理协议并不能由 nginx 代为处理 TLS 层（和之前可以使用 gPRC&#x2F;WebSocket 等作为数据传输方式的协议不同），但为了实现最好的伪装效果，使用 <code>443/tcp</code> 端口是有必要的（伪装的白名单目标网站一般情况下也只会在 <code>443/tcp</code> 端口开放 HTTPS 服务）。因此 <code>443/tcp</code> 端口的复用是必要的。</p>
-<p>如果要让 SNI 分流和 QUIC 共存，在原来的 SNI 分流配置上只需要给每个 server 加上 <code>listen 443 quic</code> 即可。示例配置如下。</p>
-<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line"></span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="attribute">server_name</span> example.com;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 443/tcp 已经被 nginx stream 占用，不能再次监听</span></span><br><span class="line">        <span class="comment"># listen 443 ssl http2 reuseport so_keepalive=on;</span></span><br><span class="line">        <span class="comment"># listen [::]:443 ssl http2 reuseport so_keepalive=on;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 监听 443/udp 端口并启用 QUIC</span></span><br><span class="line">        <span class="comment"># ref: https://nginx.org/en/docs/http/ngx_http_v3_module.html</span></span><br><span class="line">        <span class="attribute">listen</span> <span class="number">443</span> quic reuseport;</span><br><span class="line">        <span class="attribute">listen</span> [::]:<span class="number">443</span> quic reuseport;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 监听 unix domain socket 以接受 stream 传送过来的连接，也可以使用本地端口</span></span><br><span class="line">        <span class="comment"># 接受 proxy_protocol，否则 log 中显示的链接源地址都是 unix:</span></span><br><span class="line">        <span class="attribute">listen</span> unix:/dev/shm/nginx-example.sock ssl http2 proxy_protocol;</span><br><span class="line">        <span class="attribute">set_real_ip_from</span> unix:;  <span class="comment"># 只对于来自 unix domain socket 的连接覆盖其源地址</span></span><br><span class="line">        <span class="attribute">real_ip_header</span> proxy_protocol;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">add_header</span> Alt-Svc <span class="string">&#x27;h3=&quot;:443&quot;; ma=86400&#x27;</span>;  <span class="comment"># used to advertise the availability of HTTP/3</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="attribute">server_name</span> foo.example.com;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 可以多个域名共享 443/udp</span></span><br><span class="line">        <span class="attribute">listen</span> <span class="number">443</span> quic;</span><br><span class="line">        <span class="attribute">listen</span> [::]:<span class="number">443</span> quic;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">listen</span> unix:/dev/shm/nginx-example-foo.sock ssl http2 proxy_protocol;</span><br><span class="line">        <span class="attribute">set_real_ip_from</span> unix:;</span><br><span class="line">        <span class="attribute">real_ip_header</span> proxy_protocol;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">add_header</span> Alt-Svc <span class="string">&#x27;h3=&quot;:443&quot;; ma=86400&#x27;</span>;  <span class="comment"># used to advertise the availability of HTTP/3</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">stream</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 根据 TLS SNI 分流</span></span><br><span class="line">    <span class="attribute">map</span> <span class="variable">$ssl_preread_server_name</span> <span class="variable">$name</span> &#123;</span><br><span class="line">        example.<span class="attribute">com</span>             unix:/dev/shm/nginx-example.sock;</span><br><span class="line">        foo.example.<span class="attribute">com</span>         unix:/dev/shm/nginx-example-foo.sock;</span><br><span class="line">        learn.microsoft.<span class="attribute">com</span>     <span class="number">127.0.0.1:8443</span>;  <span class="comment"># 用于 shadow-tls/xray-reality 等</span></span><br><span class="line">        <span class="attribute">default</span>                 unix:/dev/shm/nginx-default.sock;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="comment"># 监听 443/tcp 并根据 SNI 分流</span></span><br><span class="line">        <span class="attribute">listen</span> <span class="number">443</span> reuseport so_keepalive=<span class="literal">on</span>;</span><br><span class="line">        <span class="attribute">listen</span> [::]:<span class="number">443</span> reuseport so_keepalive=<span class="literal">on</span>;</span><br><span class="line">        <span class="attribute">proxy_pass</span> <span class="variable">$name</span>;</span><br><span class="line">        <span class="attribute">ssl_preread</span> <span class="literal">on</span>;</span><br><span class="line">        <span class="attribute">proxy_protocol</span> <span class="literal">on</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>目前 <code>curl</code>&#x2F;<code>wget</code> mainline 还没有支持 QUIC，可以使用 <code>ymuski/curl-http3</code> 这个 docker 镜像：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -it --<span class="built_in">rm</span> ymuski/curl-http3 curl https://static.monsoon-cs.moe/public/ --http3 -IL</span></span><br><span class="line"></span><br><span class="line">HTTP/3 200</span><br><span class="line">server: nginx/1.25.2</span><br><span class="line">date: Tue, 26 Sep 2023 14:52:29 GMT</span><br><span class="line">content-type: text/html; charset=utf-8</span><br><span class="line">strict-transport-security: max-age=63072000</span><br><span class="line">alt-svc: h3=&quot;:443&quot;; ma=86400</span><br></pre></td></tr></table></figure>
-
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html">https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html</a></li>
-<li><a target="_blank" rel="noopener" href="https://nginx.org/en/docs/http/ngx_http_v3_module.html">https://nginx.org/en/docs/http/ngx_http_v3_module.html</a></li>
-</ul>
-
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-          
-
-<div class="post-copyright">
-<ul>
-  <li class="post-copyright-author">
-      <strong>本文作者： </strong>Monsoon
-  </li>
-  <li class="post-copyright-link">
-      <strong>本文链接：</strong>
-      <a href="https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/" title="Nginx 启用 QUIC 并和 SNI 分流共存">https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/</a>
-  </li>
-  <li class="post-copyright-license">
-      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-
-          <div class="post-tags">
-              <a href="/tags/nginx/" rel="tag"># nginx</a>
-              <a href="/tags/quic/" rel="tag"># quic</a>
-              <a href="/tags/http3/" rel="tag"># http3</a>
-              <a href="/tags/tls/" rel="tag"># tls</a>
-              <a href="/tags/sni-routing/" rel="tag"># sni-routing</a>
-          </div>
-
-        
-
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2023-06-19-mkl-on-amd/" rel="prev" title="优化 MKL 在 AMD CPU 上的性能">
-                  <i class="fa fa-angle-left"></i> 优化 MKL 在 AMD CPU 上的性能
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2023-10-20-bitahub/" rel="next" title="利用 SSH 反向隧道登录 BitaHub 中的容器并长期占用 GPU">
-                  利用 SSH 反向隧道登录 BitaHub 中的容器并长期占用 GPU <i class="fa fa-angle-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
-  </article>
-</div>
-
-
-
-
-
-
-</div>
-  </main>
-
-  <footer class="footer">
-    <div class="footer-inner">
-  <div class="languages">
-    <label class="lang-select-label">
-      <i class="fa fa-language"></i>
-      <span>简体中文</span>
-      <i class="fa fa-angle-up" aria-hidden="true"></i>
-    </label>
-    <select class="lang-select" data-canonical="" aria-label="选择语言">
-      
-        <option value="en" data-href="/2023-09-26-nginx-quic-with-ssl-preread/" selected="">
-          English
-        </option>
-      
-        <option value="zh-cn" data-href="/zh-cn/2023-09-26-nginx-quic-with-ssl-preread/" selected="">
-          zh-cn
-        </option>
-      
-    </select>
-  </div>
-
-  <div class="copyright">
-    &copy; 2023 – 
-    <span itemprop="copyrightYear">2026</span>
-    <span class="with-love">
-      <i class="fa fa-heart"></i>
-    </span>
-    <span class="author" itemprop="copyrightHolder">Monsoon</span>
-  </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
-  </div>
-
-    </div>
-  </footer>
-
-  
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-  <div class="sidebar-dimmer"></div>
-  <div class="back-to-top" role="button" aria-label="返回顶部">
-    <i class="fa fa-arrow-up fa-lg"></i>
-    <span>0%</span>
-  </div>
-  <div class="reading-progress-bar"></div>
-
-  <a href="https://github.com/monsoon235" class="github-corner" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
-
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
-
-</body>
-</html>
+<!doctype html><html lang=en dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Enabling QUIC in Nginx While Keeping SNI Routing | Monsoon's Blog</title><meta name=keywords content="nginx,quic,http3,tls,sni-routing"><meta name=description content="Problem
+Since version 1.25.0, Nginx&rsquo;s support for QUIC has been merged into mainline. Users who want to try it out can simply use the official nginx docker image, which is very convenient.
+However, the nginx on my server uses SNI routing, driven by the needs of a new generation of TLS-based proxy protocols such as Shadow TLS and Xray Reality. These proxy protocols cannot have their TLS layer handled by nginx on their behalf (unlike earlier protocols that could use gRPC/WebSocket and the like as their data transport). But in order to achieve the best camouflage effect, using the 443/tcp port is necessary (the whitelisted target sites used for camouflage generally only serve HTTPS on the 443/tcp port). Therefore, multiplexing the 443/tcp port is necessary."><meta name=author content="Monsoon"><link rel=canonical href=https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/><link crossorigin=anonymous href=/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as=style><link rel=icon href=https://monsoon-cs.moe/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://monsoon-cs.moe/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://monsoon-cs.moe/favicon-32x32.png><link rel=apple-touch-icon href=https://monsoon-cs.moe/apple-touch-icon.png><link rel=mask-icon href=https://monsoon-cs.moe/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/><link rel=alternate hreflang=zh href=https://monsoon-cs.moe/zh/2023-09-26-nginx-quic-with-ssl-preread/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><script>(function(){var e,t,n,s,o,i="sitelang";function a(){try{var e,t,n=localStorage.getItem(i);if(n==="en"||n==="zh")return n}catch{}for(t=navigator.languages||[navigator.language||"en"],e=0;e<t.length;e++){if(/^zh/i.test(t[e]))return"zh";if(/^en/i.test(t[e]))return"en"}return"en"}n=a(),o=/^zh/i.test(document.documentElement.lang||"en")?"zh":"en",n!==o&&(e=document.querySelector('link[rel="alternate"][hreflang="'+n+'"]'),e&&e.getAttribute("href")&&(t=new URL(e.getAttribute("href"),location.href),s=t.pathname+t.search+t.hash,s!==location.pathname+location.search+location.hash&&location.replace(s)))})()</script><style>.cross-lang-link{white-space:nowrap}.entry-lang-badge{display:inline-block;font-size:.62rem;line-height:1.5;font-weight:600;letter-spacing:.04em;vertical-align:middle;margin-left:.5em;padding:0 .45em;border:1px solid var(--border);border-radius:6px;opacity:.7;white-space:nowrap;position:relative;top:-.06em}</style><meta property="og:url" content="https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/"><meta property="og:site_name" content="Monsoon's Blog"><meta property="og:title" content="Enabling QUIC in Nginx While Keeping SNI Routing"><meta property="og:description" content="Problem Since version 1.25.0, Nginx’s support for QUIC has been merged into mainline. Users who want to try it out can simply use the official nginx docker image, which is very convenient.
+However, the nginx on my server uses SNI routing, driven by the needs of a new generation of TLS-based proxy protocols such as Shadow TLS and Xray Reality. These proxy protocols cannot have their TLS layer handled by nginx on their behalf (unlike earlier protocols that could use gRPC/WebSocket and the like as their data transport). But in order to achieve the best camouflage effect, using the 443/tcp port is necessary (the whitelisted target sites used for camouflage generally only serve HTTPS on the 443/tcp port). Therefore, multiplexing the 443/tcp port is necessary."><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2023-09-26T00:00:00+00:00"><meta property="article:modified_time" content="2023-09-26T00:00:00+00:00"><meta property="article:tag" content="nginx"><meta property="article:tag" content="quic"><meta property="article:tag" content="http3"><meta property="article:tag" content="tls"><meta property="article:tag" content="sni-routing"><meta name=twitter:card content="summary"><meta name=twitter:title content="Enabling QUIC in Nginx While Keeping SNI Routing"><meta name=twitter:description content="Problem Since version 1.25.0, Nginx’s support for QUIC has been merged into mainline. Users who want to try it out can simply use the official nginx docker image, which is very convenient.
+However, the nginx on my server uses SNI routing, driven by the needs of a new generation of TLS-based proxy protocols such as Shadow TLS and Xray Reality. These proxy protocols cannot have their TLS layer handled by nginx on their behalf (unlike earlier protocols that could use gRPC/WebSocket and the like as their data transport). But in order to achieve the best camouflage effect, using the 443/tcp port is necessary (the whitelisted target sites used for camouflage generally only serve HTTPS on the 443/tcp port). Therefore, multiplexing the 443/tcp port is necessary."><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"posts","item":"https://monsoon-cs.moe/posts/"},{"@type":"ListItem","position":2,"name":"Enabling QUIC in Nginx While Keeping SNI Routing","item":"https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Enabling QUIC in Nginx While Keeping SNI Routing","name":"Enabling QUIC in Nginx While Keeping SNI Routing","description":"Problem Since version 1.25.0, Nginx\u0026rsquo;s support for QUIC has been merged into mainline. Users who want to try it out can simply use the official nginx docker image, which is very convenient.\nHowever, the nginx on my server uses SNI routing, driven by the needs of a new generation of TLS-based proxy protocols such as Shadow TLS and Xray Reality. These proxy protocols cannot have their TLS layer handled by nginx on their behalf (unlike earlier protocols that could use gRPC/WebSocket and the like as their data transport). But in order to achieve the best camouflage effect, using the 443/tcp port is necessary (the whitelisted target sites used for camouflage generally only serve HTTPS on the 443/tcp port). Therefore, multiplexing the 443/tcp port is necessary.\n","keywords":["nginx","quic","http3","tls","sni-routing"],"articleBody":"Problem Since version 1.25.0, Nginx’s support for QUIC has been merged into mainline. Users who want to try it out can simply use the official nginx docker image, which is very convenient.\nHowever, the nginx on my server uses SNI routing, driven by the needs of a new generation of TLS-based proxy protocols such as Shadow TLS and Xray Reality. These proxy protocols cannot have their TLS layer handled by nginx on their behalf (unlike earlier protocols that could use gRPC/WebSocket and the like as their data transport). But in order to achieve the best camouflage effect, using the 443/tcp port is necessary (the whitelisted target sites used for camouflage generally only serve HTTPS on the 443/tcp port). Therefore, multiplexing the 443/tcp port is necessary.\nTo make SNI routing and QUIC coexist, you only need to add listen 443 quic to each server in the original SNI routing configuration. An example configuration is shown below.\nConfiguration 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 http { # ... server { server_name example.com; # 443/tcp is already occupied by nginx stream, so it cannot be listened on again # listen 443 ssl http2 reuseport so_keepalive=on; # listen [::]:443 ssl http2 reuseport so_keepalive=on; # Listen on the 443/udp port and enable QUIC # ref: https://nginx.org/en/docs/http/ngx_http_v3_module.html listen 443 quic reuseport; listen [::]:443 quic reuseport; # Listen on a unix domain socket to accept connections forwarded from stream; a local port can also be used # Accept proxy_protocol, otherwise the connection source address shown in the log will all be unix: listen unix:/dev/shm/nginx-example.sock ssl http2 proxy_protocol; set_real_ip_from unix:; # Only override the source address for connections coming from the unix domain socket real_ip_header proxy_protocol; add_header Alt-Svc 'h3=\":443\"; ma=86400'; # used to advertise the availability of HTTP/3 # ... } server { server_name foo.example.com; # Multiple domains can share 443/udp listen 443 quic; listen [::]:443 quic; listen unix:/dev/shm/nginx-example-foo.sock ssl http2 proxy_protocol; set_real_ip_from unix:; real_ip_header proxy_protocol; add_header Alt-Svc 'h3=\":443\"; ma=86400'; # used to advertise the availability of HTTP/3 # ... } } stream { # ... # Route based on TLS SNI map $ssl_preread_server_name $name { example.com unix:/dev/shm/nginx-example.sock; foo.example.com unix:/dev/shm/nginx-example-foo.sock; learn.microsoft.com 127.0.0.1:8443; # used for shadow-tls/xray-reality, etc. default unix:/dev/shm/nginx-default.sock; } server { # Listen on 443/tcp and route based on SNI listen 443 reuseport so_keepalive=on; listen [::]:443 reuseport so_keepalive=on; proxy_pass $name; ssl_preread on; proxy_protocol on; } } Testing Currently, the mainline of curl/wget does not yet support QUIC. You can use the ymuski/curl-http3 docker image:\n1 2 3 4 5 6 7 8 $ docker run -it --rm ymuski/curl-http3 curl https://static.monsoon-cs.moe/public/ --http3 -IL HTTP/3 200 server: nginx/1.25.2 date: Tue, 26 Sep 2023 14:52:29 GMT content-type: text/html; charset=utf-8 strict-transport-security: max-age=63072000 alt-svc: h3=\":443\"; ma=86400 References https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html https://nginx.org/en/docs/http/ngx_http_v3_module.html ","wordCount":"507","inLanguage":"en","datePublished":"2023-09-26T00:00:00Z","dateModified":"2023-09-26T00:00:00Z","author":{"@type":"Person","name":"Monsoon"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/"},"publisher":{"@type":"Organization","name":"Monsoon's Blog","logo":{"@type":"ImageObject","url":"https://monsoon-cs.moe/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=header-nav><div class=logo><a href=/ accesskey=h title="Monsoon's Blog (Alt + H)">Monsoon's Blog</a><div class=logo-switches><button id=theme-toggle class=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button><span class=nav-sep>|</span><ul class=lang-menu><li><a href=/zh/2023-09-26-nginx-quic-with-ssl-preread/ title=中文 aria-label=中文>中文</a></li></ul></div></div><ul id=menu class=menu><li><a href=/about/ title=About><span>About</span></a></li><li><a href=/archives/ title=Archive><span>Archive</span></a></li><li><a href=/tags/ title=Tags><span>Tags</span></a></li><li><a href=/search/ title="Search (Alt + /)" accesskey=/><span>Search</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><nav class=breadcrumbs role=navigation aria-label=Breadcrumb><a href=/>Home</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/>posts</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg></nav><h1 class="post-title entry-hint-parent">Enabling QUIC in Nginx While Keeping SNI Routing</h1><div class=post-meta><span title='2023-09-26 00:00:00 +0000 UTC'>2023-09-26</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>Monsoon</span>&nbsp;|&nbsp;
+<a class=cross-lang-link data-lang=zh href=/zh/2023-09-26-nginx-quic-with-ssl-preread/>阅读中文版</a></div></header><details class=toc><summary accesskey=c title="(Alt + C)"><span class=title>Table of Contents</span></summary><div class=inner><ul><li><a href=#problem aria-label=Problem>Problem</a></li><li><a href=#configuration aria-label=Configuration>Configuration</a></li><li><a href=#testing aria-label=Testing>Testing</a></li><li><a href=#references aria-label=References>References</a></li></ul></div></details><div class="post-content md-content"><h2 id=problem>Problem<a hidden class=anchor aria-hidden=true href=#problem>#</a></h2><p>Since version 1.25.0, Nginx&rsquo;s support for QUIC <a href=https://nginx.org/en/docs/quic.html>has been merged into mainline</a>. Users who want to try it out can simply use the official <code>nginx</code> docker image, which is very convenient.</p><p>However, the nginx on my server uses <a href=https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html>SNI routing</a>, driven by the needs of a new generation of TLS-based proxy protocols such as <a href=https://github.com/ihciah/shadow-tls>Shadow TLS</a> and <a href=https://github.com/XTLS/REALITY>Xray Reality</a>. These proxy protocols cannot have their TLS layer handled by nginx on their behalf (unlike earlier protocols that could use gRPC/WebSocket and the like as their data transport). But in order to achieve the best camouflage effect, using the <code>443/tcp</code> port is necessary (the whitelisted target sites used for camouflage generally only serve HTTPS on the <code>443/tcp</code> port). Therefore, multiplexing the <code>443/tcp</code> port is necessary.</p><p>To make SNI routing and QUIC coexist, you only need to add <code>listen 443 quic</code> to each server in the original SNI routing configuration. An example configuration is shown below.</p><h2 id=configuration>Configuration<a hidden class=anchor aria-hidden=true href=#configuration>#</a></h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>http</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=c1># ...
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>server</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kn>server_name</span> <span class=s>example.com</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># 443/tcp is already occupied by nginx stream, so it cannot be listened on again
+</span></span></span><span class=line><span class=cl>        <span class=c1># listen 443 ssl http2 reuseport so_keepalive=on;
+</span></span></span><span class=line><span class=cl>        <span class=c1># listen [::]:443 ssl http2 reuseport so_keepalive=on;
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># Listen on the 443/udp port and enable QUIC
+</span></span></span><span class=line><span class=cl>        <span class=c1># ref: https://nginx.org/en/docs/http/ngx_http_v3_module.html
+</span></span></span><span class=line><span class=cl>        <span class=kn>listen</span> <span class=mi>443</span> <span class=s>quic</span> <span class=s>reuseport</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>listen</span> <span class=s>[::]:443</span> <span class=s>quic</span> <span class=s>reuseport</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># Listen on a unix domain socket to accept connections forwarded from stream; a local port can also be used
+</span></span></span><span class=line><span class=cl>        <span class=c1># Accept proxy_protocol, otherwise the connection source address shown in the log will all be unix:
+</span></span></span><span class=line><span class=cl>        <span class=kn>listen</span> <span class=s>unix:/dev/shm/nginx-example.sock</span> <span class=s>ssl</span> <span class=s>http2</span> <span class=s>proxy_protocol</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>set_real_ip_from</span> <span class=s>unix:</span><span class=p>;</span>  <span class=c1># Only override the source address for connections coming from the unix domain socket
+</span></span></span><span class=line><span class=cl>        <span class=kn>real_ip_header</span> <span class=s>proxy_protocol</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=kn>add_header</span> <span class=s>Alt-Svc</span> <span class=s>&#39;h3=&#34;:443&#34;</span><span class=p>;</span> <span class=kn>ma=86400&#39;</span><span class=p>;</span>  <span class=c1># used to advertise the availability of HTTP/3
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># ...
+</span></span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>server</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kn>server_name</span> <span class=s>foo.example.com</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># Multiple domains can share 443/udp
+</span></span></span><span class=line><span class=cl>        <span class=kn>listen</span> <span class=mi>443</span> <span class=s>quic</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>listen</span> <span class=s>[::]:443</span> <span class=s>quic</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=kn>listen</span> <span class=s>unix:/dev/shm/nginx-example-foo.sock</span> <span class=s>ssl</span> <span class=s>http2</span> <span class=s>proxy_protocol</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>set_real_ip_from</span> <span class=s>unix:</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>real_ip_header</span> <span class=s>proxy_protocol</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=kn>add_header</span> <span class=s>Alt-Svc</span> <span class=s>&#39;h3=&#34;:443&#34;</span><span class=p>;</span> <span class=kn>ma=86400&#39;</span><span class=p>;</span>  <span class=c1># used to advertise the availability of HTTP/3
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># ...
+</span></span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>stream</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># ...
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># Route based on TLS SNI
+</span></span></span><span class=line><span class=cl>    <span class=kn>map</span> <span class=nv>$ssl_preread_server_name</span> <span class=nv>$name</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kn>example.com</span>             <span class=s>unix:/dev/shm/nginx-example.sock</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>foo.example.com</span>         <span class=s>unix:/dev/shm/nginx-example-foo.sock</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>learn.microsoft.com</span>     <span class=n>127.0.0.1</span><span class=p>:</span><span class=mi>8443</span><span class=p>;</span>  <span class=c1># used for shadow-tls/xray-reality, etc.
+</span></span></span><span class=line><span class=cl>        <span class=kn>default</span>                 <span class=s>unix:/dev/shm/nginx-default.sock</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>server</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1># Listen on 443/tcp and route based on SNI
+</span></span></span><span class=line><span class=cl>        <span class=kn>listen</span> <span class=mi>443</span> <span class=s>reuseport</span> <span class=s>so_keepalive=on</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>listen</span> <span class=s>[::]:443</span> <span class=s>reuseport</span> <span class=s>so_keepalive=on</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>proxy_pass</span> <span class=nv>$name</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>ssl_preread</span> <span class=no>on</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>proxy_protocol</span> <span class=no>on</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=testing>Testing<a hidden class=anchor aria-hidden=true href=#testing>#</a></h2><p>Currently, the mainline of <code>curl</code>/<code>wget</code> does not yet support QUIC. You can use the <code>ymuski/curl-http3</code> docker image:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>$ docker run -it --rm ymuski/curl-http3 curl https://static.monsoon-cs.moe/public/ --http3 -IL
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>HTTP/3 <span class=m>200</span>
+</span></span><span class=line><span class=cl>server: nginx/1.25.2
+</span></span><span class=line><span class=cl>date: Tue, <span class=m>26</span> Sep <span class=m>2023</span> 14:52:29 GMT
+</span></span><span class=line><span class=cl>content-type: text/html<span class=p>;</span> <span class=nv>charset</span><span class=o>=</span>utf-8
+</span></span><span class=line><span class=cl>strict-transport-security: max-age<span class=o>=</span><span class=m>63072000</span>
+</span></span><span class=line><span class=cl>alt-svc: <span class=nv>h3</span><span class=o>=</span><span class=s2>&#34;:443&#34;</span><span class=p>;</span> <span class=nv>ma</span><span class=o>=</span><span class=m>86400</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=references>References<a hidden class=anchor aria-hidden=true href=#references>#</a></h2><ul><li><a href=https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html>https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html</a></li><li><a href=https://nginx.org/en/docs/http/ngx_http_v3_module.html>https://nginx.org/en/docs/http/ngx_http_v3_module.html</a></li></ul></div><footer class=post-footer><ul class=post-tags><li><a href=/tags/nginx/>nginx</a></li><li><a href=/tags/quic/>quic</a></li><li><a href=/tags/http3/>http3</a></li><li><a href=/tags/tls/>tls</a></li><li><a href=/tags/sni-routing/>sni-routing</a></li></ul><nav class=paginav><a class=prev href=/2023-10-20-bitahub/><span class=title>« Prev</span>
+<span>Using an SSH Reverse Tunnel to Log Into BitaHub Containers and Hold GPUs Long-Term</span>
+</a><a class=next href=/2023-06-19-mkl-on-amd/><span class=title>Next »</span>
+<span>Optimizing MKL Performance on AMD CPUs</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2026 <a href=/>Monsoon's Blog</a></span> ·
+<span>Powered by
+<a href="https://gohugo.io/?utm_source=papermod" rel=noopener target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top id=top-link class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey=g><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+</a><script>(function(){document.addEventListener("click",function(e){var n,t=e.target.closest&&e.target.closest("a");if(!t)return;if(!t.matches(".lang-switch a, .lang-menu a, .i18n_list a, a.cross-lang-link"))return;n=t.getAttribute("data-lang"),n||(n=/(^|\/)zh(\/|$)/.test(t.getAttribute("href")||"")?"zh":"en");try{localStorage.setItem("sitelang",n)}catch{}},!0)})()</script><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var toplink=document.getElementById("top-link");window.onscroll=function(){const e=window.innerHeight;document.body.scrollTop>e||document.documentElement.scrollTop>e?toplink.classList.remove("hidden"):toplink.classList.add("hidden")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>network on Monsoon's Blog</title><link>https://monsoon-cs.moe/tags/network/</link><description>Recent content in network on Monsoon's Blog</description><generator>Hugo</generator><language>en</language><lastBuildDate>Sun, 22 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/tags/network/index.xml" rel="self" type="application/rss+xml"/><item><title>Using GPU accessible VS Code Server on UIUC Delta</title><link>https://monsoon-cs.moe/2024-12-22-uiuc-delta-code-server/</link><pubDate>Sun, 22 Dec 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-12-22-uiuc-delta-code-server/</guid><description>&lt;h2 id="why-writing-this-blog-post"&gt;Why writing this blog post&lt;/h2&gt;
+&lt;p&gt;Many UIUC students rely on the &lt;a href="https://www.ncsa.illinois.edu/research/project-highlights/delta/"&gt;Delta&lt;/a&gt; to access the GPU resources for their research. Delta provides 4 ssh-enabled login nodes, and lots of computing nodes with GPUs. Usually, we must ssh to the login node (by password and DUO 2FA OTP) first, and then use &lt;code&gt;srun&lt;/code&gt; to request GPU resources to run our code. However, based on my experience, sometimes we could suffer many problems when using the Delta:&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="why-writing-this-blog-post">Why writing this blog post</h2>
+<p>Many UIUC students rely on the <a href="https://www.ncsa.illinois.edu/research/project-highlights/delta/">Delta</a> to access the GPU resources for their research. Delta provides 4 ssh-enabled login nodes, and lots of computing nodes with GPUs. Usually, we must ssh to the login node (by password and DUO 2FA OTP) first, and then use <code>srun</code> to request GPU resources to run our code. However, based on my experience, sometimes we could suffer many problems when using the Delta:</p>
+<ul>
+<li><strong>Unstable network connection</strong>: Connection is lost frequently when the network is poor. Each time when the VS Code Remote lost connection, you must reenter the password and DUO 2FA OTP (you have to unlock your phone to get the OTP) to reconnect, which is annoying, time-consuming, and distracting.</li>
+<li><strong>Broken <a href="https://docs.ncsa.illinois.edu/systems/delta/en/latest/user_guide/ood/index.html">OnDemand Code Server</a></strong>: Although you can run VS COde Remote on the login nodes by ssh, there&rsquo;s no GPU for debugging, and the computing nodes are not accessible by ssh. The alternative ways include <a href="https://docs.ncsa.illinois.edu/systems/delta/en/latest/user_guide/ood/index.html">OnDemand Jupyter Lab and Code Server</a>. But the functions of Jupiter Lab are limited, and the Code Server is broken &ndash; When I try to request a Code Server on computing nodes, the system just queues and shows my request has been completed, <strong>no running status</strong>.</li>
+</ul>
+<p>Due to the above problems, debugging GPU programs on Delta are struggling. That&rsquo;s why I wrote this blog post: by running private Code Server on computing nodes, and deploying a <a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/">Cloudflare Tunnel</a> reverse proxy, you can say goodbye to these annoying problems.</p>
+<h2 id="how-to">How to</h2>
+<p>My solution is based on an <strong>observation</strong> about the Delta: all login nodes and computing nodes are in a trusted network. There&rsquo;s no firewalls between them, which means you can access to any ports on the computing nodes from the login nodes.</p>
+<p>The main steps of my solution are simple:</p>
+<ol>
+<li>Use <code>srun</code> to get a tty on the computing node (e.g., on <code>gpua042</code> node).</li>
+<li>Run a Code Server on the computing node. It will listen on <code>0.0.0.0:8080</code>.</li>
+<li>Reverse proxy <code>gpua042:8080</code> to any port you have access. There are two approaches:
+<ul>
+<li>Use <code>ssh -L</code> to forward the port to your local machine.</li>
+<li>Use Cloudflare Tunnel to reverse proxy the port to a public domain. This approach is more stable in poor network conditions.</li>
+</ul>
+</li>
+</ol>
+<h3 id="run-code-server">Run Code Server</h3>
+<p>Download the Code Server binary from the <a href="https://github.com/coder/code-server">Github repository</a> (e.g., <code>code-server-4.96.2-linux-amd64.tar.gz</code>), and extract it. On the computing node, run:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> code-server-4.96.2-linux-amd64/bin
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## no auth</span>
+</span></span><span class="line"><span class="cl">./code-server --bind-addr 0.0.0.0:8080 --auth none
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## if port is exposed to untrusted network, use password auth</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## password can be modified in ~/.config/code-server/config.yaml</span>
+</span></span><span class="line"><span class="cl">./code-server --bind-addr 0.0.0.0:8080
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="access-code-server">Access Code Server</h3>
+<h4 id="ssh-port-forwarding">SSH Port Forwarding</h4>
+<p><code>ssh -L</code> can forward a local port to a remote port. Run:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh -L 127.0.0.1:8080:gpua042:8080 username@login.delta.ncsa.illinois.edu
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then open <code>http://127.0.0.1:8080</code> in your browser, and enjoy the Code Server!</p>
+<h4 id="cloudflare-tunnel">Cloudflare Tunnel</h4>
+<p>Cloudflare Tunnel is more stable when your computer suffer from poor network connection. But it requires a domain name.</p>
+<p>TODO</p>
+]]></content:encoded></item><item><title>All About IPv6 Address Allocation</title><link>https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/</link><pubDate>Sat, 12 Oct 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/</guid><description>&lt;h2 id="preface"&gt;Preface&lt;/h2&gt;
+&lt;p&gt;IPv4 has only one method of dynamic address allocation, namely DHCP, but IPv6 has two allocation methods, SLAAC and DHCPv6, and DHCPv6 additionally has the PD (Prefix Delegation) extension. These three allocation methods also interact with each other, which makes problems arising during IPv6 allocation far more common than with IPv4. Most tutorials you can find only solve problems superficially, are ambiguous about the underlying technical details, and do not fundamentally clarify the differences between IPv6 and IPv4.&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="preface">Preface</h2>
+<p>IPv4 has only one method of dynamic address allocation, namely DHCP, but IPv6 has two allocation methods, SLAAC and DHCPv6, and DHCPv6 additionally has the PD (Prefix Delegation) extension. These three allocation methods also interact with each other, which makes problems arising during IPv6 allocation far more common than with IPv4. Most tutorials you can find only solve problems superficially, are ambiguous about the underlying technical details, and do not fundamentally clarify the differences between IPv6 and IPv4.</p>
+<p>This article aims to start from the relevant fundamental concepts and, in a &ldquo;teach a man to fish&rdquo; manner, explain how the three IPv6 address allocation methods work, helping to thoroughly resolve the tricky problems in IPv6 allocation.</p>
+<h2 id="ipv6-fundamental-concepts">IPv6 Fundamental Concepts</h2>
+<h3 id="lla-link-local-address-and-eui-64">LLA (Link-Local Address) and EUI-64</h3>
+<p>LLA actually already existed in IPv4: when DHCP is not working properly, some operating systems assign a <code>169.254.0.0/16</code> address to the network interface for temporary point-to-point communication. But LLA is not important in IPv4, playing only an optional fallback role that appears only when DHCP fails. As a result, the vast majority of people (including the author) did not learn about the existence of LLA until IPv6 became widespread.</p>
+<p>IPv6 LLA (<code>fe80::/8</code>) inherits the basic point-to-point communication function of IPv4 LLA, but goes further to take on the important functions of NDP (Neighbor Discovery Protocol) and SLAAC (Stateless Address Autoconfiguration). Understanding it is necessary to understand how SLAAC works.</p>
+<p>For example, when two network ports are directly connected with a cable, they each automatically generate an IPv6 LLA, such as <code>fe80::dfc2:d2aa:c86f:171e/64</code> and <code>fe80::da8f:9d5b:57e3:c6a6/64</code>, and each can <code>ping</code> the other&rsquo;s LLA. On Linux, the <code>ip -6 route</code> command shows the automatically configured LLA route entry:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">fe80::/64 dev eth0 proto kernel metric 1024 pref medium
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>IPv6 LLA is generated from the MAC address using a specific algorithm, namely EUI-64. For example, when the network port&rsquo;s MAC address is <code>70:07:12:34:56:78</code>, the generated EUI-64 is <code>7207:12ff:fe34:5678</code>, and the LLA is <code>fe80:7207:12ff:fe34:5678/64</code> (EUI-64 with the <code>fe80</code> prefix prepended). The specific generation process is shown in the figure below:</p>
+<p><img alt="IPv6 LLA generation process, image source https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac" loading="lazy" src="/2024-10-12-all-about-ipv6-addr-alloc/generating-link-local-address-example.png"></p>
+<p>Generally, routers do not forward traffic for LLA addresses; it is <strong>only used for point-to-point communication on the link</strong>.</p>
+<h3 id="gua-global-unicast-address">GUA (Global Unicast Address)</h3>
+<p>IPv6 GUA (<code>2000::/3</code>) can be mapped to the IPv4 concept of a &ldquo;public IP&rdquo;. In theory it is globally unique and can be used for communication over the public network. A well-designed network architecture should allow every device to obtain an IPv6 GUA, so as to maximize IPv6&rsquo;s P2P communication advantage.</p>
+<h3 id="private-addresses">Private Addresses</h3>
+<p><code>fc00::/7</code> is defined as the IPv6 private address range, analogous to <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, and <code>192.168.0.0/16</code> in IPv4, used for LAN communication. Unlike LLA, it can be forwarded by routers.</p>
+<p>Because IPv6 is designed so that every device worldwide can be assigned a GUA, the role of private addresses in IPv6 is greatly diminished. When it is not possible to assign a GUA to every device (as in some campus network environments), assigning IPv6 private addresses on the internal network can serve as an alternative, allowing internal devices to access IPv6.</p>
+<h3 id="multicast">Multicast</h3>
+<p>IPv6 multicast addresses (<code>ff00::/8</code>) are similar to IPv4 multicast addresses (<code>224.0.0.0/4</code>), used for one-to-many communication within a network segment. <strong>Both SLAAC and DHCPv6 rely on multicast to work</strong>. Commonly used multicast addresses include:</p>
+<ul>
+<li><code>ff02::1</code>: all nodes on the local link;</li>
+<li><code>ff02::2</code>: all routers on the local link.</li>
+</ul>
+<h3 id="ndp-neighbor-discovery-protocol">NDP (Neighbor Discovery Protocol)</h3>
+<p>NDP works on top of ICMPv6 and is similar to IPv4 ARP. It is used to discover other nodes on the data link layer and their corresponding IPv6 addresses, to determine available routes, and to maintain reachability information about available paths and other active nodes. <strong>SLAAC works based on NDP</strong>. The message types involved are:</p>
+<ol>
+<li>RS (Router Solicitation) and RA (Router Advertisement): used to configure IPv6 addresses and routes;</li>
+<li>NS (Neighbor Solicitation) and NA (Neighbor Advertisement): used to find the MAC addresses of other devices on the link.</li>
+</ol>
+<h2 id="slaac-stateless-address-autoconfiguration">SLAAC (Stateless Address Autoconfiguration)</h2>
+<p>SLAAC is the IPv6 address allocation method defined in <a href="https://datatracker.ietf.org/doc/html/rfc4862">RFC 4862</a>, and is also the <strong>recommended allocation method</strong>. In fact, Android only supports SLAAC for IPv6 allocation.</p>
+<p>The most notable feature of SLAAC is that it is stateless, i.e. it does not require a centralized server responsible for allocation. Below, the author uses an example to illustrate the SLAAC process.</p>
+<p>Suppose the <code>lan0</code> port on the <strong>router</strong> is connected to the <code>eth0</code> port on the <strong>host</strong>. The LLA of <code>lan0</code> is <code>fe80::1/64</code>, and the MAC address of <code>eth0</code> is <code>70:07:12:34:56:78</code>. At the same time, the router holds the GUA prefix <code>2001:db8::/64</code>, i.e. all GUAs under this subnet will be routed by the upstream router to this router&rsquo;s <code>wan</code> port. The SLAAC process is as follows:</p>
+<ol>
+<li>
+<p><code>eth0</code> generates the EUI-64 <code>7207:12ff:fe34:5678</code> and the LLA <code>fe80:7207:12ff:fe34:5678/64</code> based on its MAC address;</p>
+</li>
+<li>
+<p>The host performs DAD (Duplicated Address Detection) to ensure the LLA is unique on the local link. This is unrelated to address allocation, so it is omitted here; interested readers can look up the relevant material themselves;</p>
+</li>
+<li>
+<p>The host sends an RS message via the <code>eth0</code> LLA. The RS is sent to all routers on the local link using the multicast address <code>ff02::2</code>.</p>
+</li>
+<li>
+<p>The router replies with an RA message to the <code>eth0</code> LLA. The RA contains the prefix <code>2001:db8::/64</code>, the validity period, the MTU, and other information.</p>
+</li>
+<li>
+<p>The host receives the RA, combines the prefix and the EUI-64 into <code>2001:db8::7207:12ff:fe34:5678/64</code>, assigns it to <code>eth0</code>, and adds the routing table entries:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">2001:db8::/64 dev eth0 proto ra metric 1024 expires 2591993sec pref medium
+</span></span><span class="line"><span class="cl">default via fe80::1 dev eth0 proto static metric 1024 onlink pref medium
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>The host performs DAD detection and uses an NA message to announce the use of the new address to neighbors on the link.</p>
+</li>
+</ol>
+<p><img alt="SLAAC process, image source https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac" loading="lazy" src="/2024-10-12-all-about-ipv6-addr-alloc/ipv6-stateless-address-autoconfiguration.gif"></p>
+<p>SLAAC looks great, but it has an <strong>important flaw</strong>: it does not support distributing DNS information, so the host must obtain DNS through some other means (usually DHCPv6). There are two flag bits in the RA to address this problem:</p>
+<ul>
+<li><code>M</code> (Managed Address Configuration): address information can be obtained via DHCPv6;</li>
+<li><code>O</code> (Other Configuration): other information (such as DNS) can be obtained via DHCPv6.</li>
+</ul>
+<p>The newer <a href="https://datatracker.ietf.org/doc/html/rfc8106">RFC 6106</a> supports distributing DNS information by adding RDNSS (Recursive DNS Server) and DNSSL (DNS Search List) to the RA. For the level of RDNSS support across operating systems, see <a href="https://en.wikipedia.org/wiki/Comparison_of_IPv6_support_in_operating_systems">Comparison of IPv6 support in operating systems</a>. In practice, in the vast majority of cases you only need to configure IPv4 DNS (obtained via DHCPv4), so the RDNSS extension is not very meaningful.</p>
+<p>The problem with the EUI-64-based SLAAC address configuration above is that <strong>the addresses it generates are fixed and predictable</strong>, which brings security and privacy concerns. The IPv6 SLAAC privacy extension defined in <a href="https://datatracker.ietf.org/doc/html/rfc4941">RFC 4941</a> solves this problem. During SLAAC it also generates random, periodically rotated addresses to address the privacy issue. At the same time, the EUI-64-generated address is also retained, for use by externally incoming connections. With the privacy extension enabled, the IPv6 addresses generated on Linux look like the following, for example (from top to bottom: the privacy address, the EUI-64 GUA, and the LLA):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc cake state UP group default qlen 1000
+</span></span><span class="line"><span class="cl">    link/ether 70:07:12:34:56:78 brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">    inet6 2001:db8::dead:beef:aaaa:bbbb/64 scope global temporary dynamic
+</span></span><span class="line"><span class="cl">       valid_lft 2591998sec preferred_lft 604798sec
+</span></span><span class="line"><span class="cl">    inet6 2001:db8::7207:12ff:fe34:5678/64 scope global dynamic mngtmpaddr noprefixroute
+</span></span><span class="line"><span class="cl">       valid_lft 2591998sec preferred_lft 604798sec
+</span></span><span class="line"><span class="cl">    inet6 fe80:7207:12ff:fe34:5678/64 scope link
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="dhcpv6">DHCPv6</h2>
+<p>DHCPv6 operates in broadly the same way as DHCPv4: the host sends a multicast message to <code>ff02::1:2</code> on UDP port 547, and the DHCPv6 server replies with address, DNS, and other information.</p>
+<p>The difference is that DHCPv6 can run in either a stateful or a stateless mode, the distinction being whether or not an address is obtained. When used together with SLAAC, the host only needs to obtain DNS and other information from DHCPv6, so stateless DHCPv6 can be used.</p>
+<h2 id="dhcpv6-pd-prefix-delegation">DHCPv6 PD (Prefix Delegation)</h2>
+<p>PD is a DHCPv6 extension defined in <a href="https://datatracker.ietf.org/doc/html/rfc3633">RFC 3633</a>. It is used to distribute IPv6 prefixes across a network.</p>
+<p>With the PD extension enabled, the DHCP server grants the host the right to use an IPv6 subnet prefix (such as <code>2001:db8::/56</code>) and adds routing table entries to ensure that all addresses under this subnet are routed to the host that requested the prefix. The host can then further subdivide and allocate this subnet.</p>
+<p>A typical use case for DHCPv6 PD is home ISP network access. The home gateway router requests an IPv6 prefix from the ISP DHCP server, and then distributes addresses from this subnet prefix within the home internal network via SLAAC.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This article briefly introduced some of the concepts involved in IPv6 address allocation and explained how SLAAC, DHCPv6, and DHCPv6 PD work. In terms of simplifying address management, IPv6 can be said to have been rather unsuccessful: multiple standards coexist, and there are various combinations of them, which gives clients a non-trivial probability of failing to correctly obtain IPv6.</p>
+<p>In practice, the three most common IPv6 allocation scenarios we encounter are:</p>
+<ul>
+<li>Pure SLAAC: typical campus networks (education networks) fall into this category. In practice, the author has found cases where a misconfigured host on the internal network indiscriminately sends RAs, causing the IPv6 of all hosts on the entire internal network to be misconfigured. At the same time, in this mode, a router you connect yourself will no longer be able to distribute SLAAC GUAs to downstream devices, because the local-link multicast packets that SLAAC relies on cannot be forwarded by the router (this can be solved via IPv6 bridging or NAT6, which is not elaborated on here).</li>
+<li>Pure DHCPv6: some enterprise internal networks use this mode, because DHCPv6 allows centralized management. The biggest problem with this mode is that <a href="https://www.nullzero.co.uk/android-does-not-support-dhcpv6-and-google-wont-fix-that/">Android does not support DHCPv6</a>. But under other operating systems, this mode runs fairly stably.</li>
+<li>SLAAC + DHCPv6 PD: this is the most common mode for home ISP network access. Most home routers are adapted for it and work out of the box.</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac">IPv6 Stateless Address Auto-configuration (SLAAC)</a></li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc4862">RFC 4862: IPv6 Stateless Address Autoconfiguration</a></li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc8106">RFC 6106: IPv6 Router Advertisement Options for DNS Configuration</a></li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc4941">RFC 4914: Privacy Extensions for Stateless Address Autoconfiguration in IPv6</a></li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc3633">RFC 3633: IPv6 Prefix Options for Dynamic Host Configuration Protocol (DHCP) version 6</a></li>
+<li><a href="https://www.nullzero.co.uk/android-does-not-support-dhcpv6-and-google-wont-fix-that/">Android does not support DHCPv6 and Google &lsquo;Won&rsquo;t Fix&rsquo; that</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Comparison_of_IPv6_support_in_operating_systems">Comparison of IPv6 support in operating systems</a></li>
+</ul>
+]]></content:encoded></item><item><title>Extracting Graph Topology from Image</title><link>https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/</link><pubDate>Thu, 11 Jul 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/</guid><description>&lt;h2 id="the-problem"&gt;The Problem&lt;/h2&gt;
+&lt;p&gt;Now we have an image representing a graph, as shown in the figure below:&lt;/p&gt;
+&lt;p&gt;&lt;img loading="lazy" src="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/image.png"&gt;&lt;/p&gt;
+&lt;p&gt;Suppose we already know the category of each pixel: background, node, or edge. How can we &lt;strong&gt;extract the graph topology&lt;/strong&gt; from it and represent the graph by an adjacency matrix?&lt;/p&gt;
+&lt;h2 id="challenges-in-classical-algorithm"&gt;Challenges in Classical Algorithm&lt;/h2&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;h2 id="what-about-neural-network"&gt;What about Neural Network?&lt;/h2&gt;
+&lt;p&gt;We can use a simple algorithm to extract the position of each node. Suppose the position of a node is $\mathbf{P}(x,y)$, and there are $N$ nodes in total.&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="the-problem">The Problem</h2>
+<p>Now we have an image representing a graph, as shown in the figure below:</p>
+<p><img loading="lazy" src="/2024-07-11-extracting-graph-topology-from-image/image.png"></p>
+<p>Suppose we already know the category of each pixel: background, node, or edge. How can we <strong>extract the graph topology</strong> from it and represent the graph by an adjacency matrix?</p>
+<h2 id="challenges-in-classical-algorithm">Challenges in Classical Algorithm</h2>
+<p>TODO</p>
+<h2 id="what-about-neural-network">What about Neural Network?</h2>
+<p>We can use a simple algorithm to extract the position of each node. Suppose the position of a node is $\mathbf{P}(x,y)$, and there are $N$ nodes in total.</p>
+<p>Then, the task is to fill in the $N\times N$ adjacency matrix with $0$ or $1$. As we can see, this can be converted into <strong>a binary classification problem</strong>.</p>
+<p>we can train a neural network $\mathbf{f}$, which takes 3 input: the image $I$, the position of a node pair $\left( \mathbf{P}_ 1, \mathbf{P}_ 2
+\right)$. It outputs $O\in\{0,1\}$, indicating whether there is a direct connection between the node pair, i.e.,</p>
+$$O=\mathbf{f}(\mathbf{I}, \mathbf{P}_ 1, \mathbf{P}_ 2).$$<p>The dataset can be synthesized by a simple program, and we can use any classification network (e.g., <a href="https://arxiv.org/abs/1905.11946">EfficientNet</a>) as our network architecture.</p>
+<p>The problem is how to feed $\left( \mathbf{P}_ 1, \mathbf{P}_ 2
+\right)$​ into the network. We can add an additional &ldquo;mask channel&rdquo; to the image, where the pixels belonging to the two input nodes are marked as 1, and the others as 0. Finally, we input this 4-channel &ldquo;image&rdquo; into the network.</p>
+<p><img loading="lazy" src="/2024-07-11-extracting-graph-topology-from-image/nn.png"></p>
+<h2 id="other-notes">Other Notes</h2>
+<p>TODO</p>
+]]></content:encoded></item><item><title>Building WireGuard VPN for Machine Learning Server Cluster</title><link>https://monsoon-cs.moe/2024-01-29-wg-for-cluster/</link><pubDate>Mon, 29 Jan 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-01-29-wg-for-cluster/</guid><description>&lt;h2 id="motivation"&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;A machine learning cluster needs a secure way to expose services to users, as well as to interconnect servers across the public network. For this, a VPN network needs to be deployed.&lt;/p&gt;
+&lt;p&gt;Deploying a VPN network requires considering the following factors:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Network topology: an appropriate topology must be chosen to minimize latency as much as possible;&lt;/li&gt;
+&lt;li&gt;User management: it should be easy to add or remove users and to authorize them;&lt;/li&gt;
+&lt;li&gt;Simplicity of use and maintenance.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="design"&gt;Design&lt;/h2&gt;
+&lt;h3 id="network-topology"&gt;Network Topology&lt;/h3&gt;
+&lt;p&gt;The network topology determines the latency.&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="motivation">Motivation</h2>
+<p>A machine learning cluster needs a secure way to expose services to users, as well as to interconnect servers across the public network. For this, a VPN network needs to be deployed.</p>
+<p>Deploying a VPN network requires considering the following factors:</p>
+<ol>
+<li>Network topology: an appropriate topology must be chosen to minimize latency as much as possible;</li>
+<li>User management: it should be easy to add or remove users and to authorize them;</li>
+<li>Simplicity of use and maintenance.</li>
+</ol>
+<h2 id="design">Design</h2>
+<h3 id="network-topology">Network Topology</h3>
+<p>The network topology determines the latency.</p>
+<p>The lowest-latency option is obviously full-mesh, i.e. every pair of peers has a direct P2P connection. However, the management complexity of this topology is $\mathcal{O}(n^2)$, and adding a new peer requires modifying the configuration files of all other peers. It also has to deal with the problems introduced by NAT, which requires some automated management software. I tried <a href="https://www.netmaker.io/">Netmaker</a> and <a href="https://headscale.net/">Headscale</a>, but neither of them seemed able to correctly handle the <strong>complex network environment</strong> within the campus, such as the symmetric NAT used by various enterprise-grade routers, and <strong>the probability of successfully establishing P2P was very low</strong>.</p>
+<p>In the end I chose a <strong>topology that combines full-mesh and hub-and-spoke</strong>. Since the number of servers and their IPs rarely change, manually configuring a full-mesh network among the servers is feasible. At the same time, a gateway server is provided as the hub for user access, and users only need to establish a connection with the gateway server. Since most users actually use the VPN within the campus, connecting to the on-campus gateway server and forwarding traffic through it does not introduce much additional latency. This structure balances latency and management complexity, and adding/removing and authorizing users only needs to be done on the gateway server.</p>
+<p><img alt="Network Topology" loading="lazy" src="/2024-01-29-wg-for-cluster/topo.png"></p>
+<h3 id="protocol-choice">Protocol Choice</h3>
+<p>The popular OpenVPN and IPSec are both good enough, but the emerging WireGuard offers unparalleled configuration simplicity. On the server side, WireGuard can define a peer and a route with just a few lines of configuration; on the user side, since WireGuard uses key-pair-based authentication, a single configuration file is enough to join the VPN network, with no need to remember an additional password or perform a login operation.</p>
+<h3 id="management-approach">Management Approach</h3>
+<p>For the sake of predictability and stability, I chose the manual configuration approach. The full-mesh network among servers does not need to be changed frequently once it is configured. User management, on the other hand, is implemented through a script: when a new user needs to be added, the script generates a key pair and allocates an IP, adds the public key and routing information to the gateway server&rsquo;s peer list, then generates a configuration file containing the private key and the allocated IP, and sends it to the user.</p>
+<p>Example of a user peer configuration on the gateway server:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="k">[Peer]</span>
+</span></span><span class="line"><span class="cl"><span class="na">PublicKey</span> <span class="o">=</span> <span class="s">&lt;redacted&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="na">AllowedIPs</span> <span class="o">=</span> <span class="s">10.1.x.y/32</span>
+</span></span><span class="line"><span class="cl"><span class="na">AllowedIPs</span> <span class="o">=</span> <span class="s">fd01::x:y/128</span>
+</span></span><span class="line"><span class="cl"><span class="na">PersistentKeepalive</span> <span class="o">=</span> <span class="s">25</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Example of a user&rsquo;s access configuration file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="k">[Interface]</span>
+</span></span><span class="line"><span class="cl"><span class="na">PrivateKey</span> <span class="o">=</span> <span class="s">&lt;redacted&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="na">Address</span> <span class="o">=</span> <span class="s">10.1.x.y/16</span>
+</span></span><span class="line"><span class="cl"><span class="na">Address</span> <span class="o">=</span> <span class="s">fd01::x:y/64</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">[Peer]</span>
+</span></span><span class="line"><span class="cl"><span class="na">PublicKey</span> <span class="o">=</span> <span class="s">&lt;redacted&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="na">AllowedIPs</span> <span class="o">=</span> <span class="s">10.1.0.0/16  # route all VPN traffic to gateway server</span>
+</span></span><span class="line"><span class="cl"><span class="na">AllowedIPs</span> <span class="o">=</span> <span class="s">fd01::/64</span>
+</span></span><span class="line"><span class="cl"><span class="na">Endpoint</span> <span class="o">=</span> <span class="s">wg.ustcaigroup.xyz:51820  # gateway server is dual stack</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Endpoint = wg.ustcaigroup.xyz:51820  # IPv4</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Endpoint = wg.ustcaigroup.xyz:51820  # IPv6</span>
+</span></span><span class="line"><span class="cl"><span class="na">PersistentKeepalive</span> <span class="o">=</span> <span class="s">25</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></content:encoded></item><item><title>Building Proxy Service for Team</title><link>https://monsoon-cs.moe/2023-11-09-proxy-for-team/</link><pubDate>Thu, 09 Nov 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-11-09-proxy-for-team/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;This is an unfinished blog.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="preface"&gt;Preface&lt;/h2&gt;
+&lt;p&gt;Due to &lt;a href="https://en.wikipedia.org/wiki/Internet_censorship_in_China"&gt;Internet censorship in China&lt;/a&gt; (known as &lt;em&gt;GFW&lt;/em&gt;, &lt;em&gt;Great Firewall&lt;/em&gt;, &lt;em&gt;防火长城&lt;/em&gt;), many websites (e.g. Google, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity issues. In China, the means to circumvent internet censorship is referred to as &lt;em&gt;翻墙&lt;/em&gt; (means &lt;em&gt;climbing over the wall&lt;/em&gt;).&lt;/p&gt;
+&lt;p&gt;In China, to freely access the Internet, a proxy is essential. Despite various commercial options available, they may not be suitable for everyone. Therefore, I have constructed a user-friendly and easy-to-maintain proxy system for my research group, as a part of my responsibilities as a system administrator.&lt;/p&gt;</description><content:encoded><![CDATA[<blockquote>
+<p>This is an unfinished blog.</p>
+</blockquote>
+<h2 id="preface">Preface</h2>
+<p>Due to <a href="https://en.wikipedia.org/wiki/Internet_censorship_in_China">Internet censorship in China</a> (known as <em>GFW</em>, <em>Great Firewall</em>, <em>防火长城</em>), many websites (e.g. Google, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity issues. In China, the means to circumvent internet censorship is referred to as <em>翻墙</em> (means <em>climbing over the wall</em>).</p>
+<p>In China, to freely access the Internet, a proxy is essential. Despite various commercial options available, they may not be suitable for everyone. Therefore, I have constructed a user-friendly and easy-to-maintain proxy system for my research group, as a part of my responsibilities as a system administrator.</p>
+<h2 id="target">Target</h2>
+<ol>
+<li><strong>Easy to use</strong>. Team members only need some simple configurations.The proxy client should be able to automatically update configuration.</li>
+<li><strong>Stability</strong>.</li>
+<li><strong>Sufficient traffic</strong>, to download large datasets.</li>
+<li><strong>Low Latency</strong>, to provide good experience for web.</li>
+<li><strong>Low Cost</strong>.</li>
+<li><strong>Easy to maintain</strong>. Frequent maintenance is unacceptable, and only simple changes of the configuration are required for new function.</li>
+<li><strong>Concealment</strong>. The cat-and-mouse game between GFW and anti-censorship tools has been escalating. Ten years ago (2013), only an OpenVPN client was all your need to <a href="https://www.cnnic.com.cn/IDR/hlwfzdsj/201306/t20130628_40563.htm">&ldquo;Across the Great Wall and reach every corner in the world&rdquo;</a>. Now, you must use much more sophisticated solutions to prevent your &ldquo;unusual&rdquo; traffic from being detected by GFW. According to <a href="https://gfw.report/">GFW Report</a>, popular <a href="https://shadowsocks.org/">Shadowsocks</a> (a proxy protocol which simply encrypt all traffic using pre-shared key) was <a href="https://gfw.report/blog/gfw_shadowsocks/">detected and blocked</a>, and the TLS-based proxy also <a href="https://github.com/net4people/bbs/issues/129">encountered large-scale blocking in Oct 2022</a>. The tools and protocols used must be concealed enough to allow the service to run for a long time.</li>
+</ol>
+<h2 id="available-resources">Available Resources</h2>
+<h3 id="cernet">CERNET</h3>
+<h3 id="cloudflare-warp">Cloudflare WARP</h3>
+<h3 id="vps">VPS</h3>
+<h3 id="server-in-ustc">Server in USTC</h3>
+<h3 id="anti-censorship-tools">Anti-Censorship Tools</h3>
+<h2 id="adopted-solution">Adopted Solution</h2>
+<!-- draw a picture -->
+<h2 id="deployment">Deployment</h2>
+<h2 id="problems">Problems</h2>
+<h3 id="client-initialization">Client Initialization</h3>
+<h3 id="compatibility">Compatibility</h3>
+<h2 id="conclusion">Conclusion</h2>
+]]></content:encoded></item></channel></rss>

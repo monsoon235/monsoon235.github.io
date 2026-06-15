@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>ssh on Monsoon's Blog</title><link>https://monsoon-cs.moe/tags/ssh/</link><description>Recent content in ssh on Monsoon's Blog</description><generator>Hugo</generator><language>en</language><lastBuildDate>Sun, 22 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/tags/ssh/index.xml" rel="self" type="application/rss+xml"/><item><title>Using GPU accessible VS Code Server on UIUC Delta</title><link>https://monsoon-cs.moe/2024-12-22-uiuc-delta-code-server/</link><pubDate>Sun, 22 Dec 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-12-22-uiuc-delta-code-server/</guid><description>&lt;h2 id="why-writing-this-blog-post"&gt;Why writing this blog post&lt;/h2&gt;
+&lt;p&gt;Many UIUC students rely on the &lt;a href="https://www.ncsa.illinois.edu/research/project-highlights/delta/"&gt;Delta&lt;/a&gt; to access the GPU resources for their research. Delta provides 4 ssh-enabled login nodes, and lots of computing nodes with GPUs. Usually, we must ssh to the login node (by password and DUO 2FA OTP) first, and then use &lt;code&gt;srun&lt;/code&gt; to request GPU resources to run our code. However, based on my experience, sometimes we could suffer many problems when using the Delta:&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="why-writing-this-blog-post">Why writing this blog post</h2>
+<p>Many UIUC students rely on the <a href="https://www.ncsa.illinois.edu/research/project-highlights/delta/">Delta</a> to access the GPU resources for their research. Delta provides 4 ssh-enabled login nodes, and lots of computing nodes with GPUs. Usually, we must ssh to the login node (by password and DUO 2FA OTP) first, and then use <code>srun</code> to request GPU resources to run our code. However, based on my experience, sometimes we could suffer many problems when using the Delta:</p>
+<ul>
+<li><strong>Unstable network connection</strong>: Connection is lost frequently when the network is poor. Each time when the VS Code Remote lost connection, you must reenter the password and DUO 2FA OTP (you have to unlock your phone to get the OTP) to reconnect, which is annoying, time-consuming, and distracting.</li>
+<li><strong>Broken <a href="https://docs.ncsa.illinois.edu/systems/delta/en/latest/user_guide/ood/index.html">OnDemand Code Server</a></strong>: Although you can run VS COde Remote on the login nodes by ssh, there&rsquo;s no GPU for debugging, and the computing nodes are not accessible by ssh. The alternative ways include <a href="https://docs.ncsa.illinois.edu/systems/delta/en/latest/user_guide/ood/index.html">OnDemand Jupyter Lab and Code Server</a>. But the functions of Jupiter Lab are limited, and the Code Server is broken &ndash; When I try to request a Code Server on computing nodes, the system just queues and shows my request has been completed, <strong>no running status</strong>.</li>
+</ul>
+<p>Due to the above problems, debugging GPU programs on Delta are struggling. That&rsquo;s why I wrote this blog post: by running private Code Server on computing nodes, and deploying a <a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/">Cloudflare Tunnel</a> reverse proxy, you can say goodbye to these annoying problems.</p>
+<h2 id="how-to">How to</h2>
+<p>My solution is based on an <strong>observation</strong> about the Delta: all login nodes and computing nodes are in a trusted network. There&rsquo;s no firewalls between them, which means you can access to any ports on the computing nodes from the login nodes.</p>
+<p>The main steps of my solution are simple:</p>
+<ol>
+<li>Use <code>srun</code> to get a tty on the computing node (e.g., on <code>gpua042</code> node).</li>
+<li>Run a Code Server on the computing node. It will listen on <code>0.0.0.0:8080</code>.</li>
+<li>Reverse proxy <code>gpua042:8080</code> to any port you have access. There are two approaches:
+<ul>
+<li>Use <code>ssh -L</code> to forward the port to your local machine.</li>
+<li>Use Cloudflare Tunnel to reverse proxy the port to a public domain. This approach is more stable in poor network conditions.</li>
+</ul>
+</li>
+</ol>
+<h3 id="run-code-server">Run Code Server</h3>
+<p>Download the Code Server binary from the <a href="https://github.com/coder/code-server">Github repository</a> (e.g., <code>code-server-4.96.2-linux-amd64.tar.gz</code>), and extract it. On the computing node, run:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> code-server-4.96.2-linux-amd64/bin
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## no auth</span>
+</span></span><span class="line"><span class="cl">./code-server --bind-addr 0.0.0.0:8080 --auth none
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## if port is exposed to untrusted network, use password auth</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## password can be modified in ~/.config/code-server/config.yaml</span>
+</span></span><span class="line"><span class="cl">./code-server --bind-addr 0.0.0.0:8080
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="access-code-server">Access Code Server</h3>
+<h4 id="ssh-port-forwarding">SSH Port Forwarding</h4>
+<p><code>ssh -L</code> can forward a local port to a remote port. Run:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh -L 127.0.0.1:8080:gpua042:8080 username@login.delta.ncsa.illinois.edu
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then open <code>http://127.0.0.1:8080</code> in your browser, and enjoy the Code Server!</p>
+<h4 id="cloudflare-tunnel">Cloudflare Tunnel</h4>
+<p>Cloudflare Tunnel is more stable when your computer suffer from poor network connection. But it requires a domain name.</p>
+<p>TODO</p>
+]]></content:encoded></item><item><title>Using an SSH Reverse Tunnel to Log Into BitaHub Containers and Hold GPUs Long-Term</title><link>https://monsoon-cs.moe/2023-10-20-bitahub/</link><pubDate>Fri, 20 Oct 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-10-20-bitahub/</guid><description>&lt;h2 id="problem"&gt;Problem&lt;/h2&gt;
+&lt;p&gt;Every year before CVPR, GPUs are always in short supply, and we need to borrow cards from elsewhere. USTC provides &lt;a href="https://bitahub.ustc.edu.cn/"&gt;BitaHub&lt;/a&gt; for on-campus users, but it suffers from the same shortage of cards before CVPR. At the same time, its job-submission-based usage model is very inconvenient: submitting jobs that occupy multiple cards often requires a long wait in the queue, and its data management approach is downright user-hostile.&lt;/p&gt;
+&lt;p&gt;As the server administrator for my group, in order to make my life easier before CVPR and to avoid repeating the 2021 pre-CVPR ordeal of scrambling to allocate resources, I needed to improve the BitaHub experience:&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="problem">Problem</h2>
+<p>Every year before CVPR, GPUs are always in short supply, and we need to borrow cards from elsewhere. USTC provides <a href="https://bitahub.ustc.edu.cn/">BitaHub</a> for on-campus users, but it suffers from the same shortage of cards before CVPR. At the same time, its job-submission-based usage model is very inconvenient: submitting jobs that occupy multiple cards often requires a long wait in the queue, and its data management approach is downright user-hostile.</p>
+<p>As the server administrator for my group, in order to make my life easier before CVPR and to avoid repeating the 2021 pre-CVPR ordeal of scrambling to allocate resources, I needed to improve the BitaHub experience:</p>
+<ol>
+<li>How to hold GPUs long-term to avoid repeatedly queuing (slightly unethical, but a measure born of necessity);</li>
+<li>How to conveniently read data from our own servers, instead of being forced to use BitaHub&rsquo;s user-hostile data management model;</li>
+<li>How to make the BitaHub GPU experience as close as possible to that of our group&rsquo;s servers, lowering migration costs and improving the flexibility of resource scheduling.</li>
+</ol>
+<h2 id="idea">Idea</h2>
+<p>Jobs in BitaHub run as docker containers, which gives us the possibility of configuring the environment we want inside the container, as long as we can somehow ssh into it.</p>
+<p>After some investigation, I found that as long as the startup command does not stop running, a BitaHub container will keep running indefinitely and will not release its GPU resources. <strong>At the same time, BitaHub containers have network access</strong>, and the BitaHub web page even thoughtfully provides the ssh private key for the root user inside each job&rsquo;s container.</p>
+<p>These facts give us an opportunity to exploit. All we need to do is run a tunnel program inside the container so that external parties can access port 22 of the container, and then we can log in and hold the resources long-term. Moreover, since the container has network access, we can also directly mount the file systems of other on-campus servers.</p>
+<h2 id="solution">Solution</h2>
+<p>The tunnel program I ended up choosing is <code>ssh</code>, which can create a reverse tunnel:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">ssh -i &lt;key_file&gt; -F none -o <span class="s2">&#34;StrictHostKeyChecking no&#34;</span> -o <span class="s2">&#34;ServerAliveInterval 15&#34;</span> -v -N -R &lt;port&gt;:localhost:22 jump@&lt;jumpserver&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>On the <code>jumpserver</code>, configure a user <code>jump</code> and allow login with a specific private key, then somehow get the private key into the container (you could bake it directly into the image, but I chose a more convenient approach: create a BitaHub dataset to store it, and just add this dataset to every job).</p>
+<p>The container&rsquo;s startup command is exactly the command above (considering network fluctuations, you can wrap it in a <code>while true</code> loop or use <code>autossh</code> to reconnect automatically). Once started, it creates a reverse tunnel on <code>&lt;port&gt;</code> of <code>&lt;jumpserver&gt;</code>, with <code>&lt;port&gt;</code> mapped to port <code>22</code> inside the container.</p>
+<p>You can set <code>GatewayPorts yes</code> in the <code>sshd_config</code> of <code>&lt;jumpserver&gt;</code> so that the reverse tunnel listens on <code>0.0.0.0</code> instead of <code>127.0.0.1</code>. Otherwise, I would have to create a user on <code>&lt;jumpserver&gt;</code> for every person, or forward each port with <code>iptables</code>, which is far too tedious. Binding to <code>0.0.0.0</code> lets us access it directly from the existing VPN network.</p>
+<p>There are many options for mounting a file system. Considering both security and convenience, I chose SSHFS. Exposing NFS directly to the public internet is too dangerous, while configuring NFS user authentication is too tedious. At the same time, the kernel that BitaHub uses to run containers neither loads the <code>wireguard</code> kmod nor maps <code>/dev/net/tun</code>, so we cannot use a VPN to protect data security. SSHFS can directly reuse the existing user authentication mechanism, and SSH traffic itself is also more likely to be let through by any potential data-center firewall.</p>
+<p>Use the following command to mount SSHFS:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">sshfs -o reconnect,ServerAliveInterval<span class="o">=</span>15,ServerAliveCountMax<span class="o">=</span>30,ssh_command<span class="o">=</span><span class="s1">&#39;ssh -p &lt;dataserver_port&gt; -i &lt;key_file&gt;&#39;</span> &lt;user&gt;@&lt;dataserver&gt;:/path /path
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="postscript">Postscript</h2>
+<p>TODO</p>
+]]></content:encoded></item></channel></rss>

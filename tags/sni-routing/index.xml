@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>sni-routing on Monsoon's Blog</title><link>https://monsoon-cs.moe/tags/sni-routing/</link><description>Recent content in sni-routing on Monsoon's Blog</description><generator>Hugo</generator><language>en</language><lastBuildDate>Tue, 26 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/tags/sni-routing/index.xml" rel="self" type="application/rss+xml"/><item><title>Enabling QUIC in Nginx While Keeping SNI Routing</title><link>https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/</link><pubDate>Tue, 26 Sep 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-09-26-nginx-quic-with-ssl-preread/</guid><description>&lt;h2 id="problem"&gt;Problem&lt;/h2&gt;
+&lt;p&gt;Since version 1.25.0, Nginx&amp;rsquo;s support for QUIC &lt;a href="https://nginx.org/en/docs/quic.html"&gt;has been merged into mainline&lt;/a&gt;. Users who want to try it out can simply use the official &lt;code&gt;nginx&lt;/code&gt; docker image, which is very convenient.&lt;/p&gt;
+&lt;p&gt;However, the nginx on my server uses &lt;a href="https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html"&gt;SNI routing&lt;/a&gt;, driven by the needs of a new generation of TLS-based proxy protocols such as &lt;a href="https://github.com/ihciah/shadow-tls"&gt;Shadow TLS&lt;/a&gt; and &lt;a href="https://github.com/XTLS/REALITY"&gt;Xray Reality&lt;/a&gt;. These proxy protocols cannot have their TLS layer handled by nginx on their behalf (unlike earlier protocols that could use gRPC/WebSocket and the like as their data transport). But in order to achieve the best camouflage effect, using the &lt;code&gt;443/tcp&lt;/code&gt; port is necessary (the whitelisted target sites used for camouflage generally only serve HTTPS on the &lt;code&gt;443/tcp&lt;/code&gt; port). Therefore, multiplexing the &lt;code&gt;443/tcp&lt;/code&gt; port is necessary.&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="problem">Problem</h2>
+<p>Since version 1.25.0, Nginx&rsquo;s support for QUIC <a href="https://nginx.org/en/docs/quic.html">has been merged into mainline</a>. Users who want to try it out can simply use the official <code>nginx</code> docker image, which is very convenient.</p>
+<p>However, the nginx on my server uses <a href="https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html">SNI routing</a>, driven by the needs of a new generation of TLS-based proxy protocols such as <a href="https://github.com/ihciah/shadow-tls">Shadow TLS</a> and <a href="https://github.com/XTLS/REALITY">Xray Reality</a>. These proxy protocols cannot have their TLS layer handled by nginx on their behalf (unlike earlier protocols that could use gRPC/WebSocket and the like as their data transport). But in order to achieve the best camouflage effect, using the <code>443/tcp</code> port is necessary (the whitelisted target sites used for camouflage generally only serve HTTPS on the <code>443/tcp</code> port). Therefore, multiplexing the <code>443/tcp</code> port is necessary.</p>
+<p>To make SNI routing and QUIC coexist, you only need to add <code>listen 443 quic</code> to each server in the original SNI routing configuration. An example configuration is shown below.</p>
+<h2 id="configuration">Configuration</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">http</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># ...
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">server_name</span> <span class="s">example.com</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 443/tcp is already occupied by nginx stream, so it cannot be listened on again
+</span></span></span><span class="line"><span class="cl">        <span class="c1"># listen 443 ssl http2 reuseport so_keepalive=on;
+</span></span></span><span class="line"><span class="cl">        <span class="c1"># listen [::]:443 ssl http2 reuseport so_keepalive=on;
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># Listen on the 443/udp port and enable QUIC
+</span></span></span><span class="line"><span class="cl">        <span class="c1"># ref: https://nginx.org/en/docs/http/ngx_http_v3_module.html
+</span></span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="mi">443</span> <span class="s">quic</span> <span class="s">reuseport</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="s">[::]:443</span> <span class="s">quic</span> <span class="s">reuseport</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># Listen on a unix domain socket to accept connections forwarded from stream; a local port can also be used
+</span></span></span><span class="line"><span class="cl">        <span class="c1"># Accept proxy_protocol, otherwise the connection source address shown in the log will all be unix:
+</span></span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="s">unix:/dev/shm/nginx-example.sock</span> <span class="s">ssl</span> <span class="s">http2</span> <span class="s">proxy_protocol</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">set_real_ip_from</span> <span class="s">unix:</span><span class="p">;</span>  <span class="c1"># Only override the source address for connections coming from the unix domain socket
+</span></span></span><span class="line"><span class="cl">        <span class="kn">real_ip_header</span> <span class="s">proxy_protocol</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kn">add_header</span> <span class="s">Alt-Svc</span> <span class="s">&#39;h3=&#34;:443&#34;</span><span class="p">;</span> <span class="kn">ma=86400&#39;</span><span class="p">;</span>  <span class="c1"># used to advertise the availability of HTTP/3
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># ...
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">server_name</span> <span class="s">foo.example.com</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># Multiple domains can share 443/udp
+</span></span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="mi">443</span> <span class="s">quic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="s">[::]:443</span> <span class="s">quic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="s">unix:/dev/shm/nginx-example-foo.sock</span> <span class="s">ssl</span> <span class="s">http2</span> <span class="s">proxy_protocol</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">set_real_ip_from</span> <span class="s">unix:</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">real_ip_header</span> <span class="s">proxy_protocol</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kn">add_header</span> <span class="s">Alt-Svc</span> <span class="s">&#39;h3=&#34;:443&#34;</span><span class="p">;</span> <span class="kn">ma=86400&#39;</span><span class="p">;</span>  <span class="c1"># used to advertise the availability of HTTP/3
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># ...
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">stream</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># ...
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># Route based on TLS SNI
+</span></span></span><span class="line"><span class="cl">    <span class="kn">map</span> <span class="nv">$ssl_preread_server_name</span> <span class="nv">$name</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">example.com</span>             <span class="s">unix:/dev/shm/nginx-example.sock</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">foo.example.com</span>         <span class="s">unix:/dev/shm/nginx-example-foo.sock</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">learn.microsoft.com</span>     <span class="n">127.0.0.1</span><span class="p">:</span><span class="mi">8443</span><span class="p">;</span>  <span class="c1"># used for shadow-tls/xray-reality, etc.
+</span></span></span><span class="line"><span class="cl">        <span class="kn">default</span>                 <span class="s">unix:/dev/shm/nginx-default.sock</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Listen on 443/tcp and route based on SNI
+</span></span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="mi">443</span> <span class="s">reuseport</span> <span class="s">so_keepalive=on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="s">[::]:443</span> <span class="s">reuseport</span> <span class="s">so_keepalive=on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_pass</span> <span class="nv">$name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">ssl_preread</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_protocol</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="testing">Testing</h2>
+<p>Currently, the mainline of <code>curl</code>/<code>wget</code> does not yet support QUIC. You can use the <code>ymuski/curl-http3</code> docker image:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ docker run -it --rm ymuski/curl-http3 curl https://static.monsoon-cs.moe/public/ --http3 -IL
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">HTTP/3 <span class="m">200</span>
+</span></span><span class="line"><span class="cl">server: nginx/1.25.2
+</span></span><span class="line"><span class="cl">date: Tue, <span class="m">26</span> Sep <span class="m">2023</span> 14:52:29 GMT
+</span></span><span class="line"><span class="cl">content-type: text/html<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>utf-8
+</span></span><span class="line"><span class="cl">strict-transport-security: max-age<span class="o">=</span><span class="m">63072000</span>
+</span></span><span class="line"><span class="cl">alt-svc: <span class="nv">h3</span><span class="o">=</span><span class="s2">&#34;:443&#34;</span><span class="p">;</span> <span class="nv">ma</span><span class="o">=</span><span class="m">86400</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="references">References</h2>
+<ul>
+<li><a href="https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html">https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html</a></li>
+<li><a href="https://nginx.org/en/docs/http/ngx_http_v3_module.html">https://nginx.org/en/docs/http/ngx_http_v3_module.html</a></li>
+</ul>
+]]></content:encoded></item></channel></rss>

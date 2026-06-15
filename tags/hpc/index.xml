@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>hpc on Monsoon's Blog</title><link>https://monsoon-cs.moe/tags/hpc/</link><description>Recent content in hpc on Monsoon's Blog</description><generator>Hugo</generator><language>en</language><lastBuildDate>Mon, 19 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/tags/hpc/index.xml" rel="self" type="application/rss+xml"/><item><title>Optimizing MKL Performance on AMD CPUs</title><link>https://monsoon-cs.moe/2023-06-19-mkl-on-amd/</link><pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-06-19-mkl-on-amd/</guid><description>&lt;h2 id="the-problem"&gt;The Problem&lt;/h2&gt;
+&lt;p&gt;My lab has some AMD EPYC 7713 servers. We bought them because some people in the group run programs with very high CPU load (I don&amp;rsquo;t know what kind of load it is, or why it can&amp;rsquo;t run on the GPU, and I don&amp;rsquo;t have the energy to help everyone solve it one by one). AMD processors with their many cores are a great fit for this kind of demand.&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="the-problem">The Problem</h2>
+<p>My lab has some AMD EPYC 7713 servers. We bought them because some people in the group run programs with very high CPU load (I don&rsquo;t know what kind of load it is, or why it can&rsquo;t run on the GPU, and I don&rsquo;t have the energy to help everyone solve it one by one). AMD processors with their many cores are a great fit for this kind of demand.</p>
+<p>But as nice as AMD processors are, using them in a deep-learning lab brings an extra problem: the numpy and PyTorch installed by Anaconda both use MKL as their BLAS implementation by default, and MKL&rsquo;s library functions are also the hotspots of most high-CPU-load programs. However, <strong>MKL checks whether it is running on an Intel CPU, and if not, the optimizations have no effect.</strong></p>
+<p>Since this is a deep-learning lab, few people have enough HPC background to compile suitable versions of numpy and PyTorch themselves, and it&rsquo;s hard for them to break away from Anaconda, so the dependency on MKL is hard to remove. For this reason I needed a solution that is <strong>transparent to ordinary users</strong>.</p>
+<h2 id="the-solution">The Solution</h2>
+<p>A widely circulated solution can be found via search engines: set the environment variable <code>MKL_DEBUG_CPU_TYPE=5</code>. This used to work, but <strong>it no longer works for MKL 2020 and later versions</strong>.</p>
+<p>In the end I found a more clever solution <a href="https://documentation.sigma2.no/jobs/mkl.html">here</a>.</p>
+<p>MKL calls a function <code>mkl_serv_intel_cpu_true()</code> to check whether it is running on an Intel CPU. As long as we provide a fake <code>mkl_serv_intel_cpu_true()</code> that always returns <code>1</code>, we can trick MKL into thinking it is running on an Intel CPU.</p>
+<p>To do this, we can use Linux&rsquo;s <strong><code>LD_PRELOAD</code> mechanism</strong>. The dynamic library pointed to by <code>LD_PRELOAD</code> has the highest loading priority, so as long as we compile the desired <code>mkl_serv_intel_cpu_true()</code> function into an <code>so</code> file and point <code>LD_PRELOAD</code> at it, we can load this function ahead of everything else.</p>
+<blockquote>
+<p>I have often heard of the <code>LD_PRELOAD</code> mechanism being used for library-function hijacking attacks; here it counts as a clever use.</p>
+</blockquote>
+<h2 id="implementation">Implementation</h2>
+<p>Create <code>mkl_trick.c</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">mkl_serv_intel_cpu_true</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Compile it with <code>gcc -shared -fPIC -o libmkl_trick.so mkl_trick.c</code>, and copy the generated <code>libmkl_trick.so</code> to <code>/usr/local/lib</code>.</p>
+<p>Add the following to the shell&rsquo;s global initialization file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">MKL_DEBUG_CPU_TYPE</span><span class="o">=</span><span class="m">5</span>  <span class="c1"># compatibility with older MKL versions</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">MKL_ENABLE_INSTRUCTIONS</span><span class="o">=</span>AVX2  <span class="c1"># optional, tells MKL it can use AVX2</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LD_PRELOAD</span><span class="o">=</span>/usr/local/lib/libmkl_trick.so
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Some of my labmates use Bash and some use ZSH, so both need to be modified:</p>
+<ul>
+<li>Bash: create the file <code>/etc/profile.d/mkl.sh</code> and add the above content</li>
+<li>ZSH: add it to <code>/etc/zsh/zshenv</code></li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://documentation.sigma2.no/jobs/mkl.html">https://documentation.sigma2.no/jobs/mkl.html</a></li>
+</ul>
+]]></content:encoded></item></channel></rss>

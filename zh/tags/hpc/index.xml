@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>hpc on Monsoon's Blog</title><link>https://monsoon-cs.moe/zh/tags/hpc/</link><description>Recent content in hpc on Monsoon's Blog</description><generator>Hugo</generator><language>zh-CN</language><lastBuildDate>Mon, 19 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/zh/tags/hpc/index.xml" rel="self" type="application/rss+xml"/><item><title>优化 MKL 在 AMD CPU 上的性能</title><link>https://monsoon-cs.moe/zh/2023-06-19-mkl-on-amd/</link><pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/zh/2023-06-19-mkl-on-amd/</guid><description>&lt;h2 id="问题"&gt;问题&lt;/h2&gt;
+&lt;p&gt;实验室有一些 AMD EPYC 7713 的服务器，采购的原因是组里有一些人的程序有非常高的 CPU 负载（我也不知道是什么负载，为什么不能跑在 GPU 上，我也没有精力去逐个帮助解决），框框多的 AMD 处理器非常适合这种需求。&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="问题">问题</h2>
+<p>实验室有一些 AMD EPYC 7713 的服务器，采购的原因是组里有一些人的程序有非常高的 CPU 负载（我也不知道是什么负载，为什么不能跑在 GPU 上，我也没有精力去逐个帮助解决），框框多的 AMD 处理器非常适合这种需求。</p>
+<p>不过 AMD 的处理器虽然香，用在炼丹实验室会有额外的问题：Anaconda 安装的 numpy 和 PyTorch 默认都使用了 MKL 作为 BLAS 的实现，MKL 的 library function 也是大部分高 CPU 负载程序的热点，但 <strong>MKL 会判断自己是否在 Intel CPU 上运行，如果不是，则没有优化效果。</strong></p>
+<p>由于这是炼丹实验室，大家很少有足够的 HPC 基础去自己编译适合的 numpy 和 PyTorch 版本，也很难脱离 Anaconda，对于 MKL 的依赖因此很难去除。为此需要一个<strong>对一般用户无感知的解决方案</strong>。</p>
+<h2 id="解决方案">解决方案</h2>
+<p>通过搜索引擎可以搜索到一个广为流传解决方案：设置环境变量 <code>MKL_DEBUG_CPU_TYPE=5</code>。这是个曾经有效的解决方案，但<strong>对于 MKL 2020 及之后的版本不再有效</strong>。</p>
+<p>最终我在<a href="https://documentation.sigma2.no/jobs/mkl.html">此处</a>找到了更巧妙的解决方案。</p>
+<p>MKL 会调用一个 <code>mkl_serv_intel_cpu_true()</code> 函数以检查自己是否运行在 Intel CPU 上，只要提供一个虚假的、始终返回 <code>1</code> 的 <code>mkl_serv_intel_cpu_true()</code>，即可欺骗 MKL 让它认为自己在 Intel CPU 上运行。</p>
+<p>为此，可以利用 Linux 的 <strong><code>LD_PRELOAD</code> 机制</strong>。<code>LD_PRELOAD</code> 指向的动态链接库有最高的加载优先级，只要编译一个想要的 <code>mkl_serv_intel_cpu_true()</code> 函数为 <code>so</code> 文件，并用 <code>LD_PRELOAD</code> 指向它，即可抢先完成此函数的加载。</p>
+<blockquote>
+<p>笔者也经常有耳闻 <code>LD_PRELOAD</code> 机制被用于库函数劫持攻击，此处算是一种妙用。</p>
+</blockquote>
+<h2 id="具体实施">具体实施</h2>
+<p>新建 <code>mkl_trick.c</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">mkl_serv_intel_cpu_true</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>使用 <code>gcc -shared -fPIC -o libmkl_trick.so mkl_trick.c</code> 编译，并将生成的 <code>libmkl_trick.so</code> 复制到 <code>/usr/local/lib</code>。</p>
+<p>在 Shell 的全局初始化文件中加入：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">MKL_DEBUG_CPU_TYPE</span><span class="o">=</span><span class="m">5</span>  <span class="c1"># 兼容旧版本 MKL</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">MKL_ENABLE_INSTRUCTIONS</span><span class="o">=</span>AVX2  <span class="c1"># 可选，指明 MKL 可以使用 AVX2</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LD_PRELOAD</span><span class="o">=</span>/usr/local/lib/libmkl_trick.so
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>实验室的同学有的用 Bash 也有的用 ZSH，所以两者都要修改：</p>
+<ul>
+<li>Bash: 新建文件 <code>/etc/profile.d/mkl.sh</code> 并添加上述内容</li>
+<li>ZSH: 添加到 <code>/etc/zsh/zshenv</code></li>
+</ul>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://documentation.sigma2.no/jobs/mkl.html">https://documentation.sigma2.no/jobs/mkl.html</a></li>
+</ul>
+]]></content:encoded></item></channel></rss>

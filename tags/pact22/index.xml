@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>pact22 on Monsoon's Blog</title><link>https://monsoon-cs.moe/tags/pact22/</link><description>Recent content in pact22 on Monsoon's Blog</description><generator>Hugo</generator><language>en</language><lastBuildDate>Sun, 31 Mar 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/tags/pact22/index.xml" rel="self" type="application/rss+xml"/><item><title>[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT'22)</title><link>https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/</link><pubDate>Wed, 07 Feb 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;This blog is a write-up of the paper &amp;ldquo;&lt;a href="https://dl.acm.org/doi/10.1145/3559009.3569650"&gt;GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud&lt;/a&gt;&amp;rdquo; from PACT'22.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="motivation"&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;This paper focuses on the &lt;strong&gt;GPU sharing in cloud scenarios&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Currently, existing GPU sharing techniques can be categorized into 2 types:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Time-sharing&lt;/strong&gt; means executing each concurrent VM on a full device in a round-robin fashion. &lt;strong&gt;Pros&lt;/strong&gt;: Simple and mature. &lt;strong&gt;Cons&lt;/strong&gt;: VMs could still under-utilize the hardware within each time slice.&lt;/p&gt;</description><content:encoded><![CDATA[<blockquote>
+<p>This blog is a write-up of the paper &ldquo;<a href="https://dl.acm.org/doi/10.1145/3559009.3569650">GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud</a>&rdquo; from PACT'22.</p>
+</blockquote>
+<h2 id="motivation">Motivation</h2>
+<p>This paper focuses on the <strong>GPU sharing in cloud scenarios</strong>.</p>
+<p>Currently, existing GPU sharing techniques can be categorized into 2 types:</p>
+<ul>
+<li>
+<p><strong>Time-sharing</strong> means executing each concurrent VM on a full device in a round-robin fashion. <strong>Pros</strong>: Simple and mature. <strong>Cons</strong>: VMs could still under-utilize the hardware within each time slice.</p>
+</li>
+<li>
+<p><strong>Shape-sharing</strong>: split a device into partitions and allows multiple workloads to execute on different partitions simultaneously.</p>
+</li>
+</ul>
+<p>Space-sharing can be categorized into 2 types：</p>
+<ul>
+<li>
+<p><strong>Coarse-grained</strong> assigns disjoint sets of streaming multiprocessors (SMs) and memory channels to concurrent workloads. For example, Nvidia MIG. <strong>Pros</strong>: offers great performance isolation among tenants of the same GPU. <strong>Cons</strong>: (i) resource under-utilization within each SM consisting of heterogeneous functional units (e.g., FP32, INT, FP64, Tensor Cores) meant for different workload types. (ii) inefficient memory bandwidth usage caused by the bursty nature of GPU memory traffic.</p>
+</li>
+<li>
+<p><strong>Fine-grained</strong> allows different workloads to co-run on the same SMs and request memory bandwidth flexibly, such as CUDA Stream and MPS. <strong>Pros</strong>: Better hardware utilization.</p>
+</li>
+</ul>
+<p>The key problem of GPU sharing in data center is <strong>performance unpredictability</strong>. It contains 2 <strong>key challenges</strong>:</p>
+<ol>
+<li>
+<p><strong>Mitigating interference</strong>. The amount of performance improvement from fine-grained sharing varies drastically depending on how compatible the concurrent workloads are in terms of resource usage. Also, the interference cannot be statically estimated. So, <strong>it is non-trivial to determine compatibility</strong> among a large number of incoming jobs in the cluster.</p>
+</li>
+<li>
+<p><strong>Providing QoS guarantees</strong>.</p>
+</li>
+</ol>
+<p>Existing solutions:</p>
+<ul>
+<li>
+<p><strong>Software-based</strong>: kernel slicing or a persistent thread model. <strong>Cons</strong>: high scheduling overhead.</p>
+</li>
+<li>
+<p><strong>Hardware-based</strong>: integrate sophisticated resource management logic into hardware to allocate resources for concurrent kernels. <strong>Cons</strong>: expensive and also inflexible.</p>
+</li>
+</ul>
+<p>Common problems of existing solutions:</p>
+<ol>
+<li>
+<p>They do not concern with interference mitigation at the cluster level.</p>
+</li>
+<li>
+<p>They do not handle scenarios where incoming jobs must be distributed among multiple GPUs to satisfy QoS constraints.</p>
+</li>
+</ol>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/tb_sm.png"></p>
+<center>Figure 1. Simulated system throughput of co-running `parb_spmv` and `rod_hotspot` at various TBs/SM settings</center>
+<p><strong>Problems of hardware TB scheduler</strong> which hinder the fine-grained sharing:</p>
+<ol>
+<li>
+<p>It always attempts to <strong>launch as many thread blocks per SM</strong> (TBs/SM) for each kernel as allowed by the execution context storage constraints (e.g., registers, shared memory, thread slots). <strong>It leaves insufficient resources for concurrent kernels</strong>. As showed in Figure 1, if we can individually set the TBs/SM for each kernel, we may achieve a higher throughput.</p>
+</li>
+<li>
+<p>It only dispatches concurrent kernels onto SMs after the earlier arriving one completes launching all the thread blocks specified by the kernel grid size. This will force an <strong>almost serially execution</strong> of kernels in some scenarios.</p>
+</li>
+</ol>
+<p>GPU applications in the cloud fall into two main categories: latency-sensitive, and <strong>throughput-oriented</strong>. Throughput-oriented workloads are good candidates for hardware space-sharing. They have the following characteristics:</p>
+<ol>
+<li>
+<p>Most workloads involve a large variety of kernels with <strong>different hardware resource utilization</strong> characteristics (e.g., CNN: compute-intensive, batch-norm: memory-intensive).</p>
+</li>
+<li>
+<p>Active SMs are <strong>underutilized</strong> in some resources (FP, tensor core, memory bandwidth).</p>
+</li>
+<li>
+<p>They typically repeatedly execute the same sequence of kernels (e.g., ML).</p>
+</li>
+<li>
+<p>Relaxed QoS Requirements.</p>
+</li>
+</ol>
+<h2 id="design">Design</h2>
+<p>This paper proposed a <strong>hardware-software co-designed</strong> strategy to solve these challenges.</p>
+<h3 id="hardware">Hardware</h3>
+<p>This paper changes the default behavior of CUDA runtime to make it more suitable for fine-grained sharing:</p>
+<ol>
+<li>
+<p>Allows CUDA runtime to program the <strong>TBs/SM setting</strong> as one of the kernel launch parameters. The value of TBs/SM is selected by the performance predictor.</p>
+</li>
+<li>
+<p>Make the TB scheduler <strong>launch TBs from any concurrent kernels</strong> whenever they are running under their TBs/SM quota.</p>
+</li>
+</ol>
+<h3 id="software">Software</h3>
+<blockquote>
+<p>Concept Explanation:</p>
+<ul>
+<li>Job: a task submitted by user, such as a DNN training task. It may be iterative and contains multiple kernels.</li>
+<li>Kernel: CUDA kernel.</li>
+<li>Normalized Progress (NP): $t _ {isolate} / t _ {co-execute}$.</li>
+</ul>
+</blockquote>
+<p><strong>Two key observations</strong>:</p>
+<ol>
+<li>
+<p>Co-execution performance of GPU kernels is highly correlated with resource utilization of individual kernels measured when running in isolation.</p>
+</li>
+<li>
+<p>Once we have predicted which job pairs can co-execute without violating QoS requirements, the scheduling task can be reduced to the classic maximum cardinality matching problem in graph theory.</p>
+</li>
+</ol>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/system-design.png"></p>
+<center>Figure 2. Overall System Design of GPUPool</center>
+<p>Based on these 2 observations, the author proposed GPUPool. Its overall system design is shown in Figure 2. It consists of 4 steps:</p>
+<ol>
+<li>
+<p><strong>Kernel Profiler</strong>. GPUPool <strong>groups all incoming GPU job into a batch</strong> for every scheduling window (e.g., 30 seconds). User should provide application executable and execution time budget. Then GPUPool automatically <strong>profiles</strong> the application for one iteration of the job in isolation on hardware, to collect the <strong>performance counter metrics</strong> of each kernel of data.</p>
+</li>
+<li>
+<p><strong>Co-execution Performance Predictor</strong>. This step decides the <strong>compatibility</strong> of all possible job pairs within the batch using the profiling result. It contains 2 stages:</p>
+<ol>
+<li>
+<p><strong>Kernel-wise Predictors</strong>. It predicts how well each kernel from one job will co-run with the ones in the other job. This stage uses a <em>Gradient Boosting Tree</em> (GBT) model to <strong>predict the performance of each kernel when co-running with another kernel</strong> (based on the 1st key observation). The model takes the profiling data of kernels as input and outputs the <strong>NP</strong>. This prediction will be done for <strong>each feasible TBs/SM</strong> settings.</p>
+</li>
+<li>
+<p><strong>Job-wise Predictor</strong>. It gets an <em>interference matrix</em> (shown in Figure 3) based on the <strong>predicted NP</strong> (under optimal TBs/SM setting) from former stage, which indicates how will two kernels slow down when they are co-running. Then, GPUPool using this matrix to calculate the <strong>co-running time of two jobs</strong>. Here, the authors found that a whole calculation may require tens of thousands iterations, but the result will <strong>coverage to a steady-state</strong> after several iterations. So the authors used an <strong>approximation algorithm</strong> (shown in Figure 4) &ndash; stops timeline calculation once the accumulated slowdown values of each job is within a small delta over the past epoch.</p>
+</li>
+</ol>
+</li>
+</ol>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/interference_matrix.png"></p>
+<center>Figure 3. Interference Matrix</center>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/stage2.2.png"></p>
+<center>Figure 4. Concurrent Application Timeline</center>
+<ol start="3">
+<li><strong>Job dispatcher</strong>. It decides which job pairs should co-run to maximize system performance while satisfying QoS. The decisions are found by solving a <strong>maximum cardinality matching problem</strong> &ndash; each node represent a job, when two jobs can co-run and will not violate the QoS requirement, connecting an edge between them. Then a graph theory algorithm is used to maximum cardinality matching, which means a largest subset of edges that do not share a common end node. Due to the potential unreliability of the performance predictor, GPUPool also add <strong>a safety margin</strong> $\delta$ to edge formulation.</li>
+</ol>
+$$E = \left\{ ( {job} _ i, {job} _ j ) \mid {job} _ i,{job} _ j \in V\ \text{and}\ {NP} _ {job _ x} > {QoS} _ {job _ x} \times (1 + \delta ), x \in \{i, j\} \right\}$$<ol start="4">
+<li><strong>Execution</strong>. The batch of jobs are assigned to the modified GPU hardware.</li>
+</ol>
+<h2 id="evaluations">Evaluations</h2>
+<p>The paper compare GPUPool against three baseline systems:</p>
+<ol>
+<li>
+<p>No-Sharing.</p>
+</li>
+<li>
+<p>Coarse: packing the jobs onto <strong>as few GPUs as possible</strong> using a greedy scheduling algorithm.</p>
+</li>
+<li>
+<p>Heuristic: pairing up jobs with the <strong>highest and lowest bandwidth utilization</strong> (profiled offline) from a batch of incoming jobs.</p>
+</li>
+</ol>
+<p>The metrics is system throughput $STP=\sum_{i=1}^n \cfrac{t_{isolated}^i}{t_{shared}^i}$. $t_{isolated}^i$ and $t_{shared}^i$ are turnaround time of the i-th concurrent job when executing in an isolated and shared environment respectively. The paper also uses we use ${QoS}_{reached}$ to evaluate QoS fulfilment rate.</p>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/gpu_sharing_compare.png"></p>
+<center>Comparison of GPU Sharing Systems</center>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/sorted_stp.png"></p>
+<center>Sorted STP on GPUs</center>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/throughput.png"></p>
+<center>Throughput Normalized to QoS Target</center>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/ml_pred.png"></p>
+<center>Prediction Accuracy of Different ML Techniques</center>
+<h2 id="comments">Comments</h2>
+<h3 id="strengths">Strengths</h3>
+<p>This paper targets the fine-grained GPU sharing problem in the cloud. I believe this work provides a valuable solution to this problem.</p>
+<p>From my perspective, fine-grained GPU sharing presents three key challenges:</p>
+<ol>
+<li>
+<p><strong>Limitations imposed by hardware and CUDA</strong>, which make it difficult for programmers to flexibly control kernel execution.</p>
+</li>
+<li>
+<p><strong>Reliable and low-cost performance prediction</strong> for concurrent kernel execution. Establishing an analytical performance prediction model is highly challenging. One naive approach is using real hardware to profile, but due to the $\mathcal{O}(n^2)$ ($n$ representing the number of jobs) time complexity, this method is not scalable to larger clusters.</p>
+</li>
+<li>
+<p><strong>Efficient algorithms to find appropriate job combinations</strong>. If we allow an arbitrary number of jobs to execute concurrently, this becomes an NP-hard problem.</p>
+</li>
+</ol>
+<p>This paper cleverly addresses or bypasses these challenges through the following strategies:</p>
+<ol>
+<li>
+<p><strong>Hardware-software co-design</strong>, which involves modifying hardware to provide more flexible API for upper-layer application. While this prevents the authors from testing their method on actual hardware and forces them perform experiments on simulator (GPGPU-Sim), I believe such simulations can provide valuable insights for adjustments on real hardware.</p>
+</li>
+<li>
+<p>Predicting kernel concurrent execution performance <strong>by a ML model</strong>. This is <strong>a standout aspect</strong> of the paper (which is also my <strong>favorite novelty</strong>). The authors introducing ML with a good motivation to effectively addresses a challenging performance modeling problem, bypassing a complicated analytical modeling. Also, this ML model has good <strong>interpretability</strong>, top-10 import metrics (show in Figure) align well with human&rsquo;s intuition. Furthermore, in my research experiences about Deep Learning Compiler (e.g., TVM), I also found many paper introduce such ML models for performance prediction. I believe the thought that <strong>leveraging ML techniques to bypass some complicated modeling problems</strong> is highly valuable in system research, which is the most important thing I learned from this paper.</p>
+</li>
+<li>
+<p>Instead of solving the whole NP-hard job combination problem, the authors limit the number of concurrently executed jobs to 2, considering this simpler case. It is <strong>a fantastic tradeoff</strong>. The simplified problem can be solved by a maximum cardinality matching algorithm, which may not find the optimal combination, but exchanging reasonable scheduling overhead for a substantial performance improvement.</p>
+</li>
+</ol>
+<h3 id="weaknesses">Weaknesses</h3>
+<p>This paper also has some potential weaknesses:</p>
+<ol>
+<li>
+<p>It seems to ignore the situation which <strong>two concurrent jobs have different execution times</strong>. For instance, when a longer job and a shorter job are executed together, after the shorter job finishes, GPUPool seems unable to schedule a new job to the GPU. Instead, the remaining GPU time is monopolized by the longer job. This could result in a lower resource utilization.</p>
+</li>
+<li>
+<p>The concurrent execution of multiple jobs on a single GPU may also be <strong>constrained by GPU memory capacity</strong>. A possible improvement is to ask users to indicate maximum GPU memory usage of their applications and consider the these constraints when constructing the graphs.</p>
+</li>
+<li>
+<p>This paper does not consider <strong>the job which leverages multiple GPUs</strong>. These jobs are quite common in reality. When a job can occupy multiple GPUs, there are some additional constraints:</p>
+<ol>
+<li>
+<p><strong>Inter-GPU connection</strong> (e.g., NVLink or InfiniBand) bandwidth is the potential bottleneck, especially for distributed training strategies relying on high GPU interconnect bandwidth, such as <em>Data Parallelism</em>. Improper job scheduling may lead to contention for bandwidth among multiple jobs, or jobs requiring high GPU interconnect bandwidth may run on different nodes.</p>
+</li>
+<li>
+<p>When a single job leverages multiple GPUs, <strong>the workload types on different GPUs may not be the same</strong>. For example, in <em>Pipeline Parallelism</em>, different GPUs run different stages of the neural network.</p>
+</li>
+</ol>
+</li>
+<li>
+<p>This paper does not clearly take into account <strong>the impact of memory hierarchy on performance</strong>, such as shared memory (or just implicitly consider it using a ML model). Some CUDA kernels are optimized by carefully utilizing CUDA SM shared memory, such as <em>Flash Attention</em>. When two kernels run together, does it lead to shared memory contention? Could it result in runtime errors or shared memory overflowing into global memory, causing a severe performance decline? Experiments in the paper can not answer these questions. Also, the selected profiling metrics to train stage 1 model listed in Figure 5 do not contains any metrics about shared memory capacity. Another possibility is that a ML model is already good enough to handle this problem. Regardless, the impact of memory hierarchy on GPU-sharing deserves further study.</p>
+</li>
+</ol>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/metrics.png"></p>
+<center>Figure 5. Metrics Used to Train Stage 1 Prediction Model</center>
+<h3 id="possible-improvements">Possible Improvements</h3>
+<p>I have some potential ideas to improve this work:</p>
+<ol>
+<li>
+<p>As response to the first weakness mentioned above, we can extend GPUPool to enable it to schedule a new job to the GPU after the shorter job finishes. This improvement can be achieved by a simple modification: <strong>keep the running jobs in the incoming window, and if two jobs are still running in the same GPU, also keep the edge between them in the pairing graph</strong>. With this modification, if shorter job finishes, we can re-run the matching algorithm to find a new job to pair with it.</p>
+</li>
+<li>
+<p>We can extend GPUPool to support <strong>multiple GPU job</strong>. To achieve that, we should consider inter-GPU connection bandwidth. This may include following modifications:</p>
+<ol>
+<li>
+<p>Ask users to <strong>indicate the required inter-GPU bandwidth or connection types</strong> (e.g., NVLink/PCIe/Infiniband/Ethernet).</p>
+</li>
+<li>
+<p>Take a multiple GPU task as several sub-jobs. <strong>Each of sub-job is a single GPU job</strong>, with interconnection constraints. Then we can reuse the infrastructure of GPUPool to find the co-running chances.</p>
+</li>
+<li>
+<p>Extend the last <strong>step &ldquo;Execution&rdquo; to consider the interconnection constraints</strong>, so it can dispatch sub-jobs to nodes that meet the constraints. This may require an efficient graph algorithm to find job placement, which requires a further research.</p>
+</li>
+</ol>
+</li>
+<li>
+<p>Sometimes the goal of a data center is not just to improve resource utilization, but also to <strong>save energy</strong>. Improving resource utilization does not necessarily mean energy saving, because the chip&rsquo;s speed $S$, power consumption $P$, and frequency $f$ have the following approximate relationship:</p>
+</li>
+</ol>
+$$\begin{align}
+   S & \propto f \\
+   P & \propto f^\alpha, \text{while}\ \alpha \in [2, 3]
+\end{align}$$<p>We can extend the optimization target of GPUPool to power consumption. This can be achieved by add a power prediction model with similar methods. Then we can use a multi-objective optimization algorithm to find the best job combination, considering both performance and power consumption.</p>
+]]></content:encoded></item></channel></rss>

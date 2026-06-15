@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>http3 on Monsoon's Blog</title><link>https://monsoon-cs.moe/zh/tags/http3/</link><description>Recent content in http3 on Monsoon's Blog</description><generator>Hugo</generator><language>zh-CN</language><lastBuildDate>Tue, 26 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/zh/tags/http3/index.xml" rel="self" type="application/rss+xml"/><item><title>Nginx 启用 QUIC 并和 SNI 分流共存</title><link>https://monsoon-cs.moe/zh/2023-09-26-nginx-quic-with-ssl-preread/</link><pubDate>Tue, 26 Sep 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/zh/2023-09-26-nginx-quic-with-ssl-preread/</guid><description>&lt;h2 id="问题"&gt;问题&lt;/h2&gt;
+&lt;p&gt;Nginx 自从 1.25.0 版本以来对 QUIC 的支持&lt;a href="https://nginx.org/en/docs/quic.html"&gt;已被合并入 mainline&lt;/a&gt;，对于想体验的用户而言可以直接使用官方发布的 &lt;code&gt;nginx&lt;/code&gt; docker 镜像，非常方便。&lt;/p&gt;
+&lt;p&gt;但是我的服务器上的 nginx 使用了 &lt;a href="https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html"&gt;SNI 分流&lt;/a&gt;，源于 &lt;a href="https://github.com/ihciah/shadow-tls"&gt;Shadow TLS&lt;/a&gt; 和 &lt;a href="https://github.com/XTLS/REALITY"&gt;Xray Reality&lt;/a&gt; 等新一代基于 TLS 的代理协议的需求。这些代理协议并不能由 nginx 代为处理 TLS 层（和之前可以使用 gPRC/WebSocket 等作为数据传输方式的协议不同），但为了实现最好的伪装效果，使用 &lt;code&gt;443/tcp&lt;/code&gt; 端口是有必要的（伪装的白名单目标网站一般情况下也只会在 &lt;code&gt;443/tcp&lt;/code&gt; 端口开放 HTTPS 服务）。因此 &lt;code&gt;443/tcp&lt;/code&gt; 端口的复用是必要的。&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="问题">问题</h2>
+<p>Nginx 自从 1.25.0 版本以来对 QUIC 的支持<a href="https://nginx.org/en/docs/quic.html">已被合并入 mainline</a>，对于想体验的用户而言可以直接使用官方发布的 <code>nginx</code> docker 镜像，非常方便。</p>
+<p>但是我的服务器上的 nginx 使用了 <a href="https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html">SNI 分流</a>，源于 <a href="https://github.com/ihciah/shadow-tls">Shadow TLS</a> 和 <a href="https://github.com/XTLS/REALITY">Xray Reality</a> 等新一代基于 TLS 的代理协议的需求。这些代理协议并不能由 nginx 代为处理 TLS 层（和之前可以使用 gPRC/WebSocket 等作为数据传输方式的协议不同），但为了实现最好的伪装效果，使用 <code>443/tcp</code> 端口是有必要的（伪装的白名单目标网站一般情况下也只会在 <code>443/tcp</code> 端口开放 HTTPS 服务）。因此 <code>443/tcp</code> 端口的复用是必要的。</p>
+<p>如果要让 SNI 分流和 QUIC 共存，在原来的 SNI 分流配置上只需要给每个 server 加上 <code>listen 443 quic</code> 即可。示例配置如下。</p>
+<h2 id="配置">配置</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">http</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># ...
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">server_name</span> <span class="s">example.com</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 443/tcp 已经被 nginx stream 占用，不能再次监听
+</span></span></span><span class="line"><span class="cl">        <span class="c1"># listen 443 ssl http2 reuseport so_keepalive=on;
+</span></span></span><span class="line"><span class="cl">        <span class="c1"># listen [::]:443 ssl http2 reuseport so_keepalive=on;
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 监听 443/udp 端口并启用 QUIC
+</span></span></span><span class="line"><span class="cl">        <span class="c1"># ref: https://nginx.org/en/docs/http/ngx_http_v3_module.html
+</span></span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="mi">443</span> <span class="s">quic</span> <span class="s">reuseport</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="s">[::]:443</span> <span class="s">quic</span> <span class="s">reuseport</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 监听 unix domain socket 以接受 stream 传送过来的连接，也可以使用本地端口
+</span></span></span><span class="line"><span class="cl">        <span class="c1"># 接受 proxy_protocol，否则 log 中显示的链接源地址都是 unix:
+</span></span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="s">unix:/dev/shm/nginx-example.sock</span> <span class="s">ssl</span> <span class="s">http2</span> <span class="s">proxy_protocol</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">set_real_ip_from</span> <span class="s">unix:</span><span class="p">;</span>  <span class="c1"># 只对于来自 unix domain socket 的连接覆盖其源地址
+</span></span></span><span class="line"><span class="cl">        <span class="kn">real_ip_header</span> <span class="s">proxy_protocol</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kn">add_header</span> <span class="s">Alt-Svc</span> <span class="s">&#39;h3=&#34;:443&#34;</span><span class="p">;</span> <span class="kn">ma=86400&#39;</span><span class="p">;</span>  <span class="c1"># used to advertise the availability of HTTP/3
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># ...
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">server_name</span> <span class="s">foo.example.com</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 可以多个域名共享 443/udp
+</span></span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="mi">443</span> <span class="s">quic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="s">[::]:443</span> <span class="s">quic</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="s">unix:/dev/shm/nginx-example-foo.sock</span> <span class="s">ssl</span> <span class="s">http2</span> <span class="s">proxy_protocol</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">set_real_ip_from</span> <span class="s">unix:</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">real_ip_header</span> <span class="s">proxy_protocol</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kn">add_header</span> <span class="s">Alt-Svc</span> <span class="s">&#39;h3=&#34;:443&#34;</span><span class="p">;</span> <span class="kn">ma=86400&#39;</span><span class="p">;</span>  <span class="c1"># used to advertise the availability of HTTP/3
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># ...
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">stream</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># ...
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 根据 TLS SNI 分流
+</span></span></span><span class="line"><span class="cl">    <span class="kn">map</span> <span class="nv">$ssl_preread_server_name</span> <span class="nv">$name</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">example.com</span>             <span class="s">unix:/dev/shm/nginx-example.sock</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">foo.example.com</span>         <span class="s">unix:/dev/shm/nginx-example-foo.sock</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">learn.microsoft.com</span>     <span class="n">127.0.0.1</span><span class="p">:</span><span class="mi">8443</span><span class="p">;</span>  <span class="c1"># 用于 shadow-tls/xray-reality 等
+</span></span></span><span class="line"><span class="cl">        <span class="kn">default</span>                 <span class="s">unix:/dev/shm/nginx-default.sock</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 监听 443/tcp 并根据 SNI 分流
+</span></span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="mi">443</span> <span class="s">reuseport</span> <span class="s">so_keepalive=on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="s">[::]:443</span> <span class="s">reuseport</span> <span class="s">so_keepalive=on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_pass</span> <span class="nv">$name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">ssl_preread</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_protocol</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="测试">测试</h2>
+<p>目前 <code>curl</code>/<code>wget</code> mainline 还没有支持 QUIC，可以使用 <code>ymuski/curl-http3</code> 这个 docker 镜像：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ docker run -it --rm ymuski/curl-http3 curl https://static.monsoon-cs.moe/public/ --http3 -IL
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">HTTP/3 <span class="m">200</span>
+</span></span><span class="line"><span class="cl">server: nginx/1.25.2
+</span></span><span class="line"><span class="cl">date: Tue, <span class="m">26</span> Sep <span class="m">2023</span> 14:52:29 GMT
+</span></span><span class="line"><span class="cl">content-type: text/html<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>utf-8
+</span></span><span class="line"><span class="cl">strict-transport-security: max-age<span class="o">=</span><span class="m">63072000</span>
+</span></span><span class="line"><span class="cl">alt-svc: <span class="nv">h3</span><span class="o">=</span><span class="s2">&#34;:443&#34;</span><span class="p">;</span> <span class="nv">ma</span><span class="o">=</span><span class="m">86400</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html">https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html</a></li>
+<li><a href="https://nginx.org/en/docs/http/ngx_http_v3_module.html">https://nginx.org/en/docs/http/ngx_http_v3_module.html</a></li>
+</ul>
+]]></content:encoded></item></channel></rss>

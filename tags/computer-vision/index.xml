@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>computer-vision on Monsoon's Blog</title><link>https://monsoon-cs.moe/tags/computer-vision/</link><description>Recent content in computer-vision on Monsoon's Blog</description><generator>Hugo</generator><language>en</language><lastBuildDate>Thu, 11 Jul 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/tags/computer-vision/index.xml" rel="self" type="application/rss+xml"/><item><title>Extracting Graph Topology from Image</title><link>https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/</link><pubDate>Thu, 11 Jul 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/</guid><description>&lt;h2 id="the-problem"&gt;The Problem&lt;/h2&gt;
+&lt;p&gt;Now we have an image representing a graph, as shown in the figure below:&lt;/p&gt;
+&lt;p&gt;&lt;img loading="lazy" src="https://monsoon-cs.moe/2024-07-11-extracting-graph-topology-from-image/image.png"&gt;&lt;/p&gt;
+&lt;p&gt;Suppose we already know the category of each pixel: background, node, or edge. How can we &lt;strong&gt;extract the graph topology&lt;/strong&gt; from it and represent the graph by an adjacency matrix?&lt;/p&gt;
+&lt;h2 id="challenges-in-classical-algorithm"&gt;Challenges in Classical Algorithm&lt;/h2&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;h2 id="what-about-neural-network"&gt;What about Neural Network?&lt;/h2&gt;
+&lt;p&gt;We can use a simple algorithm to extract the position of each node. Suppose the position of a node is $\mathbf{P}(x,y)$, and there are $N$ nodes in total.&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="the-problem">The Problem</h2>
+<p>Now we have an image representing a graph, as shown in the figure below:</p>
+<p><img loading="lazy" src="/2024-07-11-extracting-graph-topology-from-image/image.png"></p>
+<p>Suppose we already know the category of each pixel: background, node, or edge. How can we <strong>extract the graph topology</strong> from it and represent the graph by an adjacency matrix?</p>
+<h2 id="challenges-in-classical-algorithm">Challenges in Classical Algorithm</h2>
+<p>TODO</p>
+<h2 id="what-about-neural-network">What about Neural Network?</h2>
+<p>We can use a simple algorithm to extract the position of each node. Suppose the position of a node is $\mathbf{P}(x,y)$, and there are $N$ nodes in total.</p>
+<p>Then, the task is to fill in the $N\times N$ adjacency matrix with $0$ or $1$. As we can see, this can be converted into <strong>a binary classification problem</strong>.</p>
+<p>we can train a neural network $\mathbf{f}$, which takes 3 input: the image $I$, the position of a node pair $\left( \mathbf{P}_ 1, \mathbf{P}_ 2
+\right)$. It outputs $O\in\{0,1\}$, indicating whether there is a direct connection between the node pair, i.e.,</p>
+$$O=\mathbf{f}(\mathbf{I}, \mathbf{P}_ 1, \mathbf{P}_ 2).$$<p>The dataset can be synthesized by a simple program, and we can use any classification network (e.g., <a href="https://arxiv.org/abs/1905.11946">EfficientNet</a>) as our network architecture.</p>
+<p>The problem is how to feed $\left( \mathbf{P}_ 1, \mathbf{P}_ 2
+\right)$​ into the network. We can add an additional &ldquo;mask channel&rdquo; to the image, where the pixels belonging to the two input nodes are marked as 1, and the others as 0. Finally, we input this 4-channel &ldquo;image&rdquo; into the network.</p>
+<p><img loading="lazy" src="/2024-07-11-extracting-graph-topology-from-image/nn.png"></p>
+<h2 id="other-notes">Other Notes</h2>
+<p>TODO</p>
+]]></content:encoded></item></channel></rss>

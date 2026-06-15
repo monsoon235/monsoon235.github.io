@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>wireguard on Monsoon's Blog</title><link>https://monsoon-cs.moe/zh/tags/wireguard/</link><description>Recent content in wireguard on Monsoon's Blog</description><generator>Hugo</generator><language>zh-CN</language><lastBuildDate>Mon, 29 Jan 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/zh/tags/wireguard/index.xml" rel="self" type="application/rss+xml"/><item><title>Building WireGuard VPN for Machine Learning Server Cluster</title><link>https://monsoon-cs.moe/zh/2024-01-29-wg-for-cluster/</link><pubDate>Mon, 29 Jan 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/zh/2024-01-29-wg-for-cluster/</guid><description>&lt;h2 id="motivation"&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;机器学习集群需要一个安全的方式向用户暴露服务，以及跨公网服务器互联，为此需要部署 VPN 网络。&lt;/p&gt;
+&lt;p&gt;VPN 网络的部署需要考虑如下因素：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;网络拓扑：需要选择合适的拓扑结构以尽可能降低延迟；&lt;/li&gt;
+&lt;li&gt;用户管理：可以方便地进行用户的增减和授权；&lt;/li&gt;
+&lt;li&gt;使用和维护简单。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="design"&gt;Design&lt;/h2&gt;
+&lt;h3 id="网络拓扑"&gt;网络拓扑&lt;/h3&gt;
+&lt;p&gt;网络拓扑决定着延迟。&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="motivation">Motivation</h2>
+<p>机器学习集群需要一个安全的方式向用户暴露服务，以及跨公网服务器互联，为此需要部署 VPN 网络。</p>
+<p>VPN 网络的部署需要考虑如下因素：</p>
+<ol>
+<li>网络拓扑：需要选择合适的拓扑结构以尽可能降低延迟；</li>
+<li>用户管理：可以方便地进行用户的增减和授权；</li>
+<li>使用和维护简单。</li>
+</ol>
+<h2 id="design">Design</h2>
+<h3 id="网络拓扑">网络拓扑</h3>
+<p>网络拓扑决定着延迟。</p>
+<p>延迟最低的方案显然是 full-mesh，即每一对 peer 之间都有直接的 P2P 连接。但这种拓扑结构的管理复杂度是 $\mathcal{O}(n^2)$ 的，并且每添加一个新的 peer 就需要修改所有其他 peer 的配置文件，还需要解决 NAT 带来的问题，这必须借助一些自动化的软件管理。我尝试了 <a href="https://www.netmaker.io/">Netmaker</a> 和 <a href="https://headscale.net/">Headscale</a>，但它们似乎都无法正确处理学校内的<strong>复杂网络环境</strong>，比如各种企业级路由器使用的 symmetric NAT，<strong>成功建立 P2P 的概率非常之低</strong>。</p>
+<p>最终我选择了 <strong>full-mesh 和 hub-and-spoke 相结合的拓扑</strong>。由于服务器数量和 IP 很少变化，手动配置一个服务器间的 full-mesh 网络是可行的。与此同时，提供一个 gateway server 作为用户接入的 hub，用户只需要与 gateway server 建立连接。由于大部分用户其实是在校内使用 VPN 的，因此连接到校内的 gateway server 并转发流量并不会带来太多额外延迟。这种结构可以平衡延迟与管理复杂度，用户的增减和授权也只需要在 gateway server 上操作。</p>
+<p><img alt="Network Topology" loading="lazy" src="/2024-01-29-wg-for-cluster/topo.png"></p>
+<h3 id="协议选择">协议选择</h3>
+<p>流行的 OpenVPN 和 IPSec 都足够优秀，但新兴的 WireGuard 具有无可比拟的配置简单性。对于服务端，WireGuard 可以用几行配置文件定义一个 peer 和路由；对于用户，由于 WireGuard 采用基于密钥对的认证方式，只需要一个配置文件即可接入 VPN 网络，不需要额外的密码记忆和登录操作。</p>
+<h3 id="管理方式">管理方式</h3>
+<p>出于可预测性和稳定性的考量，我选择了手动配置的方法。服务器间的 full-mesh 网络一次配置后就不需要再频繁更改。而用户管理则通过一个脚本实现，当需要添加一个新用户时，脚本生成密钥对并分配 IP，把公钥和路由信息加入 gateway server 的 peer list 中，然后生成包含私钥和分配的 IP 的配置文件，并发给用户。</p>
+<p>Gateway server 上的用户 peer 配置示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="k">[Peer]</span>
+</span></span><span class="line"><span class="cl"><span class="na">PublicKey</span> <span class="o">=</span> <span class="s">&lt;redacted&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="na">AllowedIPs</span> <span class="o">=</span> <span class="s">10.1.x.y/32</span>
+</span></span><span class="line"><span class="cl"><span class="na">AllowedIPs</span> <span class="o">=</span> <span class="s">fd01::x:y/128</span>
+</span></span><span class="line"><span class="cl"><span class="na">PersistentKeepalive</span> <span class="o">=</span> <span class="s">25</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>用户的接入配置文件示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="k">[Interface]</span>
+</span></span><span class="line"><span class="cl"><span class="na">PrivateKey</span> <span class="o">=</span> <span class="s">&lt;redacted&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="na">Address</span> <span class="o">=</span> <span class="s">10.1.x.y/16</span>
+</span></span><span class="line"><span class="cl"><span class="na">Address</span> <span class="o">=</span> <span class="s">fd01::x:y/64</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">[Peer]</span>
+</span></span><span class="line"><span class="cl"><span class="na">PublicKey</span> <span class="o">=</span> <span class="s">&lt;redacted&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="na">AllowedIPs</span> <span class="o">=</span> <span class="s">10.1.0.0/16  # route all VPN traffic to gateway server</span>
+</span></span><span class="line"><span class="cl"><span class="na">AllowedIPs</span> <span class="o">=</span> <span class="s">fd01::/64</span>
+</span></span><span class="line"><span class="cl"><span class="na">Endpoint</span> <span class="o">=</span> <span class="s">wg.ustcaigroup.xyz:51820  # gateway server is dual stack</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Endpoint = wg.ustcaigroup.xyz:51820  # IPv4</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Endpoint = wg.ustcaigroup.xyz:51820  # IPv6</span>
+</span></span><span class="line"><span class="cl"><span class="na">PersistentKeepalive</span> <span class="o">=</span> <span class="s">25</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></content:encoded></item></channel></rss>

@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>pytorch on Monsoon's Blog</title><link>https://monsoon-cs.moe/tags/pytorch/</link><description>Recent content in pytorch on Monsoon's Blog</description><generator>Hugo</generator><language>en</language><lastBuildDate>Tue, 14 Nov 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/tags/pytorch/index.xml" rel="self" type="application/rss+xml"/><item><title>Custom PyTorch Operators on Ascend 910B</title><link>https://monsoon-cs.moe/2023-11-14-ascend-910b-custom-op/</link><pubDate>Tue, 14 Nov 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-11-14-ascend-910b-custom-op/</guid><description>&lt;h2 id="environment"&gt;Environment&lt;/h2&gt;
+&lt;p&gt;The hardware environment this article is based on is the Ascend 910B3, and the software environment includes &lt;a href="https://www.hiascend.com/developer/download/community/result"&gt;CANN 7.0-RC1&lt;/a&gt;, &lt;a href="https://repo.huaweicloud.com/kunpeng/archive/Ascend/PyTorch/"&gt;PyTorch 1.11.0&lt;/a&gt;, and &lt;a href="https://gitee.com/ascend/pytorch/releases/tag/v5.0.rc3-pytorch1.11.0"&gt;Ascend PyTorch Adapter v5.0.rc3-pytorch1.11.0&lt;/a&gt;. The situation on other CANN and PyTorch versions may differ slightly.&lt;/p&gt;
+&lt;h2 id="registration-process"&gt;Registration Process&lt;/h2&gt;
+&lt;h3 id="adding-a-custom-operator-in-the-ascend-pytorch-adapter"&gt;Adding a Custom Operator in the Ascend PyTorch Adapter&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;References:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0045.html"&gt;https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0045.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://gitee.com/ascend/samples/tree/master/operator/AddCustomSample/FrameworkLaunch/PytorchInvocation"&gt;https://gitee.com/ascend/samples/tree/master/operator/AddCustomSample/FrameworkLaunch/PytorchInvocation&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Add the &lt;code&gt;npu_add_custom&lt;/code&gt; function in &lt;code&gt;torch_npu/csrc/aten/npu_native_functions.yaml&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nt"&gt;custom&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="nt"&gt;func&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;npu_add_custom(Tensor x, Tensor y) -&amp;gt; Tensor &lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;# 添加的函数&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Add the file &lt;code&gt;AddCustomKernelNpu.cpp&lt;/code&gt; in &lt;code&gt;torch_npu/csrc/aten/ops/op_api&lt;/code&gt;:&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="environment">Environment</h2>
+<p>The hardware environment this article is based on is the Ascend 910B3, and the software environment includes <a href="https://www.hiascend.com/developer/download/community/result">CANN 7.0-RC1</a>, <a href="https://repo.huaweicloud.com/kunpeng/archive/Ascend/PyTorch/">PyTorch 1.11.0</a>, and <a href="https://gitee.com/ascend/pytorch/releases/tag/v5.0.rc3-pytorch1.11.0">Ascend PyTorch Adapter v5.0.rc3-pytorch1.11.0</a>. The situation on other CANN and PyTorch versions may differ slightly.</p>
+<h2 id="registration-process">Registration Process</h2>
+<h3 id="adding-a-custom-operator-in-the-ascend-pytorch-adapter">Adding a Custom Operator in the Ascend PyTorch Adapter</h3>
+<blockquote>
+<p>References:</p>
+<ul>
+<li><a href="https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0045.html">https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0045.html</a></li>
+<li><a href="https://gitee.com/ascend/samples/tree/master/operator/AddCustomSample/FrameworkLaunch/PytorchInvocation">https://gitee.com/ascend/samples/tree/master/operator/AddCustomSample/FrameworkLaunch/PytorchInvocation</a></li>
+</ul>
+</blockquote>
+<p>Add the <code>npu_add_custom</code> function in <code>torch_npu/csrc/aten/npu_native_functions.yaml</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">custom</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">func</span><span class="p">:</span><span class="w"> </span><span class="l">npu_add_custom(Tensor x, Tensor y) -&gt; Tensor </span><span class="w"> </span><span class="c"># 添加的函数</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Add the file <code>AddCustomKernelNpu.cpp</code> in <code>torch_npu/csrc/aten/ops/op_api</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;torch/csrc/autograd/custom_function.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;torch_npu/csrc/framework/utils/OpAdapter.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;torch_npu/csrc/aten/NPUNativeFunctions.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;torch_npu/csrc/aten/ops/op_api/op_api_common.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="n">at_npu</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">namespace</span> <span class="n">native</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">using</span> <span class="n">torch</span><span class="o">::</span><span class="n">autograd</span><span class="o">::</span><span class="n">Function</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">using</span> <span class="n">torch</span><span class="o">::</span><span class="n">autograd</span><span class="o">::</span><span class="n">AutogradContext</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">at</span><span class="o">::</span><span class="n">Tensor</span> <span class="n">NPUNativeFunctions</span><span class="o">::</span><span class="n">npu_add_custom</span><span class="p">(</span><span class="k">const</span> <span class="n">at</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">,</span> <span class="k">const</span> <span class="n">at</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&amp;</span> <span class="n">y</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">at</span><span class="o">::</span><span class="n">Tensor</span> <span class="n">result</span> <span class="o">=</span> <span class="n">OpPreparation</span><span class="o">::</span><span class="n">ApplyTensor</span><span class="p">(</span><span class="n">x</span><span class="p">);</span> <span class="c1">// 创建输出内存
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// calculate the output result of the NPU
+</span></span></span><span class="line"><span class="cl">        <span class="n">EXEC_NPU_CMD</span><span class="p">(</span><span class="n">aclnnAddCustom</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">result</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="c1">// namespace native
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="c1">// namespace at_npu
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Afterwards, recompile and reinstall <code>torch_npu</code>.</p>
+<h3 id="adding-the-custom-operator-implementation-in-cann">Adding the Custom Operator Implementation in CANN</h3>
+<blockquote>
+<p>References:</p>
+<ul>
+<li><a href="https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0023.html">https://www.hiascend.com/document/detail/zh/canncommercial/70RC1/operatordev/Ascendcopdevg/atlas_ascendc_10_0023.html</a></li>
+</ul>
+</blockquote>
+<p>First, define the operator description file <code>add_custom.json</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;op&#34;</span><span class="p">:</span> <span class="s2">&#34;AddCustom&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;language&#34;</span><span class="p">:</span> <span class="s2">&#34;cpp&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;input_desc&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;x&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;param_type&#34;</span><span class="p">:</span> <span class="s2">&#34;required&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;format&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;ND&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">],</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;fp16&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;y&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;param_type&#34;</span><span class="p">:</span> <span class="s2">&#34;required&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;format&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;ND&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">],</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;fp16&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;output_desc&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;z&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;param_type&#34;</span><span class="p">:</span> <span class="s2">&#34;required&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;format&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;ND&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">],</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;fp16&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Run</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">msopgen gen -i add_custom.json -c ai_core-Ascend910B3 -f pytorch -out . -lan cpp
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>to generate the operator project:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">AddCustom
+</span></span><span class="line"><span class="cl">├── build.sh
+</span></span><span class="line"><span class="cl">├── cmake 
+</span></span><span class="line"><span class="cl">│   ├── config.cmake
+</span></span><span class="line"><span class="cl">│   ├── func.cmake
+</span></span><span class="line"><span class="cl">│   ├── intf.cmake
+</span></span><span class="line"><span class="cl">│   ├── makeself.cmake
+</span></span><span class="line"><span class="cl">│   └── util
+</span></span><span class="line"><span class="cl">├── CMakeLists.txt
+</span></span><span class="line"><span class="cl">├── CMakePresets.json          // 修改 ASCEND_CANN_PACKAGE_PATH
+</span></span><span class="line"><span class="cl">├── framework
+</span></span><span class="line"><span class="cl">├── op_host
+</span></span><span class="line"><span class="cl">│   ├── add_custom_tiling.h    // 定义 length 和 tiling 相关信息
+</span></span><span class="line"><span class="cl">│   ├── add_custom.cpp         // 算子 host 侧实现
+</span></span><span class="line"><span class="cl">│   ├── CMakeLists.txt
+</span></span><span class="line"><span class="cl">├── op_kernel
+</span></span><span class="line"><span class="cl">│   ├── CMakeLists.txt
+</span></span><span class="line"><span class="cl">│   ├── add_custom.cpp         // 算子 kernel 侧实现
+</span></span><span class="line"><span class="cl">└── scripts
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In <code>CMakePresets.json</code>, change <code>ASCEND_CANN_PACKAGE_PATH</code> to the CANN installation path.</p>
+<p>The content of <code>op_host/add_custom_tiling.h</code> is as follows (a simple implementation):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;register/tilingdata_base.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="n">optiling</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="n">BEGIN_TILING_DATA_DEF</span><span class="p">(</span><span class="n">AddCustomTilingData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">TILING_DATA_FIELD_DEF</span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>  <span class="c1">// 定义 tensor size
+</span></span></span><span class="line"><span class="cl"><span class="n">END_TILING_DATA_DEF</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">REGISTER_TILING_DATA_CLASS</span><span class="p">(</span><span class="n">AddCustom</span><span class="p">,</span> <span class="n">AddCustomTilingData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In <code>op_host/add_custom.cpp</code>, modify the <code>block_dim</code> used when the operator is invoked:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">context</span><span class="o">-&gt;</span><span class="n">SetBlockDim</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span> <span class="c1">// 910B3 的 block_dim
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>op_kernel/add_custom.cpp</code> is the concrete implementation of the operator:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;kernel_operator.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#ifdef __DAV_C220_VEC__
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">extern</span> <span class="s">&#34;C&#34;</span> <span class="n">__global__</span> <span class="n">__aicore__</span> <span class="kt">void</span> <span class="n">add_custom</span><span class="p">(</span><span class="n">GM_ADDR</span> <span class="n">x</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">y</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">z</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">workspace</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">tiling</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">GET_TILING_DATA</span><span class="p">(</span><span class="n">tiling_data</span><span class="p">,</span> <span class="n">tiling</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">M</span> <span class="o">=</span> <span class="n">tiling_data</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>  <span class="c1">// 从 tiling_data 中获取 tensor size
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#else
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 重要：CANN 会尝试不同的 ccec 编译参数以推断算子的类型（VEC、CUBE、MIXED），如果不创建一个 stub 函数将会编译失败
+</span></span></span><span class="line"><span class="cl"><span class="k">extern</span> <span class="s">&#34;C&#34;</span> <span class="n">__global__</span> <span class="n">__aicore__</span> <span class="kt">void</span> <span class="n">add_custom</span><span class="p">(</span><span class="n">GM_ADDR</span> <span class="n">x</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">y</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">z</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">workspace</span><span class="p">,</span> <span class="n">GM_ADDR</span> <span class="n">tiling</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pip_barrier</span><span class="p">(</span><span class="n">PIPE_ALL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="compilation-and-deployment">Compilation and Deployment</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ bash build.sh
+</span></span><span class="line"><span class="cl">$ ./custom_opp_euleros_aarch64.run
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Calling it in PyTorch:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch_npu</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">z</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">npu_add_custom</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>  <span class="c1"># 由于是运行时编译，第一次运行时需要等待编译</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="registration-principles">Registration Principles</h2>
+<p>TODO</p>
+<h2 id="references">References</h2>
+<p>TODO</p>
+]]></content:encoded></item></channel></rss>

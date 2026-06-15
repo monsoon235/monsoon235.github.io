@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>ipv6 on Monsoon's Blog</title><link>https://monsoon-cs.moe/tags/ipv6/</link><description>Recent content in ipv6 on Monsoon's Blog</description><generator>Hugo</generator><language>en</language><lastBuildDate>Sat, 12 Oct 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/tags/ipv6/index.xml" rel="self" type="application/rss+xml"/><item><title>All About IPv6 Address Allocation</title><link>https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/</link><pubDate>Sat, 12 Oct 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-10-12-all-about-ipv6-addr-alloc/</guid><description>&lt;h2 id="preface"&gt;Preface&lt;/h2&gt;
+&lt;p&gt;IPv4 has only one method of dynamic address allocation, namely DHCP, but IPv6 has two allocation methods, SLAAC and DHCPv6, and DHCPv6 additionally has the PD (Prefix Delegation) extension. These three allocation methods also interact with each other, which makes problems arising during IPv6 allocation far more common than with IPv4. Most tutorials you can find only solve problems superficially, are ambiguous about the underlying technical details, and do not fundamentally clarify the differences between IPv6 and IPv4.&lt;/p&gt;</description><content:encoded><![CDATA[<h2 id="preface">Preface</h2>
+<p>IPv4 has only one method of dynamic address allocation, namely DHCP, but IPv6 has two allocation methods, SLAAC and DHCPv6, and DHCPv6 additionally has the PD (Prefix Delegation) extension. These three allocation methods also interact with each other, which makes problems arising during IPv6 allocation far more common than with IPv4. Most tutorials you can find only solve problems superficially, are ambiguous about the underlying technical details, and do not fundamentally clarify the differences between IPv6 and IPv4.</p>
+<p>This article aims to start from the relevant fundamental concepts and, in a &ldquo;teach a man to fish&rdquo; manner, explain how the three IPv6 address allocation methods work, helping to thoroughly resolve the tricky problems in IPv6 allocation.</p>
+<h2 id="ipv6-fundamental-concepts">IPv6 Fundamental Concepts</h2>
+<h3 id="lla-link-local-address-and-eui-64">LLA (Link-Local Address) and EUI-64</h3>
+<p>LLA actually already existed in IPv4: when DHCP is not working properly, some operating systems assign a <code>169.254.0.0/16</code> address to the network interface for temporary point-to-point communication. But LLA is not important in IPv4, playing only an optional fallback role that appears only when DHCP fails. As a result, the vast majority of people (including the author) did not learn about the existence of LLA until IPv6 became widespread.</p>
+<p>IPv6 LLA (<code>fe80::/8</code>) inherits the basic point-to-point communication function of IPv4 LLA, but goes further to take on the important functions of NDP (Neighbor Discovery Protocol) and SLAAC (Stateless Address Autoconfiguration). Understanding it is necessary to understand how SLAAC works.</p>
+<p>For example, when two network ports are directly connected with a cable, they each automatically generate an IPv6 LLA, such as <code>fe80::dfc2:d2aa:c86f:171e/64</code> and <code>fe80::da8f:9d5b:57e3:c6a6/64</code>, and each can <code>ping</code> the other&rsquo;s LLA. On Linux, the <code>ip -6 route</code> command shows the automatically configured LLA route entry:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">fe80::/64 dev eth0 proto kernel metric 1024 pref medium
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>IPv6 LLA is generated from the MAC address using a specific algorithm, namely EUI-64. For example, when the network port&rsquo;s MAC address is <code>70:07:12:34:56:78</code>, the generated EUI-64 is <code>7207:12ff:fe34:5678</code>, and the LLA is <code>fe80:7207:12ff:fe34:5678/64</code> (EUI-64 with the <code>fe80</code> prefix prepended). The specific generation process is shown in the figure below:</p>
+<p><img alt="IPv6 LLA generation process, image source https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac" loading="lazy" src="/2024-10-12-all-about-ipv6-addr-alloc/generating-link-local-address-example.png"></p>
+<p>Generally, routers do not forward traffic for LLA addresses; it is <strong>only used for point-to-point communication on the link</strong>.</p>
+<h3 id="gua-global-unicast-address">GUA (Global Unicast Address)</h3>
+<p>IPv6 GUA (<code>2000::/3</code>) can be mapped to the IPv4 concept of a &ldquo;public IP&rdquo;. In theory it is globally unique and can be used for communication over the public network. A well-designed network architecture should allow every device to obtain an IPv6 GUA, so as to maximize IPv6&rsquo;s P2P communication advantage.</p>
+<h3 id="private-addresses">Private Addresses</h3>
+<p><code>fc00::/7</code> is defined as the IPv6 private address range, analogous to <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, and <code>192.168.0.0/16</code> in IPv4, used for LAN communication. Unlike LLA, it can be forwarded by routers.</p>
+<p>Because IPv6 is designed so that every device worldwide can be assigned a GUA, the role of private addresses in IPv6 is greatly diminished. When it is not possible to assign a GUA to every device (as in some campus network environments), assigning IPv6 private addresses on the internal network can serve as an alternative, allowing internal devices to access IPv6.</p>
+<h3 id="multicast">Multicast</h3>
+<p>IPv6 multicast addresses (<code>ff00::/8</code>) are similar to IPv4 multicast addresses (<code>224.0.0.0/4</code>), used for one-to-many communication within a network segment. <strong>Both SLAAC and DHCPv6 rely on multicast to work</strong>. Commonly used multicast addresses include:</p>
+<ul>
+<li><code>ff02::1</code>: all nodes on the local link;</li>
+<li><code>ff02::2</code>: all routers on the local link.</li>
+</ul>
+<h3 id="ndp-neighbor-discovery-protocol">NDP (Neighbor Discovery Protocol)</h3>
+<p>NDP works on top of ICMPv6 and is similar to IPv4 ARP. It is used to discover other nodes on the data link layer and their corresponding IPv6 addresses, to determine available routes, and to maintain reachability information about available paths and other active nodes. <strong>SLAAC works based on NDP</strong>. The message types involved are:</p>
+<ol>
+<li>RS (Router Solicitation) and RA (Router Advertisement): used to configure IPv6 addresses and routes;</li>
+<li>NS (Neighbor Solicitation) and NA (Neighbor Advertisement): used to find the MAC addresses of other devices on the link.</li>
+</ol>
+<h2 id="slaac-stateless-address-autoconfiguration">SLAAC (Stateless Address Autoconfiguration)</h2>
+<p>SLAAC is the IPv6 address allocation method defined in <a href="https://datatracker.ietf.org/doc/html/rfc4862">RFC 4862</a>, and is also the <strong>recommended allocation method</strong>. In fact, Android only supports SLAAC for IPv6 allocation.</p>
+<p>The most notable feature of SLAAC is that it is stateless, i.e. it does not require a centralized server responsible for allocation. Below, the author uses an example to illustrate the SLAAC process.</p>
+<p>Suppose the <code>lan0</code> port on the <strong>router</strong> is connected to the <code>eth0</code> port on the <strong>host</strong>. The LLA of <code>lan0</code> is <code>fe80::1/64</code>, and the MAC address of <code>eth0</code> is <code>70:07:12:34:56:78</code>. At the same time, the router holds the GUA prefix <code>2001:db8::/64</code>, i.e. all GUAs under this subnet will be routed by the upstream router to this router&rsquo;s <code>wan</code> port. The SLAAC process is as follows:</p>
+<ol>
+<li>
+<p><code>eth0</code> generates the EUI-64 <code>7207:12ff:fe34:5678</code> and the LLA <code>fe80:7207:12ff:fe34:5678/64</code> based on its MAC address;</p>
+</li>
+<li>
+<p>The host performs DAD (Duplicated Address Detection) to ensure the LLA is unique on the local link. This is unrelated to address allocation, so it is omitted here; interested readers can look up the relevant material themselves;</p>
+</li>
+<li>
+<p>The host sends an RS message via the <code>eth0</code> LLA. The RS is sent to all routers on the local link using the multicast address <code>ff02::2</code>.</p>
+</li>
+<li>
+<p>The router replies with an RA message to the <code>eth0</code> LLA. The RA contains the prefix <code>2001:db8::/64</code>, the validity period, the MTU, and other information.</p>
+</li>
+<li>
+<p>The host receives the RA, combines the prefix and the EUI-64 into <code>2001:db8::7207:12ff:fe34:5678/64</code>, assigns it to <code>eth0</code>, and adds the routing table entries:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">2001:db8::/64 dev eth0 proto ra metric 1024 expires 2591993sec pref medium
+</span></span><span class="line"><span class="cl">default via fe80::1 dev eth0 proto static metric 1024 onlink pref medium
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>The host performs DAD detection and uses an NA message to announce the use of the new address to neighbors on the link.</p>
+</li>
+</ol>
+<p><img alt="SLAAC process, image source https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac" loading="lazy" src="/2024-10-12-all-about-ipv6-addr-alloc/ipv6-stateless-address-autoconfiguration.gif"></p>
+<p>SLAAC looks great, but it has an <strong>important flaw</strong>: it does not support distributing DNS information, so the host must obtain DNS through some other means (usually DHCPv6). There are two flag bits in the RA to address this problem:</p>
+<ul>
+<li><code>M</code> (Managed Address Configuration): address information can be obtained via DHCPv6;</li>
+<li><code>O</code> (Other Configuration): other information (such as DNS) can be obtained via DHCPv6.</li>
+</ul>
+<p>The newer <a href="https://datatracker.ietf.org/doc/html/rfc8106">RFC 6106</a> supports distributing DNS information by adding RDNSS (Recursive DNS Server) and DNSSL (DNS Search List) to the RA. For the level of RDNSS support across operating systems, see <a href="https://en.wikipedia.org/wiki/Comparison_of_IPv6_support_in_operating_systems">Comparison of IPv6 support in operating systems</a>. In practice, in the vast majority of cases you only need to configure IPv4 DNS (obtained via DHCPv4), so the RDNSS extension is not very meaningful.</p>
+<p>The problem with the EUI-64-based SLAAC address configuration above is that <strong>the addresses it generates are fixed and predictable</strong>, which brings security and privacy concerns. The IPv6 SLAAC privacy extension defined in <a href="https://datatracker.ietf.org/doc/html/rfc4941">RFC 4941</a> solves this problem. During SLAAC it also generates random, periodically rotated addresses to address the privacy issue. At the same time, the EUI-64-generated address is also retained, for use by externally incoming connections. With the privacy extension enabled, the IPv6 addresses generated on Linux look like the following, for example (from top to bottom: the privacy address, the EUI-64 GUA, and the LLA):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc cake state UP group default qlen 1000
+</span></span><span class="line"><span class="cl">    link/ether 70:07:12:34:56:78 brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">    inet6 2001:db8::dead:beef:aaaa:bbbb/64 scope global temporary dynamic
+</span></span><span class="line"><span class="cl">       valid_lft 2591998sec preferred_lft 604798sec
+</span></span><span class="line"><span class="cl">    inet6 2001:db8::7207:12ff:fe34:5678/64 scope global dynamic mngtmpaddr noprefixroute
+</span></span><span class="line"><span class="cl">       valid_lft 2591998sec preferred_lft 604798sec
+</span></span><span class="line"><span class="cl">    inet6 fe80:7207:12ff:fe34:5678/64 scope link
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="dhcpv6">DHCPv6</h2>
+<p>DHCPv6 operates in broadly the same way as DHCPv4: the host sends a multicast message to <code>ff02::1:2</code> on UDP port 547, and the DHCPv6 server replies with address, DNS, and other information.</p>
+<p>The difference is that DHCPv6 can run in either a stateful or a stateless mode, the distinction being whether or not an address is obtained. When used together with SLAAC, the host only needs to obtain DNS and other information from DHCPv6, so stateless DHCPv6 can be used.</p>
+<h2 id="dhcpv6-pd-prefix-delegation">DHCPv6 PD (Prefix Delegation)</h2>
+<p>PD is a DHCPv6 extension defined in <a href="https://datatracker.ietf.org/doc/html/rfc3633">RFC 3633</a>. It is used to distribute IPv6 prefixes across a network.</p>
+<p>With the PD extension enabled, the DHCP server grants the host the right to use an IPv6 subnet prefix (such as <code>2001:db8::/56</code>) and adds routing table entries to ensure that all addresses under this subnet are routed to the host that requested the prefix. The host can then further subdivide and allocate this subnet.</p>
+<p>A typical use case for DHCPv6 PD is home ISP network access. The home gateway router requests an IPv6 prefix from the ISP DHCP server, and then distributes addresses from this subnet prefix within the home internal network via SLAAC.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This article briefly introduced some of the concepts involved in IPv6 address allocation and explained how SLAAC, DHCPv6, and DHCPv6 PD work. In terms of simplifying address management, IPv6 can be said to have been rather unsuccessful: multiple standards coexist, and there are various combinations of them, which gives clients a non-trivial probability of failing to correctly obtain IPv6.</p>
+<p>In practice, the three most common IPv6 allocation scenarios we encounter are:</p>
+<ul>
+<li>Pure SLAAC: typical campus networks (education networks) fall into this category. In practice, the author has found cases where a misconfigured host on the internal network indiscriminately sends RAs, causing the IPv6 of all hosts on the entire internal network to be misconfigured. At the same time, in this mode, a router you connect yourself will no longer be able to distribute SLAAC GUAs to downstream devices, because the local-link multicast packets that SLAAC relies on cannot be forwarded by the router (this can be solved via IPv6 bridging or NAT6, which is not elaborated on here).</li>
+<li>Pure DHCPv6: some enterprise internal networks use this mode, because DHCPv6 allows centralized management. The biggest problem with this mode is that <a href="https://www.nullzero.co.uk/android-does-not-support-dhcpv6-and-google-wont-fix-that/">Android does not support DHCPv6</a>. But under other operating systems, this mode runs fairly stably.</li>
+<li>SLAAC + DHCPv6 PD: this is the most common mode for home ISP network access. Most home routers are adapted for it and work out of the box.</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://www.networkacademy.io/ccna/ipv6/stateless-address-autoconfiguration-slaac">IPv6 Stateless Address Auto-configuration (SLAAC)</a></li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc4862">RFC 4862: IPv6 Stateless Address Autoconfiguration</a></li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc8106">RFC 6106: IPv6 Router Advertisement Options for DNS Configuration</a></li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc4941">RFC 4914: Privacy Extensions for Stateless Address Autoconfiguration in IPv6</a></li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc3633">RFC 3633: IPv6 Prefix Options for Dynamic Host Configuration Protocol (DHCP) version 6</a></li>
+<li><a href="https://www.nullzero.co.uk/android-does-not-support-dhcpv6-and-google-wont-fix-that/">Android does not support DHCPv6 and Google &lsquo;Won&rsquo;t Fix&rsquo; that</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Comparison_of_IPv6_support_in_operating_systems">Comparison of IPv6 support in operating systems</a></li>
+</ul>
+]]></content:encoded></item></channel></rss>

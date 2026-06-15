@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>gpu on Monsoon's Blog</title><link>https://monsoon-cs.moe/tags/gpu/</link><description>Recent content in gpu on Monsoon's Blog</description><generator>Hugo</generator><language>en</language><lastBuildDate>Sun, 31 Mar 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/tags/gpu/index.xml" rel="self" type="application/rss+xml"/><item><title>[Paper Reading] ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs (arXiv'24)</title><link>https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/</link><pubDate>Wed, 07 Feb 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-02-07-paper-reading-arxiv24-acs/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;This blog is a write-up of the paper &amp;ldquo;&lt;a href="https://arxiv.org/abs/2401.12377"&gt;ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs&lt;/a&gt;&amp;rdquo; from arXiv'24.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="motivation"&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;Some workloads (e.g., Simulation Engines for Deep RL, Dynamic DNNs) cannot fully utilize the massive parallelism of GPUs (see Figure 1). The main reason is that these workloads contain lots of &lt;strong&gt;small kernels&lt;/strong&gt; which cannot fully utilize the GPU, and these kernels are not executed concurrently, although &lt;strong&gt;most of them are independent and in theory can be executed concurrently&lt;/strong&gt;.&lt;/p&gt;</description><content:encoded><![CDATA[<blockquote>
+<p>This blog is a write-up of the paper &ldquo;<a href="https://arxiv.org/abs/2401.12377">ACS: Concurrent Kernel Execution on Irregular, Input-Dependent Computational Graphs</a>&rdquo; from arXiv'24.</p>
+</blockquote>
+<h2 id="motivation">Motivation</h2>
+<p>Some workloads (e.g., Simulation Engines for Deep RL, Dynamic DNNs) cannot fully utilize the massive parallelism of GPUs (see Figure 1). The main reason is that these workloads contain lots of <strong>small kernels</strong> which cannot fully utilize the GPU, and these kernels are not executed concurrently, although <strong>most of them are independent and in theory can be executed concurrently</strong>.</p>
+<p><img alt="Figure 1. Achieved Occupancy of simulation engines (up) and dynamic DNN (down)" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/achieved_occ.png"></p>
+<p>But there are some challenges to execute these kernels concurrently:</p>
+<ol>
+<li><strong>Input-dependent kernel dependencies</strong>. For some workload, the the dependencies between kernels are only <strong>determined at runtime</strong> for each input. Constructing full computational graph and resolving dependencies before execution will introduce <strong>high latency</strong> (see Figure 2,average of 47% of overall execution time as the paper says).</li>
+</ol>
+<p><img alt="Figure 2. DAG construction time as % of execution time" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/dag_time.png"></p>
+<ol start="2">
+<li><strong>Irregular kernel dependencies</strong>. Some workloads have irregular computational graphs. We can partitioned the computational graph of the workload into independent streams of kernels. But this would require <strong>fine-grained scheduling</strong> and <strong>synchronization</strong>, with <strong>large overhead</strong> (see Figure 3).</li>
+</ol>
+<p><img alt="Figure 3. Kernel launch and synchronization overheads" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/sync_overhead.png"></p>
+<p>Existed solutions:</p>
+<ol>
+<li>
+<p>CUDA Graph and AMD ATMI. They allow users specify dependencies between different kernels as DAG, and can eliminate the synchronization and kernel launch overhead. But the DAG needs to be constructed in <strong>full before execution</strong>, which imakes them not suitable for dynamic kernel dependencies (such as Dynamic DNNs).</p>
+</li>
+<li>
+<p>Using events provided by the CUDA stream management API, which allows synchronization between kernels across streams through the <code>cudaStreamWaitEvent</code> API, without blocking the host. But approach still requires deriving dependencies between all kernels beforehand.</p>
+</li>
+<li>
+<p>Persistent threads (PT) can eliminate the scheduling and launch overheads, but are only effective when all kernels are homogeneous.</p>
+<blockquote>
+<p>PT is just like coroutine in some programming languages.</p>
+</blockquote>
+</li>
+<li>
+<p>CUDA dynamic parallelism (CDP) or AMD’s device enqueue (DE) enables parent kernels to launch child kernels, but , only allowing data dependencies between one parent and its children (so cannot be use to synchronize between multiple tasks).</p>
+</li>
+</ol>
+<h2 id="design">Design</h2>
+<p>The <strong>goal</strong> of this paper is to design a framework that enables efficient concurrent execution of GPU kernels with:</p>
+<ol>
+<li>
+<p>lightweight detection of inter-kernel dependencies at runtime,</p>
+</li>
+<li>
+<p>low overhead kernel scheduling and synchronization.</p>
+</li>
+</ol>
+<p><strong>The key idea is to perform the dependence checking and scheduling within a small window of kernels at runtime similar to out-of-order instruction scheduling.</strong></p>
+<p>The authors proposed Automatic Concurrent Scheduling (ACS) as solution. The overall design of ACS-SW is shown in Figure 4. It contains three main functionalities:</p>
+<p><img alt="Figure 4. ACS-SW Overview" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/acs_overview.png"></p>
+<ol>
+<li>
+<p><strong>Determining inter-kernel dependencies</strong>. By checking for <strong>overlaps between read segments and write segments</strong>, we determine dependencies between kernels. For a wide range of commonly used kernels (e.g., matrix multiplication, convolution), we can infer the read and write segments from the input easily. But for some kernels, it&rsquo;s impossible to determine the range of memory accessed statically because of the potential indirect memory accesses, so the authors just assume the <strong>entire GPU memory may be accessed</strong>.</p>
+<p><img alt="Memory regions written to/accessed by the kernel" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/seg.png"></p>
+<p>The authors use a kernel wrapper to finish the dependency detection. <code>get_addresses()</code> is called to get <code>__read_segments__</code> and <code>__write_segments__</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">ACE_wrapper</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">  <span class="c1">//list of read,write segments defined as
+</span></span></span><span class="line"><span class="cl">  <span class="c1">//[{start_adr1,size1},{start_adr2,size2}..]
+</span></span></span><span class="line"><span class="cl">  <span class="n">list</span> <span class="n">__read_segments__</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">list</span> <span class="n">__write_segments__</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// function which gets called at kernel
+</span></span></span><span class="line"><span class="cl">  <span class="c1">// launch to populate read,write segments
+</span></span></span><span class="line"><span class="cl">  <span class="kt">void</span> <span class="nf">get_addresses</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dim3</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">dim3</span> <span class="n">threads</span><span class="p">,</span> <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// function declaration of the kernel
+</span></span></span><span class="line"><span class="cl">  <span class="k">static</span> <span class="n">__global__</span> <span class="kt">void</span> <span class="nf">kernel</span><span class="p">(...);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>Tracking kernel state at runtime. The kernels in the window can be three states:</p>
+<ol>
+<li><strong>Ready</strong>: kernels it is dependent on complete execution.</li>
+<li><strong>Pending</strong>: upstream kernels are still pending or executing.</li>
+<li><strong>Executing</strong>.</li>
+</ol>
+</li>
+</ol>
+<p><img alt="Kernels in the scheduling window with their state and corresponding upstream kernels" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/window.png"></p>
+<ol start="3">
+<li>Eliminating CPU synchronization overheads. See ACS-HW for more details.</li>
+</ol>
+<p>ACS has two variants:</p>
+<ol>
+<li>
+<p>ACS-SW: software-only implementation which emulates the out-of-order kernel scheduling mechanism.</p>
+</li>
+<li>
+<p>ACS-HW: hardware-facilitated implementation which is more efficient as it also alleviates synchronization overheads.</p>
+</li>
+</ol>
+<h3 id="acs-sw">ACS-SW</h3>
+<h4 id="window-module">Window Module</h4>
+<p>This module is to determining inter-kernel dependencies. It is implemented as a separate thread that manages the input FIFO queue and the scheduling window. The kernel state tracking is implemented in the hardware.</p>
+<h4 id="scheduler-module">Scheduler Module</h4>
+<p>This module schedules and launches ready kernels for execution. It has fixed number of CUDA streams. Each stream contains only one kernel at any given time. Threads with empty streams poll the scheduling window for a ready kernel.</p>
+<p><img alt="ACS-SW: The scheduler module" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/acs_hw_scheduler.png"></p>
+<h3 id="acs-hw">ACS-HW</h3>
+<p>ACS-SW incurs kernel synchronization and launch overheads because scheduler module launches a kernel in the CPU. ACS-HW solves these problems by a software-hardware co-design.</p>
+<p><img alt="ACS-HW Overview" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/acs_hw.png"></p>
+<p>Software-side: maintains an input FIFO queue like ACS-SW, and a list of kernels in the GPU’s scheduling window, <strong>but it can be stale</strong>.</p>
+<p>Hardware-side: the scheduling window and its management are implemented in hardware on the GPU side.</p>
+<p>A key novelty in hardware design is <strong>two stage dependency detections</strong>. First, ACS use software to perform initial detection using stale kernel information (without frequent synchronize overhead), then utilizes hardware to correct outdated dependency information. This two-stage approach significantly reduces the hardware complexity.</p>
+<p><img alt="ACS-HW Scheduler" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/hw_scheduler.png"></p>
+<h2 id="evaluation">Evaluation</h2>
+<ol>
+<li>Baseline: cuDNN implementation (for DNNs) and a jax implementation (for deep RL simulation), both using CUDA streams.</li>
+<li>ACS-SW: on real hardware.</li>
+<li>ACS-SW-Sim: ACS-SW on the GPU simulator.</li>
+<li>ACS-HW: on the GPU simulator.</li>
+<li>CUDAGraph.</li>
+</ol>
+<p><img alt="Deep RL physics simulations: Normalized Speedup" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl.png"></p>
+<p><img alt="Deep RL physics simulations: Normalized Speedup on GPU simulator" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl_sim.png"></p>
+<p><img alt="Deep RL physics simulations: Achieved occupancy" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/eval_deep_rl_occ.png"></p>
+<p><img alt="Dynamic DNNs: Normalized speedup" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/eval_dcnn.png"></p>
+<p><img alt="Dynamic DNNs: Achieved occupancy" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/eval_dcnn_occ.png"></p>
+<p><img alt="Static DNNs: Normalized speedup" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/eval_scnn.png"></p>
+<p><img alt="Static DNNs: Achieved occupancy" loading="lazy" src="/2024-02-07-paper-reading-arxiv24-acs/eval_scnn_occ.png"></p>
+<h2 id="comments">Comments</h2>
+<h3 id="strengths">Strengths</h3>
+<p>This paper focuses on the problem of low GPU utilization caused by the serial execution of numerous small CUDA kernels. I believe this paper effectively addresses this problem, particularly with the following innovative points that are impressive me:</p>
+<ol>
+<li>
+<p><strong>Out-of-order dependency detection and scheduling</strong>. Out-of-order (OoO) is a common technique in micro-architecture and software (e.g., hard disk I/O queue) designs. It&rsquo;s an impressive and innovative idea to introduce OoO into this area to find the dynamic dependencies efficiently.</p>
+</li>
+<li>
+<p>A good <strong>trade-off</strong>. When I first read the Introduction section of the paper, I thought the read-write dependencies detection may be a difficulty task. To my knowledge, there aren&rsquo;t reliable static binary memory access analysis techniques (otherwise, segmentation fault wouldn&rsquo;t be a common problem). However, the authors made a good <strong>simplification</strong> and <strong>trade-off</strong> regarding this problem. For most common kernels, memory access areas can be inferred from input parameters. For the rest kernels, it can be assumed that they access the entire memory. Since few common operators occupy most of the execution time, this trade-off leads to significant performance improvements with a relatively low scheduling overhead. This innovation is my <strong>favorite</strong> aspect of this paper.</p>
+</li>
+<li>
+<p><strong>Two-stage dependency detection</strong> in ACS-HW. While a complete hardware dependency detection approach is theoretically feasible, it could incur significant <strong>chip area costs</strong> (as we know, the re-order buffer in microprocessor carries large area). The authors proposed a two-stage software-hardware co-design dependency detection, significantly simplifying the difficulty of hardware design. It is a brilliant idea.</p>
+</li>
+</ol>
+<h3 id="weaknesses">Weaknesses</h3>
+<p>This paper has some potential weaknesses:</p>
+<ol>
+<li>
+<p>To each type of kernel, we must custom <code>get_addresses</code> function int the kernel wrapper. This weakness may limit the adoption of ACS.</p>
+</li>
+<li>
+<p>Deciding whether kernels should be executed concurrently requires considering <strong>more factors</strong> than just data dependencies. If there are resource conflict (e.g., memory bandwidth, shared memory size) between two <strong>large kernels</strong>, performance may degrade if they co-execute.</p>
+</li>
+</ol>
+<h3 id="improvements">Improvements</h3>
+<p>I propose some potential improvements to this paper:</p>
+<ol>
+<li>
+<p>In response to the first weakness mentioned above, I propose a <strong>profiling-rollback</strong> strategy to achieve safe automatic dependency detection. This strategy leverages the commonly used <strong>paging</strong> technique in OS virtual memory management: we can set a memory page as <strong>read-only</strong> or <strong>write-only</strong>. When a program is running, if a <strong>page fault</strong> is triggered, we can know that a read/write occurs. While I&rsquo;m unsure if Nvidia GPUs provide APIs for user to control page tables, let&rsquo;s assume such APIs exist. Given that many workloads are iterative (e.g., neural network training), we can profile the workload just one iteration, utilizing the aforementioned paging trick to <strong>record the memory access segments</strong> of each kernel. Obviously this may introduce some inaccuracies, we need a <strong>rollback strategy</strong> to ensure correct program execution. During runtime, we set known <code>__write_segments__</code> as read-write, while other areas are set as read-only. Upon encountering a page fault, we detect an error and revert to the default strategy (assuming all memory areas will be read and wrote). With this strategy, we can eliminate the need of manual <code>get_addresses</code> function, and maximize the potential parallelism.</p>
+</li>
+<li>
+<p>Regarding the second weakness, I suggest adopting the method of <strong>GPUPool</strong> to determine which kernels are suitable for concurrent execution. A naive solution involves tracking the number of SMs each kernel occupies. When the SMs of a GPU are fully occupied, even if there are kernels in the <code>ready</code> state and available CUDA streams, no new kernels are scheduled.</p>
+</li>
+</ol>
+]]></content:encoded></item><item><title>[Paper Reading] GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud (PACT'22)</title><link>https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/</link><pubDate>Wed, 07 Feb 2024 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2024-02-07-paper-reading-pact22-gpupool/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;This blog is a write-up of the paper &amp;ldquo;&lt;a href="https://dl.acm.org/doi/10.1145/3559009.3569650"&gt;GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud&lt;/a&gt;&amp;rdquo; from PACT'22.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="motivation"&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;This paper focuses on the &lt;strong&gt;GPU sharing in cloud scenarios&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Currently, existing GPU sharing techniques can be categorized into 2 types:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Time-sharing&lt;/strong&gt; means executing each concurrent VM on a full device in a round-robin fashion. &lt;strong&gt;Pros&lt;/strong&gt;: Simple and mature. &lt;strong&gt;Cons&lt;/strong&gt;: VMs could still under-utilize the hardware within each time slice.&lt;/p&gt;</description><content:encoded><![CDATA[<blockquote>
+<p>This blog is a write-up of the paper &ldquo;<a href="https://dl.acm.org/doi/10.1145/3559009.3569650">GPUPool: A Holistic Approach to Fine-Grained GPU Sharing in the Cloud</a>&rdquo; from PACT'22.</p>
+</blockquote>
+<h2 id="motivation">Motivation</h2>
+<p>This paper focuses on the <strong>GPU sharing in cloud scenarios</strong>.</p>
+<p>Currently, existing GPU sharing techniques can be categorized into 2 types:</p>
+<ul>
+<li>
+<p><strong>Time-sharing</strong> means executing each concurrent VM on a full device in a round-robin fashion. <strong>Pros</strong>: Simple and mature. <strong>Cons</strong>: VMs could still under-utilize the hardware within each time slice.</p>
+</li>
+<li>
+<p><strong>Shape-sharing</strong>: split a device into partitions and allows multiple workloads to execute on different partitions simultaneously.</p>
+</li>
+</ul>
+<p>Space-sharing can be categorized into 2 types：</p>
+<ul>
+<li>
+<p><strong>Coarse-grained</strong> assigns disjoint sets of streaming multiprocessors (SMs) and memory channels to concurrent workloads. For example, Nvidia MIG. <strong>Pros</strong>: offers great performance isolation among tenants of the same GPU. <strong>Cons</strong>: (i) resource under-utilization within each SM consisting of heterogeneous functional units (e.g., FP32, INT, FP64, Tensor Cores) meant for different workload types. (ii) inefficient memory bandwidth usage caused by the bursty nature of GPU memory traffic.</p>
+</li>
+<li>
+<p><strong>Fine-grained</strong> allows different workloads to co-run on the same SMs and request memory bandwidth flexibly, such as CUDA Stream and MPS. <strong>Pros</strong>: Better hardware utilization.</p>
+</li>
+</ul>
+<p>The key problem of GPU sharing in data center is <strong>performance unpredictability</strong>. It contains 2 <strong>key challenges</strong>:</p>
+<ol>
+<li>
+<p><strong>Mitigating interference</strong>. The amount of performance improvement from fine-grained sharing varies drastically depending on how compatible the concurrent workloads are in terms of resource usage. Also, the interference cannot be statically estimated. So, <strong>it is non-trivial to determine compatibility</strong> among a large number of incoming jobs in the cluster.</p>
+</li>
+<li>
+<p><strong>Providing QoS guarantees</strong>.</p>
+</li>
+</ol>
+<p>Existing solutions:</p>
+<ul>
+<li>
+<p><strong>Software-based</strong>: kernel slicing or a persistent thread model. <strong>Cons</strong>: high scheduling overhead.</p>
+</li>
+<li>
+<p><strong>Hardware-based</strong>: integrate sophisticated resource management logic into hardware to allocate resources for concurrent kernels. <strong>Cons</strong>: expensive and also inflexible.</p>
+</li>
+</ul>
+<p>Common problems of existing solutions:</p>
+<ol>
+<li>
+<p>They do not concern with interference mitigation at the cluster level.</p>
+</li>
+<li>
+<p>They do not handle scenarios where incoming jobs must be distributed among multiple GPUs to satisfy QoS constraints.</p>
+</li>
+</ol>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/tb_sm.png"></p>
+<center>Figure 1. Simulated system throughput of co-running `parb_spmv` and `rod_hotspot` at various TBs/SM settings</center>
+<p><strong>Problems of hardware TB scheduler</strong> which hinder the fine-grained sharing:</p>
+<ol>
+<li>
+<p>It always attempts to <strong>launch as many thread blocks per SM</strong> (TBs/SM) for each kernel as allowed by the execution context storage constraints (e.g., registers, shared memory, thread slots). <strong>It leaves insufficient resources for concurrent kernels</strong>. As showed in Figure 1, if we can individually set the TBs/SM for each kernel, we may achieve a higher throughput.</p>
+</li>
+<li>
+<p>It only dispatches concurrent kernels onto SMs after the earlier arriving one completes launching all the thread blocks specified by the kernel grid size. This will force an <strong>almost serially execution</strong> of kernels in some scenarios.</p>
+</li>
+</ol>
+<p>GPU applications in the cloud fall into two main categories: latency-sensitive, and <strong>throughput-oriented</strong>. Throughput-oriented workloads are good candidates for hardware space-sharing. They have the following characteristics:</p>
+<ol>
+<li>
+<p>Most workloads involve a large variety of kernels with <strong>different hardware resource utilization</strong> characteristics (e.g., CNN: compute-intensive, batch-norm: memory-intensive).</p>
+</li>
+<li>
+<p>Active SMs are <strong>underutilized</strong> in some resources (FP, tensor core, memory bandwidth).</p>
+</li>
+<li>
+<p>They typically repeatedly execute the same sequence of kernels (e.g., ML).</p>
+</li>
+<li>
+<p>Relaxed QoS Requirements.</p>
+</li>
+</ol>
+<h2 id="design">Design</h2>
+<p>This paper proposed a <strong>hardware-software co-designed</strong> strategy to solve these challenges.</p>
+<h3 id="hardware">Hardware</h3>
+<p>This paper changes the default behavior of CUDA runtime to make it more suitable for fine-grained sharing:</p>
+<ol>
+<li>
+<p>Allows CUDA runtime to program the <strong>TBs/SM setting</strong> as one of the kernel launch parameters. The value of TBs/SM is selected by the performance predictor.</p>
+</li>
+<li>
+<p>Make the TB scheduler <strong>launch TBs from any concurrent kernels</strong> whenever they are running under their TBs/SM quota.</p>
+</li>
+</ol>
+<h3 id="software">Software</h3>
+<blockquote>
+<p>Concept Explanation:</p>
+<ul>
+<li>Job: a task submitted by user, such as a DNN training task. It may be iterative and contains multiple kernels.</li>
+<li>Kernel: CUDA kernel.</li>
+<li>Normalized Progress (NP): $t _ {isolate} / t _ {co-execute}$.</li>
+</ul>
+</blockquote>
+<p><strong>Two key observations</strong>:</p>
+<ol>
+<li>
+<p>Co-execution performance of GPU kernels is highly correlated with resource utilization of individual kernels measured when running in isolation.</p>
+</li>
+<li>
+<p>Once we have predicted which job pairs can co-execute without violating QoS requirements, the scheduling task can be reduced to the classic maximum cardinality matching problem in graph theory.</p>
+</li>
+</ol>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/system-design.png"></p>
+<center>Figure 2. Overall System Design of GPUPool</center>
+<p>Based on these 2 observations, the author proposed GPUPool. Its overall system design is shown in Figure 2. It consists of 4 steps:</p>
+<ol>
+<li>
+<p><strong>Kernel Profiler</strong>. GPUPool <strong>groups all incoming GPU job into a batch</strong> for every scheduling window (e.g., 30 seconds). User should provide application executable and execution time budget. Then GPUPool automatically <strong>profiles</strong> the application for one iteration of the job in isolation on hardware, to collect the <strong>performance counter metrics</strong> of each kernel of data.</p>
+</li>
+<li>
+<p><strong>Co-execution Performance Predictor</strong>. This step decides the <strong>compatibility</strong> of all possible job pairs within the batch using the profiling result. It contains 2 stages:</p>
+<ol>
+<li>
+<p><strong>Kernel-wise Predictors</strong>. It predicts how well each kernel from one job will co-run with the ones in the other job. This stage uses a <em>Gradient Boosting Tree</em> (GBT) model to <strong>predict the performance of each kernel when co-running with another kernel</strong> (based on the 1st key observation). The model takes the profiling data of kernels as input and outputs the <strong>NP</strong>. This prediction will be done for <strong>each feasible TBs/SM</strong> settings.</p>
+</li>
+<li>
+<p><strong>Job-wise Predictor</strong>. It gets an <em>interference matrix</em> (shown in Figure 3) based on the <strong>predicted NP</strong> (under optimal TBs/SM setting) from former stage, which indicates how will two kernels slow down when they are co-running. Then, GPUPool using this matrix to calculate the <strong>co-running time of two jobs</strong>. Here, the authors found that a whole calculation may require tens of thousands iterations, but the result will <strong>coverage to a steady-state</strong> after several iterations. So the authors used an <strong>approximation algorithm</strong> (shown in Figure 4) &ndash; stops timeline calculation once the accumulated slowdown values of each job is within a small delta over the past epoch.</p>
+</li>
+</ol>
+</li>
+</ol>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/interference_matrix.png"></p>
+<center>Figure 3. Interference Matrix</center>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/stage2.2.png"></p>
+<center>Figure 4. Concurrent Application Timeline</center>
+<ol start="3">
+<li><strong>Job dispatcher</strong>. It decides which job pairs should co-run to maximize system performance while satisfying QoS. The decisions are found by solving a <strong>maximum cardinality matching problem</strong> &ndash; each node represent a job, when two jobs can co-run and will not violate the QoS requirement, connecting an edge between them. Then a graph theory algorithm is used to maximum cardinality matching, which means a largest subset of edges that do not share a common end node. Due to the potential unreliability of the performance predictor, GPUPool also add <strong>a safety margin</strong> $\delta$ to edge formulation.</li>
+</ol>
+$$E = \left\{ ( {job} _ i, {job} _ j ) \mid {job} _ i,{job} _ j \in V\ \text{and}\ {NP} _ {job _ x} > {QoS} _ {job _ x} \times (1 + \delta ), x \in \{i, j\} \right\}$$<ol start="4">
+<li><strong>Execution</strong>. The batch of jobs are assigned to the modified GPU hardware.</li>
+</ol>
+<h2 id="evaluations">Evaluations</h2>
+<p>The paper compare GPUPool against three baseline systems:</p>
+<ol>
+<li>
+<p>No-Sharing.</p>
+</li>
+<li>
+<p>Coarse: packing the jobs onto <strong>as few GPUs as possible</strong> using a greedy scheduling algorithm.</p>
+</li>
+<li>
+<p>Heuristic: pairing up jobs with the <strong>highest and lowest bandwidth utilization</strong> (profiled offline) from a batch of incoming jobs.</p>
+</li>
+</ol>
+<p>The metrics is system throughput $STP=\sum_{i=1}^n \cfrac{t_{isolated}^i}{t_{shared}^i}$. $t_{isolated}^i$ and $t_{shared}^i$ are turnaround time of the i-th concurrent job when executing in an isolated and shared environment respectively. The paper also uses we use ${QoS}_{reached}$ to evaluate QoS fulfilment rate.</p>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/gpu_sharing_compare.png"></p>
+<center>Comparison of GPU Sharing Systems</center>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/sorted_stp.png"></p>
+<center>Sorted STP on GPUs</center>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/throughput.png"></p>
+<center>Throughput Normalized to QoS Target</center>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/ml_pred.png"></p>
+<center>Prediction Accuracy of Different ML Techniques</center>
+<h2 id="comments">Comments</h2>
+<h3 id="strengths">Strengths</h3>
+<p>This paper targets the fine-grained GPU sharing problem in the cloud. I believe this work provides a valuable solution to this problem.</p>
+<p>From my perspective, fine-grained GPU sharing presents three key challenges:</p>
+<ol>
+<li>
+<p><strong>Limitations imposed by hardware and CUDA</strong>, which make it difficult for programmers to flexibly control kernel execution.</p>
+</li>
+<li>
+<p><strong>Reliable and low-cost performance prediction</strong> for concurrent kernel execution. Establishing an analytical performance prediction model is highly challenging. One naive approach is using real hardware to profile, but due to the $\mathcal{O}(n^2)$ ($n$ representing the number of jobs) time complexity, this method is not scalable to larger clusters.</p>
+</li>
+<li>
+<p><strong>Efficient algorithms to find appropriate job combinations</strong>. If we allow an arbitrary number of jobs to execute concurrently, this becomes an NP-hard problem.</p>
+</li>
+</ol>
+<p>This paper cleverly addresses or bypasses these challenges through the following strategies:</p>
+<ol>
+<li>
+<p><strong>Hardware-software co-design</strong>, which involves modifying hardware to provide more flexible API for upper-layer application. While this prevents the authors from testing their method on actual hardware and forces them perform experiments on simulator (GPGPU-Sim), I believe such simulations can provide valuable insights for adjustments on real hardware.</p>
+</li>
+<li>
+<p>Predicting kernel concurrent execution performance <strong>by a ML model</strong>. This is <strong>a standout aspect</strong> of the paper (which is also my <strong>favorite novelty</strong>). The authors introducing ML with a good motivation to effectively addresses a challenging performance modeling problem, bypassing a complicated analytical modeling. Also, this ML model has good <strong>interpretability</strong>, top-10 import metrics (show in Figure) align well with human&rsquo;s intuition. Furthermore, in my research experiences about Deep Learning Compiler (e.g., TVM), I also found many paper introduce such ML models for performance prediction. I believe the thought that <strong>leveraging ML techniques to bypass some complicated modeling problems</strong> is highly valuable in system research, which is the most important thing I learned from this paper.</p>
+</li>
+<li>
+<p>Instead of solving the whole NP-hard job combination problem, the authors limit the number of concurrently executed jobs to 2, considering this simpler case. It is <strong>a fantastic tradeoff</strong>. The simplified problem can be solved by a maximum cardinality matching algorithm, which may not find the optimal combination, but exchanging reasonable scheduling overhead for a substantial performance improvement.</p>
+</li>
+</ol>
+<h3 id="weaknesses">Weaknesses</h3>
+<p>This paper also has some potential weaknesses:</p>
+<ol>
+<li>
+<p>It seems to ignore the situation which <strong>two concurrent jobs have different execution times</strong>. For instance, when a longer job and a shorter job are executed together, after the shorter job finishes, GPUPool seems unable to schedule a new job to the GPU. Instead, the remaining GPU time is monopolized by the longer job. This could result in a lower resource utilization.</p>
+</li>
+<li>
+<p>The concurrent execution of multiple jobs on a single GPU may also be <strong>constrained by GPU memory capacity</strong>. A possible improvement is to ask users to indicate maximum GPU memory usage of their applications and consider the these constraints when constructing the graphs.</p>
+</li>
+<li>
+<p>This paper does not consider <strong>the job which leverages multiple GPUs</strong>. These jobs are quite common in reality. When a job can occupy multiple GPUs, there are some additional constraints:</p>
+<ol>
+<li>
+<p><strong>Inter-GPU connection</strong> (e.g., NVLink or InfiniBand) bandwidth is the potential bottleneck, especially for distributed training strategies relying on high GPU interconnect bandwidth, such as <em>Data Parallelism</em>. Improper job scheduling may lead to contention for bandwidth among multiple jobs, or jobs requiring high GPU interconnect bandwidth may run on different nodes.</p>
+</li>
+<li>
+<p>When a single job leverages multiple GPUs, <strong>the workload types on different GPUs may not be the same</strong>. For example, in <em>Pipeline Parallelism</em>, different GPUs run different stages of the neural network.</p>
+</li>
+</ol>
+</li>
+<li>
+<p>This paper does not clearly take into account <strong>the impact of memory hierarchy on performance</strong>, such as shared memory (or just implicitly consider it using a ML model). Some CUDA kernels are optimized by carefully utilizing CUDA SM shared memory, such as <em>Flash Attention</em>. When two kernels run together, does it lead to shared memory contention? Could it result in runtime errors or shared memory overflowing into global memory, causing a severe performance decline? Experiments in the paper can not answer these questions. Also, the selected profiling metrics to train stage 1 model listed in Figure 5 do not contains any metrics about shared memory capacity. Another possibility is that a ML model is already good enough to handle this problem. Regardless, the impact of memory hierarchy on GPU-sharing deserves further study.</p>
+</li>
+</ol>
+<p><img loading="lazy" src="/2024-02-07-paper-reading-pact22-gpupool/metrics.png"></p>
+<center>Figure 5. Metrics Used to Train Stage 1 Prediction Model</center>
+<h3 id="possible-improvements">Possible Improvements</h3>
+<p>I have some potential ideas to improve this work:</p>
+<ol>
+<li>
+<p>As response to the first weakness mentioned above, we can extend GPUPool to enable it to schedule a new job to the GPU after the shorter job finishes. This improvement can be achieved by a simple modification: <strong>keep the running jobs in the incoming window, and if two jobs are still running in the same GPU, also keep the edge between them in the pairing graph</strong>. With this modification, if shorter job finishes, we can re-run the matching algorithm to find a new job to pair with it.</p>
+</li>
+<li>
+<p>We can extend GPUPool to support <strong>multiple GPU job</strong>. To achieve that, we should consider inter-GPU connection bandwidth. This may include following modifications:</p>
+<ol>
+<li>
+<p>Ask users to <strong>indicate the required inter-GPU bandwidth or connection types</strong> (e.g., NVLink/PCIe/Infiniband/Ethernet).</p>
+</li>
+<li>
+<p>Take a multiple GPU task as several sub-jobs. <strong>Each of sub-job is a single GPU job</strong>, with interconnection constraints. Then we can reuse the infrastructure of GPUPool to find the co-running chances.</p>
+</li>
+<li>
+<p>Extend the last <strong>step &ldquo;Execution&rdquo; to consider the interconnection constraints</strong>, so it can dispatch sub-jobs to nodes that meet the constraints. This may require an efficient graph algorithm to find job placement, which requires a further research.</p>
+</li>
+</ol>
+</li>
+<li>
+<p>Sometimes the goal of a data center is not just to improve resource utilization, but also to <strong>save energy</strong>. Improving resource utilization does not necessarily mean energy saving, because the chip&rsquo;s speed $S$, power consumption $P$, and frequency $f$ have the following approximate relationship:</p>
+</li>
+</ol>
+$$\begin{align}
+   S & \propto f \\
+   P & \propto f^\alpha, \text{while}\ \alpha \in [2, 3]
+\end{align}$$<p>We can extend the optimization target of GPUPool to power consumption. This can be achieved by add a power prediction model with similar methods. Then we can use a multi-objective optimization algorithm to find the best job combination, considering both performance and power consumption.</p>
+]]></content:encoded></item></channel></rss>

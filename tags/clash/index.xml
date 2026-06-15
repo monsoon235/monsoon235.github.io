@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>clash on Monsoon's Blog</title><link>https://monsoon-cs.moe/tags/clash/</link><description>Recent content in clash on Monsoon's Blog</description><generator>Hugo</generator><language>en</language><lastBuildDate>Thu, 09 Nov 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://monsoon-cs.moe/tags/clash/index.xml" rel="self" type="application/rss+xml"/><item><title>Building Proxy Service for Team</title><link>https://monsoon-cs.moe/2023-11-09-proxy-for-team/</link><pubDate>Thu, 09 Nov 2023 00:00:00 +0000</pubDate><guid>https://monsoon-cs.moe/2023-11-09-proxy-for-team/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;This is an unfinished blog.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="preface"&gt;Preface&lt;/h2&gt;
+&lt;p&gt;Due to &lt;a href="https://en.wikipedia.org/wiki/Internet_censorship_in_China"&gt;Internet censorship in China&lt;/a&gt; (known as &lt;em&gt;GFW&lt;/em&gt;, &lt;em&gt;Great Firewall&lt;/em&gt;, &lt;em&gt;防火长城&lt;/em&gt;), many websites (e.g. Google, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity issues. In China, the means to circumvent internet censorship is referred to as &lt;em&gt;翻墙&lt;/em&gt; (means &lt;em&gt;climbing over the wall&lt;/em&gt;).&lt;/p&gt;
+&lt;p&gt;In China, to freely access the Internet, a proxy is essential. Despite various commercial options available, they may not be suitable for everyone. Therefore, I have constructed a user-friendly and easy-to-maintain proxy system for my research group, as a part of my responsibilities as a system administrator.&lt;/p&gt;</description><content:encoded><![CDATA[<blockquote>
+<p>This is an unfinished blog.</p>
+</blockquote>
+<h2 id="preface">Preface</h2>
+<p>Due to <a href="https://en.wikipedia.org/wiki/Internet_censorship_in_China">Internet censorship in China</a> (known as <em>GFW</em>, <em>Great Firewall</em>, <em>防火长城</em>), many websites (e.g. Google, Twitter) are blocked, and some websites (e.g. GitHub) suffer connectivity issues. In China, the means to circumvent internet censorship is referred to as <em>翻墙</em> (means <em>climbing over the wall</em>).</p>
+<p>In China, to freely access the Internet, a proxy is essential. Despite various commercial options available, they may not be suitable for everyone. Therefore, I have constructed a user-friendly and easy-to-maintain proxy system for my research group, as a part of my responsibilities as a system administrator.</p>
+<h2 id="target">Target</h2>
+<ol>
+<li><strong>Easy to use</strong>. Team members only need some simple configurations.The proxy client should be able to automatically update configuration.</li>
+<li><strong>Stability</strong>.</li>
+<li><strong>Sufficient traffic</strong>, to download large datasets.</li>
+<li><strong>Low Latency</strong>, to provide good experience for web.</li>
+<li><strong>Low Cost</strong>.</li>
+<li><strong>Easy to maintain</strong>. Frequent maintenance is unacceptable, and only simple changes of the configuration are required for new function.</li>
+<li><strong>Concealment</strong>. The cat-and-mouse game between GFW and anti-censorship tools has been escalating. Ten years ago (2013), only an OpenVPN client was all your need to <a href="https://www.cnnic.com.cn/IDR/hlwfzdsj/201306/t20130628_40563.htm">&ldquo;Across the Great Wall and reach every corner in the world&rdquo;</a>. Now, you must use much more sophisticated solutions to prevent your &ldquo;unusual&rdquo; traffic from being detected by GFW. According to <a href="https://gfw.report/">GFW Report</a>, popular <a href="https://shadowsocks.org/">Shadowsocks</a> (a proxy protocol which simply encrypt all traffic using pre-shared key) was <a href="https://gfw.report/blog/gfw_shadowsocks/">detected and blocked</a>, and the TLS-based proxy also <a href="https://github.com/net4people/bbs/issues/129">encountered large-scale blocking in Oct 2022</a>. The tools and protocols used must be concealed enough to allow the service to run for a long time.</li>
+</ol>
+<h2 id="available-resources">Available Resources</h2>
+<h3 id="cernet">CERNET</h3>
+<h3 id="cloudflare-warp">Cloudflare WARP</h3>
+<h3 id="vps">VPS</h3>
+<h3 id="server-in-ustc">Server in USTC</h3>
+<h3 id="anti-censorship-tools">Anti-Censorship Tools</h3>
+<h2 id="adopted-solution">Adopted Solution</h2>
+<!-- draw a picture -->
+<h2 id="deployment">Deployment</h2>
+<h2 id="problems">Problems</h2>
+<h3 id="client-initialization">Client Initialization</h3>
+<h3 id="compatibility">Compatibility</h3>
+<h2 id="conclusion">Conclusion</h2>
+]]></content:encoded></item></channel></rss>
