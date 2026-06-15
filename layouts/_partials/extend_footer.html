@@ -1,0 +1,15 @@
+{{- /* Persist the visitor's manual language choice so the auto-redirect in
+       extend_head.html respects it on subsequent navigations. Fires when the user
+       clicks PaperMod's language switcher or a per-post cross-language link. */ -}}
+<script>
+(function () {
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a');
+    if (!a) return;
+    if (!a.matches('.lang-switch a, .lang-menu a, .i18n_list a, a.cross-lang-link')) return;
+    var t = a.getAttribute('data-lang');
+    if (!t) t = /(^|\/)zh(\/|$)/.test(a.getAttribute('href') || '') ? 'zh' : 'en';
+    try { localStorage.setItem('sitelang', t); } catch (err) {}
+  }, true);
+})();
+</script>

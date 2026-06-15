@@ -4,30 +4,33 @@ on:
   push:
     branches:
       - main
+      - next
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  pages:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    env:
+      HUGO_VERSION: "0.163.1"
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: "22"
-      - name: Cache NPM dependencies
-        uses: actions/cache@v4
+          submodules: recursive   # pull the PaperMod theme
+          fetch-depth: 0          # full history (for git-based lastmod, if enabled)
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
         with:
-          path: node_modules
-          key: ${{ runner.OS }}-npm-cache
-          restore-keys: |
-            ${{ runner.OS }}-npm-cache
-      - name: Install Dependencies
-        run: npm install
+          hugo-version: ${{ env.HUGO_VERSION }}
+          extended: true
       - name: Build
-        run: npm run build
+        run: hugo --gc --minify
+      # Deploy only from main; pushes to `next` run a build-only CI check.
       - name: Deploy
+        if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

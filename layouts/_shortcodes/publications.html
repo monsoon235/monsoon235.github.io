@@ -1,0 +1,12 @@
+{{- /* Renders the publication list from data/publications.yaml.
+       Replaces Hexo's {% publications %} tag (hexo-tag-publications). */ -}}
+<ol class="publications">
+{{- range hugo.Data.publications }}
+  <li class="publication">
+    <span class="pub-title"><strong>{{ .title }}</strong></span><br>
+    <span class="pub-authors">{{ .authors }}</span><br>
+    <span class="pub-venue"><em>{{ .venue }}</em>{{ with .year }}, {{ . }}{{ end }}</span>
+    {{- if .link }} &nbsp;<a class="pub-link" href="{{ .link }}" target="_blank" rel="noopener">[{{ .linkname | default "Link" }}]</a>{{ end }}
+  </li>
+{{- end }}
+</ol>

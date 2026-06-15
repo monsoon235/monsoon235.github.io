@@ -1,0 +1,42 @@
+# Migrated from source/_data/pub.bib (hexo-tag-publications).
+# Order matches the original {% publications %} list on the About page.
+# NOTE: the `link` is the full URL from the bib `github={...}` field — this fixes
+# the old site's broken double-prefixed links (https://github.com/https://...).
+
+- title: "SuperInfer: SLO-Aware Rotary Scheduling and Memory Management for LLM Inference on Superchips"
+  authors: "Jiahuan Yu, Mingtao Hu, Zichao Lin, Minjia Zhang"
+  venue: "Proceedings of Machine Learning and Systems (MLSys)"
+  year: 2026
+
+- title: "VoltanaLLM: Feedback-Driven Frequency Control and State-Space Routing for Energy-Efficient LLM Serving"
+  authors: "Jiahuan Yu, Aryan Taneja, Junfeng Lin, Minjia Zhang"
+  venue: "arXiv preprint arXiv:2509.04827"
+  year: 2025
+  link: "https://github.com/Supercomputing-System-AI-Lab/VoltanaLLM"
+  linkname: "Code"
+
+- title: "Adaptive Spot-Guided Transformer for Consistent Local Feature Matching"
+  authors: "Jiahuan Yu, Jiahao Chang, Jianfeng He, Tianzhu Zhang, Jiyang Yu, Feng Wu"
+  venue: "Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)"
+  year: 2023
+  link: "https://astr2023.github.io/"
+  linkname: "Project"
+
+- title: "Structured Epipolar Matcher for Local Feature Matching"
+  authors: "Jiahao Chang, Jiahuan Yu, Tianzhu Zhang"
+  venue: "Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops"
+  year: 2023
+  link: "https://sem2023.github.io/"
+  linkname: "Project"
+
+- title: "Tiface: Improving Facial Reconstruction through Tensorial Radiance Fields and Implicit Surfaces"
+  authors: "Ruijie Zhu, Jiahao Chang, Ziyang Song, Jiahuan Yu, Tianzhu Zhang"
+  venue: "arXiv preprint arXiv:2312.09527"
+  year: 2023
+  link: "https://github.com/RuijieZhu94/TI-Face"
+  linkname: "Code"
+
+- title: "VSCHH 2023: A Benchmark for the View Synthesis Challenge of Human Heads"
+  authors: "Youngkyoon Jang, Jiali Zheng, Jifei Song, Helisa Dhamo, Eduardo Pérez-Pellitero, Thomas Tanay, Matteo Maggioni, Richard Shaw, Sibi Catley-Chandar, Yiren Zhou, et al."
+  venue: "Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) Workshops"
+  year: 2023

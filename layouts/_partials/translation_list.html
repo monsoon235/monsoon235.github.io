@@ -1,0 +1,12 @@
+{{- /* Per-post cross-language link, using Hugo's native .Translations
+       (index.md <-> index.zh.md in the same bundle). */ -}}
+{{- if .IsTranslated }}
+{{- range .Translations }}
+    {{- if or ($.Param "author") ($.Param "ShowReadingTime") (not $.Date.IsZero) }}
+    {{- printf "&nbsp;|&nbsp;" | safeHTML -}}
+    {{- end }}
+    <a class="cross-lang-link" data-lang="{{ if eq .Lang "zh" }}zh{{ else }}en{{ end }}" href="{{ .RelPermalink }}">
+    {{- if eq .Lang "zh" }}阅读中文版{{ else }}Read in English{{ end -}}
+    </a>
+{{- end }}
+{{- end -}}

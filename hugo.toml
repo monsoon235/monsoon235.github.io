@@ -1,0 +1,122 @@
+# Hugo configuration — bilingual (English default at /, Chinese under /zh/)
+
+baseURL = "https://monsoon-cs.moe/"
+title = "Monsoon's Blog"
+theme = "PaperMod"
+
+defaultContentLanguage = "en"
+defaultContentLanguageInSubdir = false   # English at root, Chinese under /zh/
+hasCJKLanguage = true
+
+enableRobotsTXT = true
+enableInlineShortcodes = true
+enableEmoji = true
+capitalizeListTitles = false   # keep tag/term names exactly as written (no auto Title-Case)
+
+# Posts keep their dated slug; non-default language (zh) is auto-prefixed with /zh/.
+[permalinks]
+  posts = "/:slug/"
+
+[pagination]
+  pagerSize = 20
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+
+# PaperMod search needs a JSON index per language home.
+# Atom = same RSS feed published at /atom.xml too (old Hexo URL, for compatibility),
+# alongside Hugo's default feed at /index.xml.
+[outputs]
+  home = ["HTML", "RSS", "Atom", "JSON"]
+
+[outputFormats]
+  [outputFormats.Atom]
+    mediaType = "application/rss+xml"
+    baseName = "atom"
+
+# Feed length (applies to both /index.xml and /atom.xml), matching the old Hexo feed.
+[services]
+  [services.rss]
+    limit = 20
+
+[markup]
+  [markup.highlight]
+    lineNos = true
+    lineNumbersInTable = true
+    noClasses = false
+    style = "github"
+    tabWidth = 4
+  [markup.goldmark.renderer]
+    unsafe = true
+  [markup.goldmark.extensions.passthrough]
+    enable = true
+    [markup.goldmark.extensions.passthrough.delimiters]
+      block = [['$$', '$$'], ['\[', '\]']]
+      inline = [['$', '$'], ['\(', '\)']]
+
+[params]
+  env = "production"
+  mainSections = ["posts"]
+  disableSpecial1stPost = true             # first post on home looks like the rest
+  description = "Monsoon's Blog — computer science"
+  author = "Monsoon"
+  DateFormat = "2006-01-02"
+  defaultTheme = "auto"
+  ShowReadingTime = true
+  ShowShareButtons = false
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowToc = true
+  TocOpen = false
+  ShowRssButtonInSectionTermList = true
+  ShowFullTextinRSS = true
+  displayFullLangName = true               # show "English" / "中文" in the switcher
+
+[languages]
+  [languages.en]
+    label = "English"
+    locale = "en"
+    weight = 1
+    title = "Monsoon's Blog"
+    [languages.en.menus]
+      [[languages.en.menus.main]]
+        name = "About"
+        url = "/about/"
+        weight = 10
+      [[languages.en.menus.main]]
+        name = "Archive"
+        url = "/archives/"
+        weight = 20
+      [[languages.en.menus.main]]
+        name = "Tags"
+        url = "/tags/"
+        weight = 30
+      [[languages.en.menus.main]]
+        name = "Search"
+        url = "/search/"
+        weight = 40
+
+  [languages.zh]
+    label = "中文"
+    locale = "zh-CN"
+    weight = 2
+    title = "Monsoon's Blog"
+    [languages.zh.menus]
+      [[languages.zh.menus.main]]
+        name = "关于"
+        url = "/about/"            # About is English-only
+        weight = 10
+      [[languages.zh.menus.main]]
+        name = "归档"
+        url = "/zh/archives/"
+        weight = 20
+      [[languages.zh.menus.main]]
+        name = "标签"
+        url = "/zh/tags/"
+        weight = 30
+      [[languages.zh.menus.main]]
+        name = "搜索"
+        url = "/zh/search/"
+        weight = 40

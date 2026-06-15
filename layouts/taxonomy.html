@@ -1,0 +1,41 @@
+{{- define "main" }}
+
+{{- if .Title }}
+<header class="page-header">
+    <h1>{{ .Title }}</h1>
+    {{- if .Description }}
+    <div class="post-description">
+        {{ .Description }}
+    </div>
+    {{- end }}
+</header>
+{{- end }}
+
+{{- $type := .Type }}
+{{- /* On the Chinese site, list ALL tags (English posts included) using the English
+       taxonomy, which already covers every post (each post has an English version). */ -}}
+{{- $terms := .Data.Terms.Alphabetical }}
+{{- if eq site.Language.Lang "zh" }}
+  {{- range hugo.Sites }}{{- if eq .Language.Lang "en" }}
+    {{- with .GetPage (printf "/%s" $type) }}{{ $terms = .Data.Terms.Alphabetical }}{{ end }}
+  {{- end }}{{- end }}
+{{- end }}
+
+<ul class="terms-tags">
+    {{- range $terms }}
+        {{- $name := .Name }}
+        {{- $count := .Count }}
+        {{- /* Prefer this language's term page; fall back to the English one (for tags
+               that only exist on English posts and have no page in this language). */ -}}
+        {{- $href := "" }}
+        {{- with site.GetPage (printf "/%s/%s" $type $name) }}{{ $href = .RelPermalink }}{{ end }}
+        {{- if not $href }}{{ range hugo.Sites }}{{ if eq .Language.Lang "en" }}{{ with .GetPage (printf "/%s/%s" $type $name) }}{{ $href = .RelPermalink }}{{ end }}{{ end }}{{ end }}{{ end }}
+        {{- with $href }}
+        <li>
+            <a href="{{ . }}">{{ $name }} <sup><strong><sup>{{ $count }}</sup></strong></sup> </a>
+        </li>
+        {{- end }}
+    {{- end }}
+</ul>
+
+{{- end }}{{/* end main */ -}}

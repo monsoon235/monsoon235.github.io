@@ -1,0 +1,77 @@
+{{- /* Custom <head> additions (overrides PaperMod's empty placeholder). */ -}}
+
+{{- /* Auto-redirect by visitor language. Runs early (before <body>) to avoid a flash.
+       Uses the hreflang <link>s PaperMod already emits. A remembered manual choice
+       (localStorage 'sitelang') wins over browser detection. English-only posts have
+       no zh hreflang, so a zh visitor simply stays on them. */ -}}
+<script>
+(function () {
+  var KEY = 'sitelang';
+  function want() {
+    try { var s = localStorage.getItem(KEY); if (s === 'en' || s === 'zh') return s; } catch (e) {}
+    var L = navigator.languages || [navigator.language || 'en'];
+    for (var i = 0; i < L.length; i++) {
+      if (/^zh/i.test(L[i])) return 'zh';
+      if (/^en/i.test(L[i])) return 'en';
+    }
+    return 'en';
+  }
+  var w = want();
+  var cur = /^zh/i.test(document.documentElement.lang || 'en') ? 'zh' : 'en';
+  if (w !== cur) {
+    var alt = document.querySelector('link[rel="alternate"][hreflang="' + w + '"]');
+    if (alt && alt.getAttribute('href')) {
+      // Redirect within the CURRENT origin only (ignore the hreflang's domain) so
+      // navigation is domain-agnostic: works on localhost / preview / any host.
+      var u = new URL(alt.getAttribute('href'), location.href);
+      var dest = u.pathname + u.search + u.hash;
+      if (dest !== location.pathname + location.search + location.hash) location.replace(dest);
+    }
+  }
+})();
+</script>
+
+{{- /* MathJax — only on posts with `math: true`. */ -}}
+{{- if .Param "math" }}
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      tags: 'ams'
+    },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+{{- end }}
+
+{{- /* Font Awesome — only on pages with `fontawesome: true` (About page). */ -}}
+{{- if .Param "fontawesome" }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css">
+{{- end }}
+
+<style>
+  .cross-lang-link { white-space: nowrap; }
+  /* Marks list/archive entries whose language differs from the current site
+     (e.g. English posts shown on the Chinese site). inline-block + fixed rem
+     font-size + own line-height keep it a small pill, decoupled from the
+     heading's font size / line-height (so it doesn't stretch when titles wrap). */
+  .entry-lang-badge {
+    display: inline-block;
+    font-size: .62rem;
+    line-height: 1.5;
+    font-weight: 600;
+    letter-spacing: .04em;
+    vertical-align: middle;
+    margin-left: .5em;
+    padding: 0 .45em;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    opacity: .7;
+    white-space: nowrap;
+    position: relative;
+    top: -.06em;
+  }
+</style>

@@ -1,0 +1,28 @@
+{{- /* /atom.xml — the old Hexo feed URL, kept for backward compatibility.
+       Serves the same posts as Hugo's built-in /index.xml feed. Only enabled on the
+       home page (see [outputs] in hugo.toml), so this only handles the home feed. */ -}}
+{{- $limit := site.Config.Services.RSS.Limit -}}
+{{- $pages := where site.RegularPages "Type" "in" site.Params.mainSections -}}
+{{- if and (ge $limit 1) (gt (len $pages) $limit) -}}{{- $pages = first $limit $pages -}}{{- end -}}
+{{ printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>{{ site.Title }}</title>
+    <link>{{ .Permalink }}</link>
+    <description>Recent content on {{ site.Title }}</description>
+    <generator>Hugo</generator>
+    {{- with site.Language.Lang }}<language>{{ . }}</language>{{ end }}
+    {{- with site.Copyright }}<copyright>{{ . }}</copyright>{{ end }}
+    {{- if gt (len $pages) 0 }}<lastBuildDate>{{ (index $pages 0).Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>{{ end }}
+    {{- with .OutputFormats.Get "Atom" }}{{ printf "<atom:link href=%q rel=%q type=%q />" .Permalink "self" .MediaType.Type | safeHTML }}{{ end }}
+    {{- range $pages }}
+    <item>
+      <title>{{ .Title }}</title>
+      <link>{{ .Permalink }}</link>
+      <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
+      <guid>{{ .Permalink }}</guid>
+      <description>{{ .Summary | html }}</description>
+    </item>
+    {{- end }}
+  </channel>
+</rss>
